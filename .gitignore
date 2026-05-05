@@ -1,0 +1,29 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+
+# Local manifest and working dirs
+manifest.sqlite
+manifest.sqlite-journal
+manifest.sqlite-wal
+manifest.sqlite-shm
+courier_automation_work/
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Data
+Operations - Couriers/
