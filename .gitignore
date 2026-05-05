@@ -14,6 +14,7 @@ manifest.sqlite-journal
 manifest.sqlite-wal
 manifest.sqlite-shm
 courier_automation_work/
+test-output/
 
 # OS
 Thumbs.db

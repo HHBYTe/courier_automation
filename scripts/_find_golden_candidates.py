@@ -4,7 +4,6 @@ ranked by row count, so we can pick rich fixtures for the golden test."""
 from __future__ import annotations
 
 import re
-import sys
 from pathlib import Path
 
 import pandas as pd

@@ -194,6 +194,31 @@ STRING_COLUMNS: tuple[str, ...] = (
 )
 
 
+def _to_clean_string(value: object) -> object:
+    """Normalise a single value to a clean string, dropping the spurious `.0`
+    that Excel introduces when it auto-stores a code field as a number.
+
+    Examples: 685 -> "685", 685.0 -> "685", "685.0" -> "685", "ABC" -> "ABC".
+    Returns None for nulls so the resulting Series can be `astype("string")`.
+    """
+    if value is None:
+        return None
+    if isinstance(value, float):
+        if pd.isna(value):
+            return None
+        if value.is_integer():
+            return str(int(value))
+        return str(value)
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.endswith(".0"):
+            core = stripped[:-2]
+            if core.lstrip("-").isdigit():
+                return core
+        return stripped
+    return str(value)
+
+
 def coerce_seur_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     """Coerce a Seur-shaped DataFrame to the parser's canonical dtypes
     (dates, ints, floats, strings).
@@ -210,15 +235,16 @@ def coerce_seur_dtypes(df: pd.DataFrame) -> pd.DataFrame:
         df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
     for col in FLOAT_COLUMNS:
         df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")
-    for col in STRING_COLUMNS:
-        df[col] = df[col].where(df[col].notna(), None).astype("string")
-    # Anything still object-dtype is a free-text or mixed-content column
-    # (e.g. `Referencia` where some rows hold ints and others alphanumerics).
-    # Normalise to `string` so parquet serialisation works and golden
-    # comparison is type-consistent.
+    # Every column not in the typed groups above is a code or free-text field.
+    # Run them all through the same string cleaner regardless of inferred dtype
+    # — Referencia comes back as float in some invoices (all-numeric) and
+    # object in others; Centro is float in Datos and int in raw. Cleaning
+    # uniformly is what makes the golden comparison sound.
+    typed = set(DATE_COLUMNS) | set(INT_COLUMNS) | set(FLOAT_COLUMNS)
     for col in df.columns:
-        if df[col].dtype == object:
-            df[col] = df[col].where(df[col].notna(), None).astype("string")
+        if col in typed:
+            continue
+        df[col] = df[col].map(_to_clean_string).astype("string")
     return df
 
 

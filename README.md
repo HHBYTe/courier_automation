@@ -2,7 +2,16 @@
 
 Internal pipeline that ingests courier invoices into per-courier historical workbooks. Pilot courier: **Seur**.
 
-See [02_step1_plan.md](02_step1_plan.md) for the overall architecture and [.claude/plans/start-with-the-python-stateful-stream.md](../../.claude/plans/start-with-the-python-stateful-stream.md) for the Python pipeline design.
+## Documentation
+
+| Doc | What's in it |
+|---|---|
+| [docs/architecture.md](docs/architecture.md) | Design, three-layer pipeline, module-by-module walkthrough, tools, key decisions. |
+| [docs/workflow.md](docs/workflow.md) | Day-to-day recipes: setup, test, ingest, picking fixtures, refreshing the golden snapshot. |
+| [docs/status.md](docs/status.md) | What's done, what's tested, known gaps, roadmap, decision log. |
+| [docs/drift_handling.md](docs/drift_handling.md) | Three classes of drift and what each layer catches; the LLM-triage future strategy. |
+
+Reference material: [01_data_exploration.md](01_data_exploration.md) (per-courier raw schemas) and [02_step1_plan.md](02_step1_plan.md) (original Step 1 plan).
 
 ## Setup (Windows, PowerShell)
 
