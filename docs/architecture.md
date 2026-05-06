@@ -78,6 +78,11 @@ Adapter interface and shared helpers, courier-agnostic.
   primary key.
 - `extract_seur_invoice_number(filename)` — Seur-specific filename regex
   `\d{10}[A-Z]{1,3}\d{7}` that handles all observed prefixes (D, AD, FR).
+- `to_clean_string(value)` — shared helper that converts numbers / NaN /
+  strings to a normalised `string` dtype, dropping the spurious `.0`
+  Excel introduces when it auto-stores a code field as a number
+  (`685` / `685.0` / `"685.0"` all → `"685"`). Every per-courier coerce
+  function uses it.
 
 ### `courier_automation/parsers/seur.py`
 
@@ -95,13 +100,57 @@ Key constants:
 - `PLAUSIBILITY_NO_NULL`, `PLAUSIBILITY_MIN_NON_NULL_RATE`,
   `PLAUSIBILITY_DATE_RANGE` — the value-level drift rules.
 
-Public functions:
+Public function:
 
 - `coerce_seur_dtypes(df)` — dtype canonicalisation, used by both the
   parser and the golden-extraction script so the comparison is sound.
-- `_to_clean_string(value)` — normalises numeric-as-text values across
-  raw vs Datos (685 / 685.0 / "685.0" all → "685"). Necessary because
-  Excel auto-stores code columns as numbers in some files but not others.
+
+### `courier_automation/parsers/seitrans.py`
+
+The Seitrans parser. Raw invoices are 21-column Italian-named files
+(sheet `Risultato`); the historical workbook has 25 columns — the same
+21 with `_` → ` ` renamed (except `DOCUMENTO_DATA` which kept its
+underscore in production), plus 4 derived columns prepended:
+`Tipo expedición`, `Q Expediciones`, `Año`, `Mes`.
+
+Key constants (all use the *historical-Datos* column names — the
+schema after the rename step):
+
+- `SEITRANS_RAW_COLUMNS` (21) — raw underscore-named columns; what
+  `assert_schema` validates against right after `read_excel`.
+- `DERIVED_COLUMNS` (4) — `Tipo expedición`, `Q Expediciones`, `Año`,
+  `Mes`.
+- `SEITRANS_COLUMNS` (25) — derived + renamed raw; the schema the
+  writer expects on the Datos sheet.
+- `_KEEP_UNDERSCORE = {"DOCUMENTO_DATA"}` — the one column not renamed
+  in production. Caught by the golden test, fixed in the rename map.
+- `DATE_COLUMNS / INT_COLUMNS / FLOAT_COLUMNS` — note `Mes` is a *date*
+  (first day of month), not int; `DOCUMENTO_NUMERO`, `Año`, `IMBALLI`,
+  `Q Expediciones` are Int64.
+
+Parse flow:
+
+1. Read raw 21-col xlsx.
+2. Validate raw schema with `assert_schema`.
+3. `_rename_and_derive(df)` — rename `_` → ` ` (except `DOCUMENTO_DATA`)
+   and add the 4 derived columns. Output is shaped like historical Datos.
+4. `coerce_seitrans_dtypes(df)` — dtype canonicalisation, identical to
+   what the golden script applies to Datos.
+5. Plausibility checks on the historical schema.
+6. Derive `invoice_number` from data: `f"{year}-{DOCUMENTO_NUMERO}"`.
+   Filenames are unreliable (observed: `2025_01_31 3065.xlsx`,
+   `2024_12_31 Factura 48172.xlsx`, `2025_06_30_24633.xlsx`).
+
+Two derived-column nuances worth knowing:
+
+- **`Tipo expedición` is always `Pallet`.** Confirmed across all 3,464
+  rows of historical Datos. The previous "IMBALLI > 1 → Pallet" guess
+  was wrong.
+- **`Q Expediciones` is per-file dedup** (`1` on the first row for each
+  `SPEDIZIONE NUMERO` within the file, `0` afterwards). The user's
+  actual rule is "1 on the first global occurrence across all of
+  Datos", which the parser can't replicate without global state.
+  Excluded from the golden comparison; ~8% divergence on the fixtures.
 
 ### `courier_automation/parsers/plausibility.py`
 
@@ -157,8 +206,11 @@ Custom errors: `WorkbookLocked` (lock timeout, exit 3), reuses
 
 ### `courier_automation/cli.py`
 
-Typer entry point. Single command tree: `ingest seur --file ... | --month
-YYYY-MM`. Exit codes:
+Typer entry point. Two subcommands sharing the same `_ingest_one` core:
+`ingest seur` and `ingest seitrans`. Each accepts
+`--file / --month YYYY-MM / --folder / --workbook / --dry-run`. With no
+file or month given, the CLI auto-discovers the latest available month
+under the courier's Facturas folder. Exit codes:
 
 | Code | Meaning |
 |---|---|
@@ -171,23 +223,32 @@ YYYY-MM`. Exit codes:
 
 `--dry-run` parses and manifest-checks without writing.
 
-### `scripts/extract_seur_golden.py`
+### `scripts/extract_seur_golden.py` and `scripts/extract_seitrans_golden.py`
 
-One-off script (run by the operator, not in the runtime). Reads `Datos`
-from the production workbook, slices to rows whose `(year, trailing-int)`
-matches a fixture in `tests/fixtures/seur/raw/`, applies
-`coerce_seur_dtypes`, and writes a parquet to
-`tests/fixtures/seur/golden/<period>-datos.parquet`. The golden test then
-compares parser output to that parquet.
+One-off scripts (run by the operator, not in the runtime). Each reads
+`Datos` from the courier's production workbook, slices to rows whose
+identity tuple matches a fixture in `tests/fixtures/<carrier>/raw/`,
+applies the same `coerce_<carrier>_dtypes` the parser uses, and writes a
+parquet to `tests/fixtures/<carrier>/golden/<period>-datos.parquet`. The
+golden test then compares parser output to that parquet.
 
-The script reads from `Operations - Couriers/` but **only writes** to
-`tests/fixtures/seur/golden/` — the production folder is read-only.
+Identity tuples differ per courier:
+
+- **Seur**: `(year, trailing-7-digit-number)`. Datos stores only the
+  trailing int; year disambiguates.
+- **Seitrans**: `(year, DOCUMENTO_NUMERO)`. Year is parsed from the
+  filename's `YYYY_MM_DD` prefix; trailing number from the filename's
+  trailing digits group. Datos stores `DOCUMENTO_NUMERO` directly.
+
+Both scripts read from `Operations - Couriers/` but **only write** to
+`tests/fixtures/.../golden/` — the production folder is read-only.
 
 ### `scripts/_find_golden_candidates.py`
 
-Dev-only tool (`_`-prefixed). Cross-references invoice numbers in `Datos`
-against files in `Operations - Couriers/01. Seur/Facturas/` so picking
-fresh fixtures for the golden test is one command.
+Dev-only tool (`_`-prefixed; ruff-excluded). Cross-references invoice
+numbers in Seur `Datos` against files in
+`Operations - Couriers/01. Seur/Facturas/` so picking fresh fixtures
+for the golden test is one command.
 
 ## Tools and why each was picked
 
@@ -280,7 +341,9 @@ into that folder is allowed.
 | `courier_automation/` | The Python package. |
 | `tests/` | Test suite + fixtures. |
 | `tests/fixtures/seur/raw/` | Real Seur invoices used as fixtures (not anonymised — internal tool). |
-| `tests/fixtures/seur/golden/` | Parquet snapshots from Datos for the golden test. |
+| `tests/fixtures/seur/golden/` | Parquet snapshots from Seur Datos for the golden test. |
+| `tests/fixtures/seitrans/raw/` | Real Seitrans invoices. Both observed filename variants represented. |
+| `tests/fixtures/seitrans/golden/` | Parquet snapshots from Seitrans Datos. |
 | `scripts/` | One-off operator tools (golden extractor, fixture finder). |
 | `docs/` | This documentation. |
 | `Operations - Couriers/` | **Read-only.** Production data: workbooks, raw invoices, PDFs, `.pbix` files. |

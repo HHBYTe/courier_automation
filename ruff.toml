@@ -1,0 +1,6 @@
+# Exclude user scratch / one-off exploration files from lint.
+# Anything under `scripts/_*` or top-level `_*.py` is treated as a sandbox.
+extend-exclude = [
+    "_*.py",
+    "scripts/_*.py",
+]
