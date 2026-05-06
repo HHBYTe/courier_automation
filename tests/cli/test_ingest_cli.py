@@ -182,21 +182,27 @@ def test_ingest_seitrans_single_file_end_to_end(tmp_path, default_seitrans_row):
 
 
 def test_ingest_seitrans_auto_discovers_latest_month(tmp_path, default_seitrans_row):
+    """Latest month wins (April 2025), so only the two April files get
+    ingested. Each file represents a distinct invoice, so we override
+    DOCUMENTO_NUMERO per file — otherwise they'd all share the conftest
+    default and trigger a manifest conflict."""
     workbook = make_empty_seitrans_workbook(tmp_path / "wb.xlsx")
     facturas = tmp_path / "Facturas" / "2025"
     facturas.mkdir(parents=True)
 
+    def _row(line_number: int, doc_num: int):
+        r = default_seitrans_row(line_number)
+        r["DOCUMENTO_NUMERO"] = doc_num
+        return r
+
     make_seitrans_invoice(
-        facturas / "2025_03_10_INV000001.xlsx",
-        rows=[default_seitrans_row(1)],
+        facturas / "2025_03_10_INV000001.xlsx", rows=[_row(1, 1001)]
     )
     make_seitrans_invoice(
-        facturas / "2025_04_15_INV000002.xlsx",
-        rows=[default_seitrans_row(2)],
+        facturas / "2025_04_15_INV000002.xlsx", rows=[_row(1, 1002)]
     )
     make_seitrans_invoice(
-        facturas / "2025_04_20_INV000003.xlsx",
-        rows=[default_seitrans_row(3)],
+        facturas / "2025_04_20_INV000003.xlsx", rows=[_row(1, 1003)]
     )
 
     result = runner.invoke(

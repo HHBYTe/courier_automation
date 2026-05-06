@@ -51,19 +51,21 @@ def test_dtypes_after_coercion(seitrans_invoice_factory, default_seitrans_row):
     assert df["IMBALLI"].dtype.name == "Int64"
     assert df["PESO LORDO"].dtype == "float64"
     assert df["IMPORTO TOTALE VALUTA"].dtype == "float64"
-    assert df["DOCUMENTO DATA"].dtype.kind == "M"
+    assert df["DOCUMENTO_DATA"].dtype.kind == "M"
     assert df["Q Expediciones"].dtype.name == "Int64"
     assert df["Tipo expedición"].dtype.name == "string"
 
 
-def test_tipo_expedicion_is_pallet_when_multiple_packages(seitrans_invoice_factory, default_seitrans_row):
-    row = default_seitrans_row(1)
-    row["IMBALLI"] = 3
-    path = seitrans_invoice_factory(rows=[row])
-    df = SeitransParser().parse(path).rows
-
-    assert df["Tipo expedición"].iloc[0] == "Pallet"
-    assert df["Q Expediciones"].iloc[0] == 1
+def test_tipo_expedicion_is_always_pallet(seitrans_invoice_factory, default_seitrans_row):
+    """Confirmed: 100% of real Datos rows use Tipo expedición = "Pallet"
+    regardless of IMBALLI count."""
+    for imballi in (1, 2, 10):
+        row = default_seitrans_row(1)
+        row["IMBALLI"] = imballi
+        path = seitrans_invoice_factory(rows=[row], filename=f"f{imballi}.xlsx")
+        df = SeitransParser().parse(path).rows
+        assert df["Tipo expedición"].iloc[0] == "Pallet"
+        assert df["Q Expediciones"].iloc[0] == 1
 
 
 def test_schema_mismatch_emits_diff_with_renamed_column(seitrans_invoice_factory):

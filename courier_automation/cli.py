@@ -351,7 +351,12 @@ def _discover_latest_month_files(root: Path) -> list[Path]:
     return sorted(latest_candidates[latest_year_month])
 
 
-_SEITRANS_FILE_RE = re.compile(r"^(\d{4})_(\d{2})_(\d{2})_.+$")
+# Seitrans filenames have an inconsistent separator after the date: observed
+# `2025_01_31 3065.xlsx`, `2024_12_31 Factura 48172.xlsx`, `2025_06_30_24633.xlsx`.
+# The pattern matches a YYYY_MM_DD prefix followed by anything that doesn't
+# start with another digit (so we don't accidentally absorb extra digits into
+# the date and produce wrong year/month groups).
+_SEITRANS_FILE_RE = re.compile(r"^(\d{4})_(\d{2})_(\d{2})(?:\D.*)?$")
 
 
 def _discover_seitrans_month_files(month: str, root: Path) -> list[Path]:
