@@ -21,8 +21,10 @@ import typer
 from courier_automation.manifest.registry import ManifestRegistry
 from courier_automation.parsers.base import ParserError, SchemaMismatch
 from courier_automation.parsers.plausibility import PlausibilityError
+from courier_automation.parsers.correos import CorreosParser
 from courier_automation.parsers.seur import SeurParser
 from courier_automation.parsers.seitrans import SeitransParser
+from courier_automation.parsers.ups import UpsParser
 from courier_automation.store.workbook_appender import (
     WorkbookAppender,
     WorkbookLocked,
@@ -43,6 +45,14 @@ DEFAULT_SEITRANS_WORKBOOK = Path(
     "Operations - Couriers/04. Seitrans/Análisis envíos Seitrans.xlsx"
 )
 DEFAULT_SEITRANS_FACTURAS = Path("Operations - Couriers/04. Seitrans/Facturas")
+DEFAULT_CORREOS_WORKBOOK = Path(
+    "Operations - Couriers/05. Correos Express/Análisis Envíos Correos Express V2.xlsx"
+)
+DEFAULT_CORREOS_FACTURAS = Path("Operations - Couriers/05. Correos Express/Facturas")
+DEFAULT_UPS_WORKBOOK = Path(
+    "Operations - Couriers/07. UPS (UK)/UPS Shippings Report.xlsx"
+)
+DEFAULT_UPS_INVOICES = Path("Operations - Couriers/07. UPS (UK)/Invoices")
 
 log = logging.getLogger("courier_automation.cli")
 
@@ -213,6 +223,130 @@ def ingest_seitrans(
             appender=appender,
             workbook=workbook,
             dry_run=dry_run,
+        )
+        summary["appended"] += int(result["appended"])
+        summary["skipped"] += int(result["skipped"])
+        summary["rows_written"] += int(result["rows_written"])
+
+    typer.echo(
+        f"done: {summary['appended']} ingested, {summary['skipped']} skipped, "
+        f"{summary['rows_written']} rows written"
+        + (" (dry-run)" if dry_run else "")
+    )
+
+
+@ingest_app.command("correos")
+def ingest_correos(
+    file: Optional[Path] = typer.Option(
+        None, "--file", "-f", help="Path to a single raw Correos invoice .xlsx."
+    ),
+    month: Optional[str] = typer.Option(
+        None, "--month", help="Month to ingest in YYYY-MM form."
+    ),
+    folder: Optional[Path] = typer.Option(
+        None, "--folder",
+        help=f"Root Facturas folder (default: {DEFAULT_CORREOS_FACTURAS}).",
+    ),
+    workbook: Path = typer.Option(
+        DEFAULT_CORREOS_WORKBOOK, "--workbook", "-w",
+        help="Target Correos historical workbook.",
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run",
+        help="Parse + manifest-check only; never write to the workbook.",
+    ),
+) -> None:
+    """Ingest one or many Correos Express invoice files."""
+    _setup_logging()
+
+    if file is not None and month is not None:
+        typer.echo("error: pass at most one of --file or --month", err=True)
+        raise typer.Exit(code=EXIT_USAGE)
+
+    root = folder or DEFAULT_CORREOS_FACTURAS
+    if file is not None:
+        files = [file]
+    elif month is not None:
+        # Correos uses the same date-prefix filename layout as Seitrans
+        # (`YYYY_MM_DD <stuff>.xlsx`), so the same discoverer works.
+        files = _discover_seitrans_month_files(month, root)
+        if not files:
+            typer.echo(f"no .xlsx invoices found for month {month} under {root}", err=True)
+            raise typer.Exit(code=EXIT_USAGE)
+    else:
+        files = _discover_latest_seitrans_month_files(root)
+        if not files:
+            typer.echo(f"no .xlsx invoices found under {root}", err=True)
+            raise typer.Exit(code=EXIT_USAGE)
+
+    parser = CorreosParser()
+    registry = ManifestRegistry()
+    appender = WorkbookAppender()
+
+    summary = {"appended": 0, "skipped": 0, "rows_written": 0}
+    for path in files:
+        result = _ingest_one(
+            path,
+            parser=parser,
+            registry=registry,
+            appender=appender,
+            workbook=workbook,
+            dry_run=dry_run,
+        )
+        summary["appended"] += int(result["appended"])
+        summary["skipped"] += int(result["skipped"])
+        summary["rows_written"] += int(result["rows_written"])
+
+    typer.echo(
+        f"done: {summary['appended']} ingested, {summary['skipped']} skipped, "
+        f"{summary['rows_written']} rows written"
+        + (" (dry-run)" if dry_run else "")
+    )
+
+
+@ingest_app.command("ups")
+def ingest_ups(
+    file: Optional[Path] = typer.Option(
+        None, "--file", "-f",
+        help="Path to a single raw UPS billing CSV.",
+    ),
+    folder: Optional[Path] = typer.Option(
+        None, "--folder",
+        help=f"Root Invoices folder (default: {DEFAULT_UPS_INVOICES}). "
+             "When given without --file, ingests every .csv under it.",
+    ),
+    workbook: Path = typer.Option(
+        DEFAULT_UPS_WORKBOOK, "--workbook", "-w",
+        help="Target UPS historical workbook.",
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run",
+        help="Parse + manifest-check only; never write to the workbook.",
+    ),
+) -> None:
+    """Ingest one or many UPS billing CSV files."""
+    _setup_logging()
+    if file is None and folder is None:
+        typer.echo("error: pass --file or --folder", err=True)
+        raise typer.Exit(code=EXIT_USAGE)
+
+    if file is not None:
+        files = [file]
+    else:
+        files = sorted((folder or DEFAULT_UPS_INVOICES).rglob("*.csv"))
+        if not files:
+            typer.echo(f"no .csv invoices under {folder}", err=True)
+            raise typer.Exit(code=EXIT_USAGE)
+
+    parser = UpsParser()
+    registry = ManifestRegistry()
+    appender = WorkbookAppender(sheet_name="Data")  # UPS uses 'Data' not 'Datos'
+
+    summary = {"appended": 0, "skipped": 0, "rows_written": 0}
+    for path in files:
+        result = _ingest_one(
+            path, parser=parser, registry=registry, appender=appender,
+            workbook=workbook, dry_run=dry_run,
         )
         summary["appended"] += int(result["appended"])
         summary["skipped"] += int(result["skipped"])

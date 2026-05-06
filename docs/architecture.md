@@ -22,14 +22,14 @@ This document describes Step 1 as built today.
 ## The three-layer pipeline
 
 ```
-   ┌─────────────────────┐    ┌─────────────────────┐   ┌──────────────────────────┐
-   │  COLLECTOR          │ -> │   PARSER            │ ->│   STORE                  │
-   │  (n8n / Power       │    │   (per-courier      │   │   (workbook appender,    │
-   │   Automate)         │    │    Python adapter)  │   │    SQLite manifest)      │
-   └─────────────────────┘    └─────────────────────┘   └──────────────────────────┘
-                                                              │
-                                                              ▼
-                                                       Power BI (per-courier)
+   ┌─────────────────────┐    ┌─────────────────────┐   ┌──────────────────────────┐    ┌────────────────────┐
+   │  COLLECTOR          │ -> │   PARSER            │ ->│   STORE                  │ -> │  COMBINE           │
+   │  (n8n / Power       │    │   (per-courier      │   │   (workbook appender,    │    │  (all couriers)    │
+   │   Automate)         │    │    Python adapter)  │   │    SQLite manifest)      │    │                    │
+   └─────────────────────┘    └─────────────────────┘   └──────────────────────────┘    └────────────────────┘
+                                                              │                                   │
+                                                              ▼                                   ▼
+                                                       Power BI (per-courier)                Big Power BI
 ```
 
 Each layer is loosely coupled and independently testable.

@@ -10,7 +10,9 @@ from typing import Any, Iterable
 import pytest
 from openpyxl import Workbook
 
+from courier_automation.parsers.correos import CORREOS_COLUMNS, CORREOS_RAW_COLUMNS
 from courier_automation.parsers.seur import SEUR_COLUMNS
+from courier_automation.parsers.ups import UPS_COLUMNS
 from courier_automation.parsers.seitrans import SEITRANS_COLUMNS, SEITRANS_RAW_COLUMNS
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
@@ -19,6 +21,10 @@ SEUR_GOLDEN_DIR = FIXTURES_DIR / "seur" / "golden"
 SEUR_SYNTHETIC_DIR = FIXTURES_DIR / "seur" / "synthetic"
 SEITRANS_RAW_DIR = FIXTURES_DIR / "seitrans" / "raw"
 SEITRANS_GOLDEN_DIR = FIXTURES_DIR / "seitrans" / "golden"
+CORREOS_RAW_DIR = FIXTURES_DIR / "correos" / "raw"
+CORREOS_GOLDEN_DIR = FIXTURES_DIR / "correos" / "golden"
+UPS_RAW_DIR = FIXTURES_DIR / "ups" / "raw"
+UPS_GOLDEN_DIR = FIXTURES_DIR / "ups" / "golden"
 
 
 def _make_default_row(line_number: int = 1) -> dict[str, Any]:
@@ -258,12 +264,228 @@ def default_seitrans_row():
     return _make_default_seitrans_row
 
 
+@pytest.fixture
+def correos_invoice_factory(tmp_path: Path):
+    """Returns a callable that writes a synthetic Correos invoice xlsx."""
+
+    def _factory(
+        rows: Iterable[dict[str, Any]] | None = None,
+        *,
+        filename: str = "2025_01_31 FAC_UNICO_F2501_14307.xlsx",
+        columns: tuple[str, ...] = CORREOS_RAW_COLUMNS,
+        invoice_number: str = "F250114307",
+        invoice_date: datetime = datetime(2025, 1, 31),
+    ) -> Path:
+        return make_correos_invoice(
+            tmp_path / filename,
+            rows,
+            columns=columns,
+            invoice_number=invoice_number,
+            invoice_date=invoice_date,
+        )
+
+    return _factory
+
+
+@pytest.fixture
+def empty_correos_workbook(tmp_path: Path) -> Path:
+    return make_empty_correos_workbook(tmp_path / "correos_workbook.xlsx")
+
+
+@pytest.fixture
+def default_correos_row():
+    return _make_default_correos_row
+
+
+@pytest.fixture
+def ups_invoice_factory(tmp_path: Path):
+    """Returns a callable that writes a synthetic UPS billing CSV."""
+
+    def _factory(
+        rows: Iterable[dict[str, Any]] | None = None,
+        *,
+        filename: str = "Invoice_3961958_012225.csv",
+        columns: tuple[str, ...] = UPS_COLUMNS,
+    ) -> Path:
+        return make_ups_invoice(tmp_path / filename, rows, columns=columns)
+
+    return _factory
+
+
+@pytest.fixture
+def empty_ups_workbook(tmp_path: Path) -> Path:
+    return make_empty_ups_workbook(tmp_path / "ups_workbook.xlsx")
+
+
+@pytest.fixture
+def default_ups_row():
+    return _make_default_ups_row
+
+
+def _make_default_correos_row(line_number: int = 1) -> dict[str, Any]:
+    """Defaults for one shipment line in a synthetic Correos invoice."""
+    row: dict[str, Any] = {
+        "Nº ENVIO": f"E{line_number:09d}",
+        "F.ALBARAN": datetime(2025, 1, 15),
+        "F.ADMISION": datetime(2025, 1, 15),
+        "REFERENCIA": f"REF{line_number:05d}",
+        "Nº ENVIO CLIENTE": f"C{line_number:08d}",
+        "BULTOS": 1,
+        "PESO KILOS": 2.5,
+        "VOLUMEN": 0.01,
+        "C. LLAMADA": "",
+        "PORTE": 4.50,
+        "G. REEMBOLSO": 0.0,
+        "DESEMBOLSO": 0.0,
+        "REEXPEDICION": 0.0,
+        "SEGUROS": 0.0,
+        "SEGURO ESPECIAL": 0.0,
+        "IMP. EXCESO MEDIDAS": 0.0,
+        "SUPLEMENTO RECOGIDA": 0.0,
+        "ENTREGA SABADO": 0.0,
+        "SUPLEMTO O/D PORTUGAL": 0.0,
+        "SUPLEMENTO DESTINO INGLATERRA": 0.0,
+        "SUPLEMENTO COMBUSTIBLE": 0.45,
+        "IMP. TOTAL": 5.99,
+        "TIPO IMPOSITIVO": 21.0,
+        "T. PORTE": 4.95,
+        "PRODUCTO": "PAQ",
+        "C. REMITENTE": "001",
+        "N. REMITENTE": "Artero",
+        "DOM. REMITENTE": "Calle Falsa 123",
+        "POB. REMITENTE": "Barcelona",
+        "C. P. REM.": "08001",
+        "TEL. REMITENTE": "934567890",
+        "C. C. REMITENTE": "001",
+        "C. DESTINATARIO": "002",
+        "N. DESTINATARIO": "Cliente",
+        "DOM. DESTINATARIO": "Avenida Real 456",
+        "POB. DESTINATARIO": "Madrid",
+        "C. P. DESTINATARIO": "28001",
+        "TEL. DESTINATARIO": "917654321",
+        "C. C. DESTINATARIO": "001",
+        "PLAZA ORIGEN": "08",
+        "PLAZA DESTINO": "28",
+        "PLAZA FACTURACION": "08",
+        "V. ASEGURADO": 0.0,
+        "IMP. REEMBOLSO": 0.0,
+        "IMP. DESEMBOLSO": 0.0,
+        "C. PAIS": "34",
+        "OBSERVACIONES": "",
+        "CLIENTE IMPUTACION": "1",
+        "BAREMO": "STD",
+        "F.ENTREGA": datetime(2025, 1, 16),
+        "HORA ENTREGA": "10:30",
+    }
+    assert set(row) == set(CORREOS_RAW_COLUMNS), (
+        f"default row schema drift: missing={set(CORREOS_RAW_COLUMNS) - set(row)}, "
+        f"extra={set(row) - set(CORREOS_RAW_COLUMNS)}"
+    )
+    return row
+
+
+def make_correos_invoice(
+    path: Path,
+    rows: Iterable[dict[str, Any]] | None = None,
+    *,
+    columns: tuple[str, ...] = CORREOS_RAW_COLUMNS,
+    invoice_number: str = "F250114307",
+    invoice_date: datetime = datetime(2025, 1, 31),
+) -> Path:
+    """Write a Correos-shaped xlsx with the inconvenient header band:
+    row 0 = invoice-metadata labels, row 1 = invoice-metadata values,
+    row 2 = shipment-line headers, rows 3+ = data."""
+    if rows is None:
+        rows = [_make_default_correos_row()]
+    rows = list(rows)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Sheet1"
+
+    # Row 0 — only the two labels the parser needs; pad to the line-table width.
+    band_labels = ["Nº FACTURA", "F.FACTURA"] + [None] * (len(columns) - 2)
+    ws.append(band_labels)
+    band_values = [invoice_number, invoice_date] + [None] * (len(columns) - 2)
+    ws.append(band_values)
+
+    # Row 2 — actual shipment-line headers.
+    ws.append(list(columns))
+    for row in rows:
+        ws.append([row.get(col) for col in columns])
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(path)
+    return path
+
+
+def make_empty_correos_workbook(path: Path) -> Path:
+    """Tiny workbook with a `Datos` sheet and the 58-col Correos header."""
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Datos"
+    ws.append(list(CORREOS_COLUMNS))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(path)
+    return path
+
+
+def _make_default_ups_row(line_number: int = 1) -> dict[str, Any]:
+    """Defaults for one UPS billing-line row. UPS has 250 columns; we only
+    set the handful the parser cares about (the no-null/plausibility set
+    plus a couple of useful fields), the rest stay empty."""
+    row: dict[str, Any] = dict.fromkeys(UPS_COLUMNS, "")
+    row["Invoice Number"] = "000003961958"
+    row["Invoice Date"] = "2025-01-22"
+    row["Invoice Currency Code"] = "GBP"
+    row["Invoice Amount"] = "-2.11"
+    row["Tracking Number"] = f"1Z999AA1{line_number:010d}"
+    row["Shipment Date"] = "2025-01-21"
+    row["Charge Description"] = "Freight"
+    row["Net Amount"] = "5.00"
+    row["Entered Weight"] = "1.5"
+    row["Billed Weight"] = "2.0"
+    return row
+
+
+def make_ups_invoice(
+    path: Path,
+    rows: Iterable[dict[str, Any]] | None = None,
+    *,
+    columns: tuple[str, ...] = UPS_COLUMNS,
+) -> Path:
+    """Write a headerless UPS-shaped CSV at `path`."""
+    import csv
+
+    if rows is None:
+        rows = [_make_default_ups_row()]
+    rows = list(rows)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        for row in rows:
+            writer.writerow([row.get(col, "") for col in columns])
+    return path
+
+
+def make_empty_ups_workbook(path: Path) -> Path:
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Data"
+    ws.append(list(UPS_COLUMNS))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(path)
+    return path
+
+
 def _glob_xlsx(d: Path) -> list[Path]:
     return sorted(d.glob("*.xlsx")) if d.exists() else []
 
 
 _REAL_SEUR_INVOICES = _glob_xlsx(SEUR_RAW_DIR)
 _REAL_SEITRANS_INVOICES = _glob_xlsx(SEITRANS_RAW_DIR)
+_REAL_CORREOS_INVOICES = _glob_xlsx(CORREOS_RAW_DIR)
+_REAL_UPS_INVOICES = sorted(UPS_RAW_DIR.glob("*.csv")) if UPS_RAW_DIR.exists() else []
 
 
 @pytest.fixture(
@@ -290,6 +512,34 @@ def real_seitrans_invoice(request) -> Path:
     if request.param is None:
         pytest.skip(
             f"no real Seitrans fixtures at {SEITRANS_RAW_DIR} "
+            "(copy a real invoice in to enable real-data tests)"
+        )
+    return request.param
+
+
+@pytest.fixture(
+    params=_REAL_UPS_INVOICES or [None],
+    ids=lambda p: p.name if p else "no-fixtures",
+)
+def real_ups_invoice(request) -> Path:
+    """Parametrized over every .csv in tests/fixtures/ups/raw/."""
+    if request.param is None:
+        pytest.skip(
+            f"no real UPS fixtures at {UPS_RAW_DIR} "
+            "(copy a real invoice in to enable real-data tests)"
+        )
+    return request.param
+
+
+@pytest.fixture(
+    params=_REAL_CORREOS_INVOICES or [None],
+    ids=lambda p: p.name if p else "no-fixtures",
+)
+def real_correos_invoice(request) -> Path:
+    """Parametrized over every .xlsx in tests/fixtures/correos/raw/."""
+    if request.param is None:
+        pytest.skip(
+            f"no real Correos fixtures at {CORREOS_RAW_DIR} "
             "(copy a real invoice in to enable real-data tests)"
         )
     return request.param
