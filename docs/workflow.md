@@ -50,34 +50,45 @@ to send them to a project-relative folder you can browse.
 
 ## Ingesting an invoice (development)
 
-Always operate on a copy of the workbook for now — the production file
-is off-limits until end-to-end validation is signed off.
+Always operate on a copy of the workbook for now — production files are
+off-limits until end-to-end validation is signed off.
+
+### Seur
 
 ```powershell
-# Copy the production workbook to a scratch path
 Copy-Item "Operations - Couriers\01. Seur\NEW Análisis expediciones SEUR.xlsx" `
           "$env:TEMP\seur-smoke.xlsx"
 
-# Dry run first — parses + manifest-checks but doesn't write
+# Dry run — parses + manifest-checks but doesn't write
 .\.venv\Scripts\python -m courier_automation.cli ingest seur `
     --file "Operations - Couriers\01. Seur\Facturas\2025\0289992025D0235697.xlsx" `
-    --workbook "$env:TEMP\seur-smoke.xlsx" `
-    --dry-run
+    --workbook "$env:TEMP\seur-smoke.xlsx" --dry-run
 
-# Real run
-.\.venv\Scripts\python -m courier_automation.cli ingest seur `
-    --file "Operations - Couriers\01. Seur\Facturas\2025\0289992025D0235697.xlsx" `
-    --workbook "$env:TEMP\seur-smoke.xlsx"
-
-# Re-run — should report "already ingested"
+# Real run, then re-run — second run reports "already ingested"
 .\.venv\Scripts\python -m courier_automation.cli ingest seur `
     --file "Operations - Couriers\01. Seur\Facturas\2025\0289992025D0235697.xlsx" `
     --workbook "$env:TEMP\seur-smoke.xlsx"
 ```
 
-Open `seur-smoke.xlsx` in Excel afterwards and confirm the new rows
-appear in `Datos`. Open `Expediciones SEUR.pbix` (also pointed at the
-scratch path) and confirm refresh still works.
+### Seitrans
+
+```powershell
+Copy-Item "Operations - Couriers\04. Seitrans\Análisis envíos Seitrans.xlsx" `
+          "$env:TEMP\seitrans-smoke.xlsx"
+
+# Single file
+.\.venv\Scripts\python -m courier_automation.cli ingest seitrans `
+    --file "Operations - Couriers\04. Seitrans\Facturas\2025\2025_06_30_24633.xlsx" `
+    --workbook "$env:TEMP\seitrans-smoke.xlsx" --dry-run
+
+# Auto-discover the latest month under the default Facturas folder
+.\.venv\Scripts\python -m courier_automation.cli ingest seitrans `
+    --workbook "$env:TEMP\seitrans-smoke.xlsx"
+```
+
+Open the smoke file in Excel afterwards, verify the new rows in `Datos`,
+and confirm the matching `.pbix` (`Expediciones SEUR.pbix` or
+`Expediciones Seitrans.pbix`) refreshes against the scratch path.
 
 ## CLI exit codes
 
@@ -85,7 +96,7 @@ scratch path) and confirm refresh still works.
 |---|---|---|
 | 0 | Success | Nothing. |
 | 1 | Usage error | Read the message; fix the args. |
-| 2 | Schema mismatch | The carrier changed columns. Update `SEUR_COLUMNS` in `parsers/seur.py`. The diff in the message tells you what changed. |
+| 2 | Schema mismatch | The carrier changed columns. Update `<CARRIER>_RAW_COLUMNS` (or the equivalent constant) in `parsers/<carrier>.py`. The diff in the message tells you what changed. |
 | 3 | Workbook lock timeout | Another ingest run, or someone has the lock file. Wait or remove the stale `.courier-automation.lock`. |
 | 4 | Manifest conflict | Carrier reissued the same invoice with new content. Inspect both files; if the new one is canonical, delete the old manifest row and re-ingest. |
 | 5 | Plausibility check failed | Either the data really is bad, or rules are too tight. The message lists every offending column. See [drift_handling.md](drift_handling.md). |
@@ -93,68 +104,99 @@ scratch path) and confirm refresh still works.
 ## Adding new fixtures (for the parser test)
 
 ```powershell
-# Pick a small invoice from any year folder
+# Seur: pick from any year folder; keep at least one of each prefix (D/AD/FR)
 Copy-Item "Operations - Couriers\01. Seur\Facturas\2025\0289992025D0177161.xlsx" `
           tests\fixtures\seur\raw\
 
-# Re-run the parser tests — the parametrized real-data test will pick it up automatically
-.\.venv\Scripts\pytest tests\parsers\test_seur.py -v
+# Seitrans: any file works; the parametrized test picks it up
+Copy-Item "Operations - Couriers\04. Seitrans\Facturas\2025\2025_03_31 11848.xlsx" `
+          tests\fixtures\seitrans\raw\
+
+# Re-run the parser tests — the parametrized real-data test runs once per fixture
+.\.venv\Scripts\pytest tests\parsers -v
 ```
 
-The fixture set deliberately includes one of each filename prefix (D,
-AD, FR) so the regex stays exercised against real data. Don't remove
-those.
+The Seur fixture set deliberately keeps one of each filename prefix
+(D / AD / FR) so the regex stays exercised against real data. Don't
+remove those.
 
-## Refreshing the golden snapshot
+## Refreshing a golden snapshot
 
 The golden test compares parser output to a parquet slice of `Datos`.
-The slice is keyed on the fixtures currently in `tests/fixtures/seur/raw/`,
-so any change to that set requires regenerating the parquet:
+The slice is keyed on the fixtures currently in
+`tests/fixtures/<carrier>/raw/`, so any fixture change requires
+regenerating the parquet:
 
 ```powershell
+# Seur (~1-2 minutes; 113 MB workbook)
 .\.venv\Scripts\python scripts\extract_seur_golden.py --period pilot-sample
-
 .\.venv\Scripts\pytest tests\parsers\test_seur_golden.py -v
+
+# Seitrans (under 5 seconds; 569 KB workbook)
+.\.venv\Scripts\python scripts\extract_seitrans_golden.py --period pilot-sample
+.\.venv\Scripts\pytest tests\parsers\test_seitrans_golden.py -v
 ```
 
-Reading the 113 MB workbook takes 1–2 minutes. The `--period` arg is
-just a tag for the output filename; the test globs `*-datos.parquet`
-and uses the most recent one.
+The `--period` arg is just a tag for the output filename; each golden
+test globs `*-datos.parquet` under its courier's golden dir and uses the
+most recent file.
 
-If the golden test fails after a parser change, the assertion message
+If a golden test fails after a parser change, the assertion message
 points at the column and first differing row. Common causes:
 
 - A code field is stored as numeric in one source but text in the other
-  (handled by `_to_clean_string`).
-- A new STRING_COLUMN needs to be added because Excel coerced its values.
+  (handled by `to_clean_string` in `parsers/base.py`).
+- A new column needs to move into the typed groups because Excel coerced
+  its values (e.g. Seitrans `Mes` was an int and turned out to be a
+  date in production).
+- An assumption about a derived column was wrong (e.g. Seitrans
+  `Tipo expedición` is always `"Pallet"`).
 - The Datos sheet itself drifted — verify against the user.
 
-## Picking a candidate fixture
+## Picking a candidate fixture (Seur only, currently)
 
 ```powershell
 .\.venv\Scripts\python scripts\_find_golden_candidates.py
 ```
 
-Prints the top invoices that exist in *both* `Datos` and `Facturas/`,
-ranked by row count. Useful when picking a richer fixture for the golden
-test or replacing a fixture that fell out of `Datos`.
+Prints the top Seur invoices that exist in *both* `Datos` and
+`Facturas/`, ranked by row count. Useful when picking a richer fixture
+or replacing one that fell out of `Datos`. (Seitrans doesn't yet have
+an equivalent — its workbook is small enough to inspect directly.)
 
 ## Adding a new courier
 
-Roughly the parser pattern from Seur, repeated. The Step 1 plan
-(`02_step1_plan.md` §3) lists the recommended order: Seitrans, Correos
-Express, VASP, etc. For each:
+Both `parsers/seur.py` and `parsers/seitrans.py` follow the same shape
+and serve as templates. Pick whichever is closer to the new courier's
+file format:
+
+- **Seur-shaped** (raw schema = historical schema, no derived columns):
+  copy seur.py.
+- **Seitrans-shaped** (raw schema differs from historical: column
+  renames + derived columns added): copy seitrans.py and adapt the
+  `_rename_and_derive` step.
+
+Step 1 plan (`02_step1_plan.md` §3) lists the recommended order:
+Correos Express → VASP → Lynda's → etc. For each carrier:
 
 1. Survey one real invoice (or read the relevant section in
    `01_data_exploration.md`).
-2. Write `courier_automation/parsers/<carrier>.py` with `CARRIER_COLUMNS`,
-   dtype groups, plausibility rules, and a `<Carrier>Parser` class.
-3. Add a `<carrier>_invoice_factory` fixture in `tests/conftest.py`.
-4. Mirror `tests/parsers/test_seur.py` for the new carrier.
-5. Once a few real invoices land in fixtures, copy `extract_seur_golden.py`
-   to `extract_<carrier>_golden.py` and adjust the matching strategy
-   (some carriers use different invoice-number formats).
-6. Add the new parser to the CLI under `ingest <carrier>`.
+2. Write `courier_automation/parsers/<carrier>.py` with
+   `<CARRIER>_RAW_COLUMNS`, the dtype groups, plausibility rules, and a
+   `<Carrier>Parser` class.
+3. Add a `<carrier>_invoice_factory` + `default_<carrier>_row` fixture in
+   `tests/conftest.py`. Make `default_<carrier>_row` schema-asserted
+   against `<CARRIER>_RAW_COLUMNS` so synthetic rows can never drift
+   from the parser's expectations.
+4. Mirror `tests/parsers/test_<carrier>.py` and the conftest's
+   `real_<carrier>_invoice` parametrized fixture.
+5. Once one or two real invoices land in fixtures, write
+   `scripts/extract_<carrier>_golden.py` (mirror the Seur or Seitrans
+   one) and run it against the historical workbook. **Expect surprises**
+   — every drift the Seur and Seitrans golden tests caught will probably
+   recur in some shape.
+6. Add the new parser to the CLI under `ingest <carrier>`. Reuse
+   `_ingest_one`; only the parser instance and default paths differ.
 
 ## Memory / state on disk
 
@@ -171,10 +213,11 @@ Express, VASP, etc. For each:
 
 This is what production will look like. Not built yet.
 
-1. n8n watches the corporate inbox label `Couriers/Seur`.
+1. n8n watches the corporate inbox labels `Couriers/Seur` and
+   `Couriers/Seitrans` (and a label per active courier as we add them).
 2. New invoice email → download attachment → POST to a Python ingest
-   endpoint (or `python -m courier_automation.cli ingest seur --file ...`
-   if the runner is co-located).
+   endpoint (or run `python -m courier_automation.cli ingest <carrier>
+   --file ...` if the runner is co-located).
 3. On exit code 0 → mark email as ingested, send "rows appended" notification.
 4. On exit code 2 / 4 / 5 → send loud alert with the error message; do
    not retry automatically.

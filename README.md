@@ -1,6 +1,6 @@
 # Courier Automation
 
-Internal pipeline that ingests courier invoices into per-courier historical workbooks. Pilot courier: **Seur**.
+Internal pipeline that ingests courier invoices into per-courier historical workbooks. Active couriers: **Seur** and **Seitrans** (both code-complete and golden-tested against real Datos rows).
 
 ## Documentation
 
@@ -52,9 +52,9 @@ python -m venv .venv
 
 ## Layout
 
-- `courier_automation/parsers/` — per-courier parsers; `seur.py` is the only one for now.
+- `courier_automation/parsers/` — per-courier parsers (`seur.py`, `seitrans.py`) plus shared helpers in `base.py` and the `plausibility.py` detector.
 - `courier_automation/manifest/` — SQLite registry for idempotent ingest.
 - `courier_automation/store/` — workbook appender with OneDrive-safe write strategy.
-- `courier_automation/cli.py` — Typer entry point.
-- `tests/` — one folder per layer; fixtures live under `tests/fixtures/seur/`.
-- `scripts/extract_seur_golden.py` — one-off extractor that reads the production `Datos` sheet and saves a parquet golden snapshot for the parser test.
+- `courier_automation/cli.py` — Typer entry point with `ingest seur` and `ingest seitrans` subcommands.
+- `tests/` — one folder per layer; fixtures live under `tests/fixtures/<carrier>/`.
+- `scripts/extract_seur_golden.py`, `scripts/extract_seitrans_golden.py` — one-off extractors that read each courier's production `Datos` sheet and save a parquet golden snapshot for the parser test.

@@ -62,10 +62,18 @@ constants) so it's reviewable in one place and tunable per courier.
 
 ### 5. Golden test — periodic ground-truth check
 
-`tests/parsers/test_seur_golden.py` parses real invoices and compares them
-row-for-row to a parquet snapshot extracted from the production `Datos`
-sheet. Any per-cell drift the deterministic checks miss shows up here. Run it
-after every parser change.
+`tests/parsers/test_seur_golden.py` and
+`tests/parsers/test_seitrans_golden.py` parse real invoices and compare them
+row-for-row to parquet snapshots extracted from the production `Datos`
+sheets. Any per-cell drift the deterministic checks miss shows up here. Run
+them after every parser change.
+
+The Seitrans golden test confirmed the value of this layer in practice:
+five distinct schema-level findings (filename inconsistency,
+`DOCUMENTO_DATA` not renamed, `Tipo expedición` actually constant, `Mes`
+stored as a date not int, mixed date formats causing silent NaT) all
+surfaced through golden-test failures during development — none of which
+the unit tests or plausibility checks would have caught alone.
 
 ## What we still don't catch
 
@@ -75,6 +83,12 @@ after every parser change.
   in dates that still parses, a currency conversion that halves all amounts.
   The golden test catches these for one period but they can creep in between
   golden refreshes.
+- **Operator post-processing in Datos** — Seitrans's `Q Expediciones` is
+  marked `1` only on the first global occurrence of each `SPEDIZIONE_NUMERO`
+  across all of Datos; the parser only sees one file at a time. Per-file
+  dedup matches ~92% of real values; the remaining ~8% is operator-level
+  cross-file dedup we can't replicate. The column is excluded from the
+  Seitrans golden comparison with a clear comment.
 - **Header row moving down** (a new preamble like VASP has). `assert_schema`
   fires — loud — but the diff is hard to read because row 1 is now data, not
   headers. Triage will be slow until the operator notices the pattern.
@@ -141,3 +155,8 @@ column tuple is fast enough.
 
 - **2026-05-05** — chose deterministic plausibility checks over LLM in the
   runtime path. LLM filed for triage / new-courier bootstrap only.
+- **2026-05-05** — Seitrans `Q Expediciones` excluded from the golden
+  comparison. The user marks `1` only on the *first global* occurrence of
+  each `SPEDIZIONE_NUMERO` across all of Datos; per-file dedup is the most
+  the parser can produce without global state. ~8% divergence on real
+  fixtures; documented in the test docstring.
