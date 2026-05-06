@@ -2,18 +2,22 @@
 
 ## TL;DR
 
-**Seur and Seitrans pipelines are both code-complete and golden-tested
-against real production data.** Neither has yet written to the real
-production workbook. n8n / Power Automate orchestrator and the remaining
-9 couriers not started.
+**Six courier parsers in tree:** Seur, Seitrans, Correos Express, UPS (UK),
+Wwex (US), Spring (FR). Three have full pipelines (parser → CLI → golden test
+against real Datos); three are at varying degrees of partial-implementation.
+n8n / Power Automate orchestrator not started; no parser has yet written to a
+real production workbook.
 
-- **73 tests passing**, 0 failing, 0 skipped.
-- Seur golden test passes against **2,948 real `Datos` rows** from 5 real
-  Seur fixtures covering all three filename prefixes (D, AD, FR).
-- Seitrans golden test passes against **62 real `Datos` rows** from 2 real
-  Seitrans fixtures spanning both observed filename variants
-  (space-separated and underscore-separated).
-- Ruff clean.
+- **99 tests passing**, 0 failing, 0 skipped. Ruff clean.
+
+| Carrier | Parser | CLI | Golden | Notes |
+|---|---|---|---|---|
+| Seur | ✅ | ✅ | ✅ 2,948 rows / 5 fixtures (D/AD/FR) | Pilot. |
+| Seitrans | ✅ | ✅ | ✅ 62 rows / 2 fixtures | `Q Expediciones` excluded (operator post-processing). |
+| Correos Express | ✅ | ✅ | ✅ 1,364 rows / 1 fixture | Phone columns + `Column58` excluded. |
+| UPS (UK) | ✅ CSV, 250 cols | ✅ | ✅ 3 rows / 1 fixture | Place Holder columns excluded. Numeric-string normalisation handles leading-zero/`.0` mismatches. |
+| Wwex (US) | ✅ multi-format, 42→44 mapping | ✅ | ✅ 4 stable cols / 425 rows | Heavy operator post-processing on the historical sheet (Ship Date filled from external sources, addresses cleaned, weights overridden) — golden compares only the operator-stable columns: `Source System`, `Account#`, `Tracking#`, `Package Count`. |
+| Spring (FR) | ⚠️ raw passthrough | ❌ | ⏸ deferred | 22-col single-sheet parser works against real fixtures; mapping to the historical 24-col `INVOICES` schema and the separate 114-col `REPORT` operations stream are TODO. |
 
 ## What's done
 
@@ -24,15 +28,22 @@ production workbook. n8n / Power Automate orchestrator and the remaining
 | `parsers/base.py` | ✅ Done. Adapter interface, `ParseResult`, `assert_schema`, file-hash helper, Seur invoice-number regex, **shared `to_clean_string`** helper. |
 | `parsers/seur.py` | ✅ Done. 68-column passthrough parser; `SEUR_COLUMNS`; dtype groups; public `coerce_seur_dtypes` shared with the golden script. |
 | `parsers/seitrans.py` | ✅ Done. 21-col raw → 25-col historical (rename `_` → ` ` except `DOCUMENTO_DATA`; add `Tipo expedición`/`Q Expediciones`/`Año`/`Mes` derived). Public `coerce_seitrans_dtypes`. Invoice number derived from data (filenames are inconsistent), namespaced by year. |
+| `parsers/correos.py` | ✅ Done. 51-col raw → 58-col historical. Header band on rows 0-2 (real header is row 2). 6 derived columns (`Año, Mes, Tipo Bulto, Tipo Exp., Q Expediciones, País`) computed from `F.ADMISION` / `PESO KILOS` / `C. PAIS`. Spanish 5-digit postcode normaliser (`_to_postcode`). |
+| `parsers/ups.py` | ✅ Done. Headerless 250-column CSVs. Column tuple hard-coded from production `Data` sheet. Auto-detected dtype groups by name keywords (`Date`, `Amount`, `Weight`, …). Each CSV asserts a single Invoice Number. `Invoice Number` coerced to Int64 to match production storage. |
+| `parsers/wwex.py` | ✅ Done. Multi-format reader (`.xlsx`, `.xls` via xlrd, `.csv` semicolon-separated). 42-col raw → 44-col historical mapping reverse-engineered: 21 direct renames, derived `Source System` constant + `Domestic/International` from country comparison + `Weight per package = TOTAL_WEIGHT / PACKAGE_COUNT` + `Ship Date` coalesced across SHIPMENT_DATE → ACTUAL_PICKUP_DATE → CREATION_DATE → ACTUAL_DELIVERY_DATE. 20 operator-filled columns emitted as None. |
+| `parsers/spring.py` | ⚠️ Partial. 22-col single-sheet parser; sheet name varies per invoice (read by index 0). Mapping to historical 24-col `INVOICES` schema and the 114-col `REPORT` operations stream are TODO. |
 | `parsers/plausibility.py` | ✅ Done. Three rule kinds (`no_null`, `min_non_null_rate`, `date_range`), aggregated error message. |
 | `manifest/registry.py` | ✅ Done. SQLite + WAL, idempotent `register`, `supersedes` for reissue detection. |
 | `store/workbook_appender.py` | ✅ Done. Sidecar lock, working-copy in `%TEMP%`, atomic replace, schema validation against the live workbook before writing. |
-| `cli.py` | ✅ Done. `ingest seur` and `ingest seitrans`, each with `--file/--month/--folder/--dry-run`, exit codes 0–5. |
-| `scripts/extract_seur_golden.py` | ✅ Done. Reads from `Operations - Couriers/`, writes to `tests/fixtures/seur/golden/`. Matches on `(year, trailing-int)`. |
-| `scripts/extract_seitrans_golden.py` | ✅ Done. Same shape; matches on `(year, DOCUMENTO_NUMERO)` extracted from filename. |
+| `cli.py` | ✅ Done. `ingest seur`, `ingest seitrans`, `ingest correos`, `ingest ups`, `ingest wwex` — Seur/Seitrans/Correos use `--file/--month/--folder/--dry-run`; UPS and Wwex use `--file/--folder/--dry-run` (their folder layouts have unique conventions). UPS writes to the `Data` sheet (UPS-specific naming), Wwex also writes to `Data`. Spring **not yet wired into the CLI** pending column mapping. Exit codes 0–5. |
+| `scripts/extract_seur_golden.py` | ✅ Done. Matches on `(year, trailing-int)`. |
+| `scripts/extract_seitrans_golden.py` | ✅ Done. Matches on `(year, DOCUMENTO_NUMERO)`. |
+| `scripts/extract_correos_golden.py` | ✅ Done. Matches on the `Nº ENVIO` set. |
+| `scripts/extract_ups_golden.py` | ✅ Done. Matches on Invoice Number (normalised to int across both sides). |
+| `scripts/extract_wwex_golden.py` | ✅ Done. Matches on the `Tracking#` set. |
 | `scripts/_find_golden_candidates.py` | ✅ Done (Seur dev tool). |
 
-### Tests (73 passing)
+### Tests (99 passing)
 
 | Suite | Count | What it covers |
 |---|---|---|
@@ -40,6 +51,13 @@ production workbook. n8n / Power Automate orchestrator and the remaining
 | `tests/parsers/test_seur_golden.py` | 1 | Element-wise comparison of parser output to a 2,948-row Datos slice. |
 | `tests/parsers/test_seitrans.py` | 9 | Schema, dtypes, `Tipo expedición=Pallet` always, schema-mismatch diff, invoice-number namespacing by year, missing sheet, real-data parametrized over 2 fixtures. |
 | `tests/parsers/test_seitrans_golden.py` | 1 | Element-wise comparison of parser output to a 62-row Datos slice (excludes `Q Expediciones` — see "Known gaps"). |
+| `tests/parsers/test_correos.py` | 11 | Schema, dtypes, weight-bucket rules (`001 KG` … `MÁS 200 KG`), `Tipo Exp.` 50 kg threshold, `País` lookup, derived columns, schema mismatch, real-data parametrized. |
+| `tests/parsers/test_correos_golden.py` | 1 | Element-wise vs 1,364-row Datos slice (excludes phone columns + `Column58` for operator post-processing). |
+| `tests/parsers/test_ups.py` | 7 | 250-col schema, dtypes, real-data CSV parses, multi-Invoice-Number rejection. |
+| `tests/parsers/test_ups_golden.py` | 1 | Element-wise vs 3-row Data slice (excludes Place Holder columns; numeric-string normalisation handles leading-zero/`.0` mismatches). |
+| `tests/parsers/test_wwex.py` | 2 | Raw + historical column tuples; real `.xlsx` smoke test verifies derived columns (Source System constant, DOM/INT). |
+| `tests/parsers/test_wwex_golden.py` | 1 | Operator-stable columns only (Source System, Account#, Tracking#, Package Count) against 425-row Data slice. |
+| `tests/parsers/test_spring.py` | 3 | Column tuple, real `.XLSX` smoke test (parametrized — case-insensitive glob hits one fixture twice on Windows). |
 | `tests/parsers/test_plausibility.py` | 13 | Each rule kind in isolation; Seur integration; aggregate failure messages. |
 | `tests/manifest/test_registry.py` | 9 | Register, has_seen, idempotent re-register, supersedes, env-var override, concurrent register (20 threads). |
 | `tests/store/test_workbook_appender.py` | 8 | Append, preserve, header validation, missing sheet, lock retry success, lock timeout, lock release, value round-trip. |
@@ -66,6 +84,20 @@ filename variants:
 
 `tests/fixtures/seitrans/golden/pilot-sample-datos.parquet` — 62 rows.
 
+`tests/fixtures/correos/raw/` — 1 real Correos invoice
+(`2025_01_31 FAC_UNICO_F2501_14307.xlsx`, 1,433 shipments).
+`tests/fixtures/correos/golden/pilot-sample-datos.parquet` — 1,364 rows
+(the user filters ~5% of shipments out manually when pasting).
+
+`tests/fixtures/ups/raw/` — 1 real UPS billing CSV
+(`Invoice_3961958_012225.csv`, smallest in 2025/01).
+
+`tests/fixtures/wwex/raw/` — 1 real Wwex `.xlsx`
+(`2025_05_31 shipment_detail_report.xlsx`).
+
+`tests/fixtures/spring/raw/` — 1 real Spring `.XLSX`
+(`E2509827_ES_Details of Invoice_O_110003790_2511251351.XLSX`).
+
 ### Documentation
 
 - [docs/architecture.md](architecture.md) ✅ — design, modules, tools, decisions.
@@ -84,7 +116,11 @@ filename variants:
 
 | Gap | Severity | Notes |
 |---|---|---|
+| **Spring** parser is raw passthrough, not in CLI. | High before production cutover. | Per-invoice file is 22 cols; historical `INVOICES` sheet is 24 cols (small mapping); separate 114-col `REPORT` operations stream is a second parser entirely. Apply the same playbook as Wwex: pair raw and historical for one shipment, derive the column mapping. |
+| **Wwex Ship Date** is operator-derived from external sources. | Low (documented). | Parser coalesces SHIPMENT_DATE → ACTUAL_PICKUP_DATE → CREATION_DATE → ACTUAL_DELIVERY_DATE; ~36% of rows still differ from real Data because the operator pulls dates from the UPS tracking website / shipping label. Excluded from the golden comparison. |
+| **Wwex weight/charge values** occasionally edited by operator. | Low. | <1% of rows have manual overrides on `Billed Weight`, `Package Weight`, etc. Wwex golden test checks only 4 operator-stable columns. The parser's correctness on derivable columns is verified by the synthetic test. |
 | Seitrans `Q Expediciones` differs by ~8% from real Datos. | Low (documented). | The user marks `1` only on the *first global* occurrence of each `SPEDIZIONE NUMERO` across all of Datos; the parser only sees one file at a time. Per-file dedup is the best we can do without global state. The column is excluded from the Seitrans golden comparison. |
+| Correos phone columns + `Column58` differ from real Datos. | Low (documented). | Operator typed-in `+34` prefix on phones, occasional manual overrides on country code. Both excluded from golden comparison. |
 | Seur `--month YYYY-MM` doesn't match the flat 2025+ folder layout. | Medium. Pilot can use `--file` or auto-discovery for now. | The 2022/2023 Seur Facturas have `MM - <Mes>/` subfolders; 2025/2026 are flat (one xlsx per invoice in the year folder). The Seitrans CLI handles flat layouts because Seitrans Facturas are always flat. Either add a `--year` mode for Seur or parse `Fecha Factura` to filter. |
 | Plausibility rule for `Fecha Servicio` (Seur) is 95% non-null. | Low. | Empirically passes for current fixtures but might be too strict for years with more cancelled-shipment rows. Tune from a longer baseline. |
 | No mechanism for "this invoice was reissued and the new file IS canonical". | Low. | CLI exit 4 forces human review. The user manually deletes the manifest row to proceed. Could add `--accept-supersedes` later. |

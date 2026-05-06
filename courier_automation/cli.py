@@ -25,6 +25,7 @@ from courier_automation.parsers.correos import CorreosParser
 from courier_automation.parsers.seur import SeurParser
 from courier_automation.parsers.seitrans import SeitransParser
 from courier_automation.parsers.ups import UpsParser
+from courier_automation.parsers.wwex import WwexParser
 from courier_automation.store.workbook_appender import (
     WorkbookAppender,
     WorkbookLocked,
@@ -53,6 +54,10 @@ DEFAULT_UPS_WORKBOOK = Path(
     "Operations - Couriers/07. UPS (UK)/UPS Shippings Report.xlsx"
 )
 DEFAULT_UPS_INVOICES = Path("Operations - Couriers/07. UPS (UK)/Invoices")
+DEFAULT_WWEX_WORKBOOK = Path(
+    "Operations - Couriers/11. Wwex (US)/Wwex USA Shippings Report.xlsx"
+)
+DEFAULT_WWEX_FOLDER = Path("Operations - Couriers/11. Wwex (US)")
 
 log = logging.getLogger("courier_automation.cli")
 
@@ -341,6 +346,67 @@ def ingest_ups(
     parser = UpsParser()
     registry = ManifestRegistry()
     appender = WorkbookAppender(sheet_name="Data")  # UPS uses 'Data' not 'Datos'
+
+    summary = {"appended": 0, "skipped": 0, "rows_written": 0}
+    for path in files:
+        result = _ingest_one(
+            path, parser=parser, registry=registry, appender=appender,
+            workbook=workbook, dry_run=dry_run,
+        )
+        summary["appended"] += int(result["appended"])
+        summary["skipped"] += int(result["skipped"])
+        summary["rows_written"] += int(result["rows_written"])
+
+    typer.echo(
+        f"done: {summary['appended']} ingested, {summary['skipped']} skipped, "
+        f"{summary['rows_written']} rows written"
+        + (" (dry-run)" if dry_run else "")
+    )
+
+
+@ingest_app.command("wwex")
+def ingest_wwex(
+    file: Optional[Path] = typer.Option(
+        None, "--file", "-f",
+        help="Path to a single raw Wwex shipment-detail file (.xlsx, .xls, .csv).",
+    ),
+    folder: Optional[Path] = typer.Option(
+        None, "--folder",
+        help=f"Root folder to scan (default: {DEFAULT_WWEX_FOLDER}).",
+    ),
+    workbook: Path = typer.Option(
+        DEFAULT_WWEX_WORKBOOK, "--workbook", "-w",
+        help="Target Wwex historical workbook.",
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run",
+        help="Parse + manifest-check only; never write to the workbook.",
+    ),
+) -> None:
+    """Ingest one or many Wwex shipment-detail files into the Data sheet."""
+    _setup_logging()
+    if file is None and folder is None:
+        typer.echo("error: pass --file or --folder", err=True)
+        raise typer.Exit(code=EXIT_USAGE)
+
+    if file is not None:
+        files = [file]
+    else:
+        # Wwex files: `YYYY_MM_DD shipment_detail_report.{xlsx,xls,csv}`
+        # under year folders. Use rglob to catch all years + extensions.
+        root = folder or DEFAULT_WWEX_FOLDER
+        files = sorted(
+            p for ext in ("*.xlsx", "*.xls", "*.csv")
+            for p in root.rglob(ext)
+            if "shipment_detail_report" in p.name.lower()
+        )
+        if not files:
+            typer.echo(f"no shipment_detail_report files under {root}", err=True)
+            raise typer.Exit(code=EXIT_USAGE)
+
+    parser = WwexParser()
+    registry = ManifestRegistry()
+    appender = WorkbookAppender(sheet_name="Data")
 
     summary = {"appended": 0, "skipped": 0, "rows_written": 0}
     for path in files:

@@ -141,6 +141,15 @@ _FLOAT_KEYWORDS = (
 )
 
 
+# Columns that real Data stores as numeric (int, not zero-padded string).
+# Hard-coded rather than keyword-matched because most "Number" columns
+# (Tracking Number, World Ease Number, …) are alphanumeric and must stay
+# string. Validated against the production `Data` sheet.
+_INT_COLUMNS: tuple[str, ...] = (
+    "Invoice Number",
+)
+
+
 def _is_date_col(name: str) -> bool:
     return any(k in name for k in _DATE_KEYWORDS)
 
@@ -163,10 +172,13 @@ PLAUSIBILITY_DATE_RANGE: dict[str, tuple[date, date]] = {
 
 def coerce_ups_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     """Coerce a 250-col UPS-shaped DataFrame. Used by parser and the
-    eventual golden-extraction script."""
+    golden-extraction script."""
     df = df.copy()
+    int_cols = set(_INT_COLUMNS)
     for col in df.columns:
-        if _is_date_col(col):
+        if col in int_cols:
+            df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
+        elif _is_date_col(col):
             df[col] = pd.to_datetime(df[col], errors="coerce")
         elif _is_float_col(col):
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")

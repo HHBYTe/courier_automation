@@ -1,0 +1,617 @@
+missing invoice audit
+scan root: C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers
+found 613 missing pair(s)
+
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Coste Transporte Francia
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Códigos Centros SEUR 2024
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\11 - Noviembre\0289992022D0274001 SAT2 Nov-22
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\11 - Noviembre\2022D0013763 Valencia Nov-22
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\11 - Noviembre\2022D0263351 Central Nov-22
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\11 - Noviembre\2022D0277270 SAT Nov-22
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\11 - Noviembre\2022D0277345 Barcelona Nov-22
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\11 - Noviembre\2022D0283670 Madrid Nov-22
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\02 - Febrero\Duas\094832R9
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\02 - Febrero\Duas\12165024
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\02 - Febrero\Duas\12718398
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\02 - Febrero\Duas\12792645
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\02 - Febrero\Duas\208689R2
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\02 - Febrero\Duas\987926R7
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\05 - Mayo\0289992023FR0013338
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\08 - Agosto\DUA 1BMBZWE4
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\08 - Agosto\DUA 31795251
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\1BZQUEE2
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\1CHUQVE5
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\1CHXXAE2
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\1CILPEE6
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\30375488
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\32140576
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\32329446
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\32333687
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\11 - Noviembre\0289992024D0268061
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0026135
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0030854
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0036815
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0040096
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0050900
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0056336
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0058804
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0062288
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0072777
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0077937
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0080710
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0083763
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0256239
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0051824
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0060093
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\KPI seguimiento\23-12- Seguimiento KPI CUCHILLERIA ARTERO diciembre 23
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\KPI seguimiento\24-02- Seguimiento KPI CUCHILLERIA ARTERO febrero 24
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\KPI seguimiento\Análisis KPI Seguimiento
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\NEW Análisis expediciones SEUR
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Old\Análisis envios 2019 SEUR
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Old\Análisis envios 2020 SEUR
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Old\Análisis envios 2021 SEUR
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Old\Análisis envios 2022 SEUR
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Old\Análisis Expediciones SEUR
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\OLD Análisis expediciones SEUR
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\SEUR fechas entregas 01 NOv a 16 NOV 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Seur-Datos entregas
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\TARIFA INTERNACIONAL SEUR 2025 - ARTERO
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Tarifas PICKUP Seur 2023-2024
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Análisis envíos VASP
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2021\02-21 VASP
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2021\03-21 VASP
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2021\04-21 VASP
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2021\05-21 VASP
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2021\06-21 VASP
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2022\Detalle factura Abril 2022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2022\Detalle factura Agosto 2022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2022\Detalle factura Diciembre 2022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2022\Detalle factura Enero 2022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2022\Detalle factura Febrero 2022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2022\Detalle factura Julio 2022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2022\Detalle factura Junio 2022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2022\Detalle factura Marzo 2022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2022\Detalle factura Noviembre 2022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2022\Detalle factura Octubre 2022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2022\Detalle factura Septiembre 2022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\01 Detalle factura Enero 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\02 Detalle factura febrero 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\03 Detalle factura Marzo 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\04 Detalle factura Abril 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\05 Detalle factura Mayo 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\06 Detalle factura Junio 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\07 Detalle factura Julio 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\08 Detalle factura Agosto 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\09 Detalle factura Septiembre 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\10 Detalle factura Octubre 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\11 Detalle factura Noviembre 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\12 Detalle factura Diciembre 2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\FCL-VP23_000553_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\FCL-VP23_001220_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\FCL-VP23_003578_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\FCL-VP23_004313_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\FCL-VP23_005011_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\FCL-VP23_005834_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\FCL-VP23_006564_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\FCL-VP23_007351_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\FCL-VP23_008133_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2023\FCL-VP23_008892_signed
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\01 Detalle factura Enero 2024
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\01 Detalle factura Febrero 2024
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\01 January FCL-VP24_000396_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\02  February FCL-VP24_001355_signed
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\03 Detalle factura Marzo 2024
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\03 March FCL-VP24_001971_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\04 April FCL-VP24_002782_signed
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\04 Detalle factura Abril 2024
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\05 Detalle factura Mayo 2024
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\05 May FCL-VP24_003593_signed
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\06 Detalle factura Junio 2024
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\06 June FCL-VP24_004238_signed
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\07 Detalle factura Julio 2024
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\07 July FCL-VP24_005080_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\08 August FCL-VP24_005749_signed
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\08 Detalle factura Agosto 2024
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\09 Detalle factura Septiembre 2024
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\09 September FCL-VP24_006513_signed
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\10 Detalle factura Octubre 2024
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\11 Detalle factura Noviembre 2024
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\11 November FCL-VP24_007979_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\12 December FCL-VP24_008847_signed
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2024\12 Detalle factura Diciembre 2024
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2025\01 Detalle factura Enero 2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2025\02 Detalle factura Febrero 2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2025\03 Detalle factura Marzo 2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2025\04 Detalle factura Abril 2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2025\05 Detalle factura Mayo 2025
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2025\2025_03_FCL-VP25_000418_signed
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Facturas\Facturas 2025\2025_04_FCL-VP25_002780_signed
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Old\Análisis envíos 2021 VASP
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\02. VASP\Old\Análisis envíos 2022 VASP
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Expediciones Dachser
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2022\111759221
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2022\111759222
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2022\120367904
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2022\130213680
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2022\artero nov2022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2022\arterodic2022
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\0111861355 Julio 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\02 artero febrero2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\03 MARZO 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\04 Abril 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\05 Mayo 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\06 Junio 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\07 Julio 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\08 Agosto 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\09 Septiembre 2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\10 Octubre 2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\1000111884617 - 30-09-2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\1001111822862 -04-30-2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\1001111822863 - 04-30-2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\100111897019 31-10-2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\1001120380891 -04-30-2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\1001120380892- 04-30-2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\1001130220878- 04-30-2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\1001130220879 - 04-30-2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\11 Noviembre 2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\111783506
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\111783507
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\111797263
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\12 Diciembre 2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\A20006607_A58778176_0111921645_2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\A20006607_A58778176_0111921646_2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\A20006607_A58778176_0120398816_2023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\A20006607_A58778176_0130232117_2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\artero enero2023
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2023\REVISAR PORTES DACHSER
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2024\01 - Enero 2024 detalle
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2024\02 - Febrero 2024 detalle
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2024\03 - Marzo 2024 detalle
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2024\04 - Abril 2024 detalle
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2024\05 - Mayo 2024 detalle
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2024\06 - Junio 2024 detalle
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2024\07  - Julio 2024 detalle
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2024\08 - Agosto 2024 detalle
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2024\09 - Septiembre 2024 detalle
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2024\10 - Octubre 2024 detalle
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2024\11 - Noviembre 2024 detalle
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2024\12 - Diciembre 2024 detalle
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\01-2025 IN 112100582
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\02-2025 IN 112114886
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\03-2025 IN 8070587
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\04-2025 IN 430104016
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\05-2025 IN 4172488127
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\06-2025 IN
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\07-2025 IN
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\08-2025 IN 430104016
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\09-2025 IN 4175924487
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\09-2025 IN 4175924487-ARTERO FRANCE
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\10-2025 IN 112224896
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\10-2025 IN 112224903-ARTERO FRANCE
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\11-2025 IN 112236231-ARTERO FRANCE
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\11-2025 IN 112239177
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\artero dic2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2025\artero france dic2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2026\2026_01_ES_112261586
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2026\2026_01_FR_112261501
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2026\2026_02_ES_112271952
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\03. Dachser\Facturas\2026\2026_02_FR_112271834
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Análisis envíos Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2022\46075 Diciembre 2022 (tte)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2022\46185 Diciembre 2022 (eventos)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\01 - January 3531
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\02 - February 7080
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\03 - March 11937
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\04- April 15540
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\05 - May 20104
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\06- Jun 24420
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\07 - Jul 28547
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\08 - Aug 30907
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\08 - Aug 31026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\09 - 34894
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\10 - 39155
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\10 - 39257
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\11-43081
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\12 - 46167
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\FatturaNotaCredito_24420_VE_10
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\FatturaNotaCredito_28547_VE_10
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\FatturaNotaCredito_7080_VE_10
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\09 - September 35267_VE_10
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_01_31 IN 3977 Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_02_29 IN 8079 Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_02_29 IN 8240 Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_03_31 IN 12139 Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_04_30 IN 16276 Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_05_31 20668 Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_06_30 24580 Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_07_31 28838 Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_08_31 31586 Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_09_30 35267 Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_10_31 39919 Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_10_31 40215 Seitrans
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_11_30 Factura 44873
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_12_31 Factura 48129
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_12_31 Factura 48172
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_01_31 3065
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_01_31 3871
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_01_31 3871_VE_10
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_02_31 7803
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_02_31 7958
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_03_31 11848
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_04_30 15946
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_05_31  20356_VE_10
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_05_31_20356
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_06_30 24633_VE_10
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_06_30_24633
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_07_31_29354
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_08_31_31724
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_08_31_31724_VE_10
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_09_31_35652
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_10_30_40713_VE_10_2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_11_30_44736
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_12_31_47778
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2026\2026_01_2997_VE_10_2026
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2026\2026_01_3224_VE_10_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2026\2026_01_FA2997
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2026\2026_01_FA3224
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2026\2026_02_7494_VE_10_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2026\2026_02_FA7494
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2026\2026_03_7494_VE_10_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2026\2026_03_FA5384
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\2024Tarifas Correos Express
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Análisis Envíos Correos Express
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Análisis Envíos Correos Express V2
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2022\11 NOV22 48410000116907
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2022\11 NOV22 generico_facturasv2_221205092704
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2022\12 DIC22 48410000117788
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2022\12 DIC22 generico_facturasv2_230102125511
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2022\FAC_UNICO_F2210_17420
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2022\FAC_UNICO_F2211_16907
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2022\FAC_UNICO_F2212_17788
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\01 Enero FAC_UNICO_F2301_16660
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\02 Febrero 48410000115447
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\03 Marzo 2_230403103807
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\03 Mazo 48410000116387
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\a230300472
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\FAC_UNICO_F2302_15447
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\FAC_UNICO_F2303_16387
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\FAC_UNICO_F2304_15180
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\2024_06_30 FA 48410000115508 Correos Express
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\2024_06_30 generico_facturasv2_240702095258
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\2024_08_31 FA48410000113947 Correos Express
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\2024_09_30 FA 48410000115439 Correos Express
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\2024_11_30 FA A28799120_A58778176_F241115178_2024
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\2024_12_31 A28799120_A58778176_F241215487_2024
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2406_15508
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2407_16295
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2408_13947
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2409_15439
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2410_16038
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2411_15178
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2412_15487
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_01_31 FAC_UNICO_F2501_14307
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_02_28 FAC_UNICO_F2501_14307
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_03_31 FAC_UNICO_F2503_13816
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_04_30_FAC_UNICO_F2504_13444
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_05_31_FAC_UNICO_F2505_13824
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_06_30_FAC_UNICO_F2506_14077
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_07_31 FAC_UNICO_F2507_14476
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_08_31 FAC_UNICO_F2508_12181
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_09_30 FAC_UNICO_F2509_14022
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_10_30 FAC_UNICO_F2510_14429
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_11_30 FAC_UNICO_F2510_14429
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_12_31 FAC_UNICO_F2512_14663
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\A28799120_A58778176_F250114307_2025
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\A28799120_A58778176_F250313816_2025
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\A28799120_A58778176_F250413444_2025
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\A28799120_A58778176_F250513824_2025
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\A28799120_A58778176_F250614077_2025
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\A28799120_A58778176_F250714476_2025
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\A28799120_A58778176_F250812181_2025
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\A28799120_A58778176_F250914022_2025
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\A28799120_A58778176_F251014429_2025
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\A28799120_A58778176_F251214663_2025
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2026\A28799120_A58778176_F260113470_2026
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2026\A28799120_A58778176_F260212967_2026
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2026\A28799120_A58778176_F260313545_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2026\FAC_UNICO_F2601_13470
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2026\FAC_UNICO_F2602_12967
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2026\FAC_UNICO_F2603_13545
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\06. Amazon\Transporte 01 Informe de transacciones sujetas a IVA JAN-22 
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_56093066_010323
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_56153764_011023
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\01 - January\2024_01_02 IN 59586753 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\01 - January\2024_01_09 IN 59630624 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\01 - January\2024_01_16 IN 59690133 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\01 - January\2024_01_23 IN 59745529 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\01 - January\2024_01_30 IN 59804307 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\02 - February\2024_02_06 IN 59856551 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\02 - February\2024_02_13 IN 59911458 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\02 - February\2024_02_20 IN 59965796 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\02 - February\2024_02_27 IN 60020468 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\03 - March\2024_03_05 IN 60079078 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\05 - May\2024_05_14 IN 60673955 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\05 - May\2024_05_21 IN 60730791 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\05 - May\2024_05_28 IN 60785736 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\05 - May\2024_06_04 IN 60842608 UPS
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\05 - May\Invoice_60621407_050724
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\08 - August\2024_08_06 IN 61352793 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\08 - August\2024_08_13 IN 61405175 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\08 - August\2024_08_20 IN 61457045 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\08 - August\2024_08_27 IN 61509342 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\09- September\2024_09_03 IN 61566246 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\09- September\2024_09_04 CN 3887241 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\09- September\2024_09_10 IN 61613978 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\09- September\2024_09_17 IN 61671839 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\09- September\2024_09_24 IN 61729844 UPS
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\09- September\2024_10_01 IN 61788859 UPS
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\03- March\Invoice_63009252_030425
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\03- March\Invoice_63073535_031125
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\03- March\Invoice_63139133_031825
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\03- March\Invoice_63196251_032525
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\04-April\Invoice_63250692_040125
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\04-April\Invoice_63314310_040825
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\04-April\Invoice_63384875_041525
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\04-April\Invoice_63441786_042225
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\04-April\Invoice_63493234_042925
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\05-May\Invoice_63556598_050625
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\05-May\Invoice_63614816_051325
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\05-May\Invoice_63675074_052025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\05-May\Invoice_63733674_052725
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\06-June\CreditNote_4042958_061325
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\06-June\CreditNote_4042959_061325
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\06-June\CreditNote_4042960_061325
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\06-June\Invoice_63788565_060325
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\06-June\Invoice_63846750_061025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\06-June\Invoice_63913939_061725
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\06-June\Invoice_63964159_062425
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\07-July\Invoice_4077164_072325
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\07-July\Invoice_64019366_070125
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\07-July\Invoice_64081756_070825
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\07-July\Invoice_64142304_071525
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\07-July\Invoice_64220524_072225
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\07-July\Invoice_64274558_072925
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\08-August\Invoice_4092164_080625
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\08-August\Invoice_4101039_082725
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\08-August\Invoice_64324906_080525
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\08-August\Invoice_64376233_081225
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\08-August\Invoice_64425179_081925
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\08-August\Invoice_64482639_082625
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\09-September\Invoice_64538888_090225
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\09-September\Invoice_64625958_090925
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\09-September\Invoice_64741786_091625
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\09-September\Invoice_64842546_092325
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\09-September\Invoice_64919569_093025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\10-October\Invoice_65000904_100725
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\10-October\Invoice_65078980_101425
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\10-October\Invoice_65156495_102225
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\10-October\Invoice_65241824_102925
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\11-November\Invoice_65329488_110525
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\11-November\Invoice_65395087_111225
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\11-November\Invoice_65461454_111925
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\11-November\Invoice_65534025_112625
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\12-December\Invoice_4212188_120925
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\12-December\Invoice_65615678_120325
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\12-December\Invoice_65691355_121025
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\12-December\Invoice_65769218
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\12-December\Invoice_65771381_121725
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\12-December\Invoice_65850182
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\12-December\Invoice_65852376_122425
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\12-December\Invoice_65913703
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2026\February\Invoice_66228923_020426
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2026\February\Invoice_66294348_021126
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2026\February\Invoice_66362004_021826
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2026\February\Invoice_66435899_022526
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2026\February\Invoice_66439437_022526
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2026\January\Invoice_65958461
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2026\January\Invoice_66022924
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2026\January\Invoice_66088263
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2026\January\Invoice_66154759
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2026\January\Invoice_66158989_012826
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\UPS columns descriptions
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\UPS Shippings Report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2024\2024_01_31 IN 30061 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2024\2024_02_29 IN 30159 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2024\2024_03_31 IN 30266 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2024\2024_04_30 IN 30380 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2024\2024_05_31 IN 30489 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2024\2024_06_30 IN 30597 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2024\2024_07_26 IN 30699 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2024\2024_08_31 IN 30800 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2024\2024_09_30 IN 30904 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2024\2024_10_31 IN 31007 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2024\2024_11_29 IN 31124 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2024\2024_12_20 IN 31227 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2025\2025_01_31 IN 31331 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2025\2025_02_28 IN 31437 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2025\2025_03_31 IN 31540 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2025\2025_04_30 IN 31651 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2025\2025_05_31 IN 370937 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2025\2025_06_30 IN 31885 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\2025\2025_07_31 IN 31991 Lynda's
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\08. Lynda's Transport (UK)\Lynda's Shipment Report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2023_04_30 Detalle facturacion DPD
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2023_06_30 Detalle facturación DPD
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2023_06_30 Detalle facturación DPD II
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2023_07_31 Detalle facturación DPD
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2023_07_31 Detalle facturación DPD II
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2023_08_31 Detalle facturacion DPD
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2023_08_31 Detalle facturacion DPD II
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2023_09_30 Detalle facturacion DPD
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2023_09_30 Detalle facturacion DPD II
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2023_10_31 Detalle facturacion DPD
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2023_11_30 Detalle facturacion DPD
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2023_12_31 Detalle facturacion DPD
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2023\2024_01_31 Detalle facturacion DPD
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_01_31 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_02_29  complement_facture (003)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_03_31  complement_facture (003)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_04_30 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_05_31 Complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_06_30 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_07_31 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_08_31 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_08_31 complement_facture (in 1689)
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_08_31 FA 06600 2408 01688 DPD
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_09_30 complement_facture (facture 1)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_09_30 complement_facture (facture 2)
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_09_30 FA 06600 2409 01912 DPD
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_09_30 FA 06600 2409 01913 DPD
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_10_31 complement_facture (02130)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_10_31 complement_facture (02131)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_11_30 FA 06600 2411 02359 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_11_30 FA 06600 2411 02360 of complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_12_31 06600 2412 02591 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2024\2024_12_31 06600 2412 02592 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2025\2025_01_31 06600 2501 00164 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2025\2025_01_31 06600 2501 00165 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2025\2025_02_28 06600 2502 00382 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2025\2025_02_28 06600 2502 00383 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2025\2025_03_31 06600 2503 00597 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2025\2025_03_31 06600 2503 00598 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2025\2025_04_30 06600 2504 00810 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2025\2025_04_30 06600 2504 00811 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2025\2025_05_31 06600 2505 01031 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\2025\2025_05_31 06600 2505 01032 complement_facture
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\09. DPD France (FR)\DPD FR-Shipping report-v0.0
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2023\Facture(03-MAR23)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2023\Facture(04-ABR23)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2023\Facture(05-MAY23)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2023\Facture(06-JUN23)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2023\Facture(07-JUL23)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2023\Facture(08-AGO23)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2023\Facture(09-SEP23)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2023\Facture(10-NOV23)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2023\Facture(11-NOV23)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2023\Facture(12-DIC23)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_02_29  FA 6624025584
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_03_31 FA 6624036452
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_04_30 FA 6624047309
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_05_31 FA 6624058153
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_06_30 FA6624068940
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_07_31 FA 6624079807
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_08_22 CN 6624080553
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_08_31 FA 6624080688
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_08_31 FA 6624080688 Express Catalan
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_09_11 AV 6624091309 Express Catalan
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_09_30 FA 6624091546
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_09_30 FA 6624091546 Express Catalan
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_10_31 CN  6624091309
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_10_31 FA 6624102376
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\2024_12_31 726389_2501_726389_6624124088
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2024\pj_726389_2412_726389_6624113237
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2025\2025_01_31 FA 6625015254
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2025\2025_02_28 FA 6625025832
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2025\2025_03_31 FA 6625036705
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2025\2025_04_30 FA 6625047875
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2025\2025_05_31 FA 6625058417
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\2025\2025_06_30 FA 6625069290
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\10. Express Catalan (FR)\Express Catalan FR-Shipping report-v0.0
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2023\2023- 12 shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2023\shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2024\2024_01 Shipment detail Wwex Report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2024\2024_02 Shipment detail Wwex report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2024\2024_03 Shipment detail Wwex report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2024\2024_04 Shipment detail Wwex report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2024\2024_05 Shipment_detail Wwex report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2024\2024_06 Shipment_detail Wwex report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2024\2024_07 Shipment_detail Wwex report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2024\2024_08 Shipment_detail_Wwex report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2024\2024_09 Shipment_detail_Wwex report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2024\2024_10 Shipment_detail_Wwex report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2024\2024_11 Shipment_detail_Wwex report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2024\2024_12 Shipment_detail_Wwex report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_01_31 shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_02_28 shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_03_31 shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_05_31 shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_06_30 shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_07_31 shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_08_31 shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_09_31 shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_10_30 shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_11_30 shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_12_31 shipment_detail_report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2026\shipmentDetailsUPS_W130089866_2026-01-01_2026-01-31_1241
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2026\shipmentDetailsUPS_W130089866_2026-02-01_2026-02-28_1241
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\Wwex USA Shippings Report
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\12. Royal Mail (UK)\Tariffs 2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2509827_ES_Details of Invoice_O_110003790_2511251351
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2509827_ES_Invoice_O_110003790_2511251351.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510060_ES_Details of Invoice_O_110003790_2512030113
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510060_ES_Invoice_O_110003790_2512030113.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510236_ES_Details of Invoice_O_110003790_2512091847
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510236_ES_Invoice_O_110003790_2512091847.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510466_ES_Details of Invoice_O_110003790_2512162046
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510466_ES_Invoice_O_110003790_2512162046.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510668_ES_Details of Invoice_O_110003790_2512231529
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510668_ES_Invoice_O_110003790_2512231529.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510874_ES_Details of Invoice_O_110003790_2512291926
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510874_ES_Invoice_O_110003790_2512291926.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2600148_ES_Details of Invoice_O_110003790_2601021819
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2600148_ES_Invoice_O_110003790_2601021819.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2600320_ES_Details of Invoice_O_110003790_2601132345
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2600320_ES_Invoice_O_110003790_2601132345.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2600575_ES_Details of Invoice_O_110003790_2601201333
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2600575_ES_Invoice_O_110003790_2601201333.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2600811_ES_Details of Invoice_O_110003790_2601271814
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2600811_ES_Invoice_O_110003790_2601271814.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601050_ES_Details of Invoice_O_110003790_2602030028
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601050_ES_Invoice_O_110003790_2602030028.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601235_ES_Details of Invoice_O_110003790_2602100047
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601235_ES_Invoice_O_110003790_2602100047.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601485_ES_Details of Invoice_O_110003790_2602181322
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601485_ES_Invoice_O_110003790_2602181322.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601730_ES_Details of Invoice_O_110003790_2602232036
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601730_ES_Invoice_O_110003790_2602232036.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601975_ES_Details of Invoice_O_110003790_2603031248
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601975_ES_Invoice_O_110003790_2603031248.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2602159_ES_Details of Invoice_O_110003790_2603101353
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2602159_ES_Invoice_O_110003790_2603101353.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2602417_ES_Details of Invoice_O_110003790_2603171411
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2602417_ES_Invoice_O_110003790_2603171411.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2602640_ES_Details of Invoice_O_110003790_2603232304
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2602640_ES_Invoice_O_110003790_2603232304.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2602873_ES_Details of Invoice_O_110003790_2603310923
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2602873_ES_Invoice_O_110003790_2603310923.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2603031_ES_Details of Invoice_O_110003790_2604061811
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2603031_ES_Invoice_O_110003790_2604061811.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2603220_ES_Details of Invoice_O_110003790_2604091750
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2603220_ES_Invoice_O_110003790_2604091750.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2603429_ES_Details of Invoice_O_110003790_2604141531
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2603429_ES_Invoice_O_110003790_2604141531.PDF
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\Shipment Report
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Global Transport Report
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\IN 301-300559 SERTRANS (100x100 Mascotas)
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Adyen\TEST
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Adyen\TEST 2
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\CORREOS EXPRESS\TARIFAS_CORREOS_EPaq24_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\CORREOS EXPRESS\TARIFAS_CORREOS_Islas Express_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\CORREOS EXPRESS\TARIFAS_CORREOS_Paq Empresa 14_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\CORREOS EXPRESS\TARIFAS_CORREOS_Paq24_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\DACHSER\Formulas_tarifas
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\DACHSER\FORMULAS_TARIFAS_DACHSER_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\DACHSER\TARIFAS_DACHSER_2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\DACHSER\TARIFAS_DACHSER_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\ROYAL MAIL\TARIFAS_ROYAL MAIL_TRACKED 24
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\SEUR\TARIFAS_SEUR 2SHOP_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\SEUR\TARIFAS_SEUR INTERNACIONAL_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\SEUR\TARIFAS_SEUR NACIONAL_Estandard 72_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\SEUR\TARIFAS_SEUR NACIONAL_Estandard10_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\SEUR\TARIFAS_SEUR NACIONAL_Estandard13 30_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\SEUR\TARIFAS_SEUR NACIONAL_Estandard24_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\SEUR\TARIFAS_SEUR NACIONAL_Maritimo Estandar_2026
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\SPRING\TARIFAS_SPRING_SIGN_2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\SPRING\TARIFAS_SPRING_TRCK_2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\UPS_UK\TARIFAS_UPS EXPRESS SAVER_2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\UPS_UK\TARIFAS_UPS EXPRESS_2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\UPS_UK\TARIFAS_UPS STANDARD_2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Outvio\WWEX\TARIFAS_UPS STANDARD TEST_2025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Proyectos - Operations
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Tickelia\CONTRATO_FIRMADO
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Tickelia\Integración Tickelia - SAP_Artero_1025
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Tickelia\Listado_empleados_completo
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Tickelia\Listado_empleados_SAP
+MISSING spreadsheet for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Tickelia\Pedido de compra Tickelia_ARTERO INSPIRING STYLE 10 1
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Tickelia\Plantilla_solicitud_datos_contrato
+MISSING pdf for C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\Operations - 01. Proyectos\Tickelia\Volcado Datos Maestros OG

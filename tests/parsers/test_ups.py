@@ -24,7 +24,9 @@ def test_parses_synthetic_invoice(ups_invoice_factory):
     result = UpsParser().parse(path)
 
     assert result.carrier == "ups"
-    assert result.invoice_number == "000003961958"
+    # Invoice Number is coerced to Int64 to match how Excel stores it in
+    # the historical Data sheet (zero-padding is presentation, not data).
+    assert result.invoice_number == "3961958"
     assert result.invoice_date == date(2025, 1, 22)
     assert result.row_count == 1
     assert tuple(result.rows.columns) == UPS_COLUMNS

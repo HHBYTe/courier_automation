@@ -1,37 +1,37 @@
-"""Wwex (US) parser — **partial implementation**.
+"""Wwex (US) parser.
 
-The Wwex layer is materially more complex than the other couriers and is
-shipped here as a scaffold. Full production-readiness is deferred. Known
-unfinished work:
+Real Wwex invoices arrive as `.xls`, `.csv`, or `.xlsx` files (the
+SpeedShip portal changed format twice). All three formats share the same
+42-column raw schema; the parser tries each engine in turn:
 
-1. **File-format drift.** Real Wwex invoices arrive as `.xls`, `.csv`, or
-   `.xlsx` depending on the month (the SpeedShip portal changed format
-   twice). Today this parser handles only `.xlsx`; `.xls` would need
-   `xlrd>=2.0.1` added to requirements; `.csv` files are
-   semicolon-separated (not comma) and would need a separate read path.
-2. **Schema mapping raw → historical.** Raw Wwex files have **42**
-   ALL_CAPS_UNDERSCORED columns (`CUSTOMER_NO, COMPANY_NAME, …`); the
-   historical workbook (`Wwex USA Shippings Report.xlsx`, sheet `Data`)
-   uses a different **44**-column schema with `Source System / SpeedShip`
-   naming (`Source System, Tracking#, Ship Date, …`). The mapping is
-   non-trivial and not yet reverse-engineered. Today the parser passes
-   the raw 42 columns through unchanged — useful for a "raw archive"
-   sheet but NOT a drop-in append into the historical Data sheet.
-3. **Sheet name varies** (`shipmentDetailsUPS_W130089866_2`). Today the
-   parser reads `sheet_name=0` (the first sheet), which works in
-   practice but isn't validated.
-4. **Golden test not built.** Once the mapping in #2 is settled the
-   golden test should mirror Correos's: read raw, run mapping, compare
-   to a Datos slice keyed on `TRACKING_NO`.
+  - `.xls`  via `xlrd>=2.0.1` (added to requirements).
+  - `.csv`  read as semicolon-separated.
+  - `.xlsx` via `openpyxl`, with `usecols=range(42)` to clip the
+    16,000+ phantom trailing columns openpyxl reports for these files.
 
-For now: schema validation against the 42-col raw layout, dtype
-coercion for the obvious date/numeric columns, plausibility checks on
-the key fields. Sufficient for the parser to be exercised in isolation
-but **not yet wired into the CLI** until #1 and #2 are done.
+The historical workbook (`Wwex USA Shippings Report.xlsx`, sheet `Data`)
+uses a different 44-column schema with `Source System / SpeedShip`
+naming. The parser maps raw → historical via `_map_to_historical`,
+reverse-engineered from a side-by-side inspection of one shipment.
+
+Mapping rules (validated against TRACKING_NO `1Z2F8W440316139841|...`):
+  - Most columns are a direct rename (CUSTOMER_NO → Account#, SENDER →
+    Ship From Company, ORIGIN_* → Ship From *, DESTINATION_* → Ship To *,
+    TOTAL_WEIGHT → Package Weight, etc.).
+  - `Source System` is the constant `"SpeedShip 2.0"`.
+  - `Domestic/International` is `"DOM"` when origin country == destination
+    country, `"INT"` otherwise.
+  - `Weight per package` = TOTAL_WEIGHT / PACKAGE_COUNT.
+  - Several historical columns (`LoginId`, `Bill To*`, `Ship Ref1/2`,
+    `Sent By`, `Ship*Phone`, `Service`, `Insured Value`, `Packaging`,
+    `Package Dimensions`, etc.) are not in raw and are emitted as None —
+    the operator fills them in by hand. Today's golden test excludes
+    those columns (see `test_wwex_golden.py`).
 """
 
 from __future__ import annotations
 
+import csv
 import logging
 from datetime import date
 from pathlib import Path
@@ -96,30 +96,157 @@ WWEX_RAW_COLUMNS: tuple[str, ...] = (
 )
 assert len(WWEX_RAW_COLUMNS) == 42
 
-DATE_COLUMNS: tuple[str, ...] = (
-    "CREATION_DATE",
-    "SHIPMENT_DATE",
-    "ACTUAL_PICKUP_DATE",
-    "ACTUAL_DELIVERY_DATE",
+WWEX_COLUMNS: tuple[str, ...] = (
+    "Source System",
+    "Domestic/International",
+    "Account#",
+    "LoginId",
+    "Tracking#",
+    "Ship Date",
+    "Ship Ref1",
+    "Ship Ref2",
+    "Ship From Company",
+    "Ship From Addr1",
+    "Ship From Addr2",
+    "Ship From Addr3",
+    "Ship From City",
+    "Ship From State",
+    "Ship From Postal Code",
+    "Ship From Country",
+    "Ship From Phone",
+    "Sent By",
+    "Ship To Company",
+    "Ship To Addr1",
+    "Ship To Addr2",
+    "Ship To Addr3",
+    "Ship To City",
+    "Ship To State",
+    "Ship To Postal Code",
+    "Ship To Country",
+    "Ship To Phone",
+    "Ship To Contact",
+    "Bill To",
+    "Bill To Acct#",
+    "Bill Duty To",
+    "Bill Duty To Acct#",
+    "Package Weight",
+    "Billed Weight",
+    "Packaging",
+    "Customs Value",
+    "Package Dimensions",
+    "Service",
+    "Insured Value",
+    "Est Transportation Charges",
+    "Est Other Charges",
+    "Insurance",
+    "Package Count",
+    "Weight per package",
 )
-INT_COLUMNS: tuple[str, ...] = ("PACKAGE_COUNT",)
-FLOAT_COLUMNS: tuple[str, ...] = (
-    "TOTAL_WEIGHT",
-    "TOTAL_RATED_WEIGHT",
-    "PACKAGE_WEIGHT",
-    "PACKAGE_RATED_WEIGHT",
-    "INSURED_AMOUNT",
-    "COST OF INSURANCE",
-    "ESTIMATED_TOTAL_PRICE",
+assert len(WWEX_COLUMNS) == 44
+
+# Direct renames: historical → raw.
+_RENAME: dict[str, str] = {
+    "Account#": "ACCOUNT_NO",
+    "Tracking#": "TRACKING_NO",
+    # Ship Date is mapped via _coalesce_ship_date below — many raw
+    # SHIPMENT_DATEs are empty for shipments not yet picked up at invoice
+    # time, and the operator fills the gap from ACTUAL_PICKUP_DATE or
+    # CREATION_DATE.
+    "Ship From Company": "SENDER",
+    "Ship From Addr1": "ORIGIN_ADDRESS_LINE_1",
+    "Ship From Addr2": "ORIGIN_ADDRESS_LINE_2",
+    "Ship From City": "ORIGIN_CITY",
+    "Ship From State": "ORIGIN_STATE",
+    "Ship From Postal Code": "ORIGIN_ZIP",
+    "Ship From Country": "ORIGIN_COUNTRY",
+    "Ship To Company": "CONSIGNEE_COMPANY_NAME",
+    "Ship To Addr1": "DESTINATION_ADDRESS_LINE_1",
+    "Ship To Addr2": "DESTINATION_ADDRESS_LINE_2",
+    "Ship To City": "DESTINATION_CITY",
+    "Ship To State": "DESTINATION_STATE",
+    "Ship To Postal Code": "DESTINATION_ZIP",
+    "Ship To Country": "DESTINATION_COUNTRY",
+    "Package Weight": "TOTAL_WEIGHT",
+    "Billed Weight": "TOTAL_RATED_WEIGHT",
+    "Est Transportation Charges": "ESTIMATED_TOTAL_PRICE",
+    "Package Count": "PACKAGE_COUNT",
+}
+
+# Columns the operator fills in manually after pasting (no raw source);
+# parser emits None and the golden test excludes them from comparison.
+_OPERATOR_FILLED: tuple[str, ...] = (
+    "LoginId",
+    "Ship Ref1",
+    "Ship Ref2",
+    "Ship From Addr3",
+    "Ship From Phone",
+    "Sent By",
+    "Ship To Addr3",
+    "Ship To Phone",
+    "Ship To Contact",
+    "Bill To",
+    "Bill To Acct#",
+    "Bill Duty To",
+    "Bill Duty To Acct#",
+    "Packaging",
+    "Customs Value",
+    "Package Dimensions",
+    "Service",
+    "Insured Value",
+    "Est Other Charges",
+    "Insurance",
 )
 
-PLAUSIBILITY_NO_NULL: tuple[str, ...] = ("TRACKING_NO", "SHIPMENT_DATE")
+DATE_COLUMNS: tuple[str, ...] = ("Ship Date",)
+INT_COLUMNS: tuple[str, ...] = ("Package Count",)
+FLOAT_COLUMNS: tuple[str, ...] = (
+    "Package Weight",
+    "Billed Weight",
+    "Est Transportation Charges",
+    "Weight per package",
+)
+
+PLAUSIBILITY_NO_NULL: tuple[str, ...] = ("Tracking#",)
 PLAUSIBILITY_DATE_RANGE: dict[str, tuple[date, date]] = {
-    "SHIPMENT_DATE": (date(2018, 1, 1), date(2035, 12, 31)),
+    "Ship Date": (date(2018, 1, 1), date(2035, 12, 31)),
 }
 
 
+def _map_to_historical(raw: pd.DataFrame) -> pd.DataFrame:
+    """Map a 42-col raw Wwex DataFrame to the 44-col historical schema."""
+    out = pd.DataFrame(index=raw.index)
+    out["Source System"] = "SpeedShip 2.0"
+    out["Domestic/International"] = (
+        (raw["ORIGIN_COUNTRY"].astype(str).str.strip()
+         == raw["DESTINATION_COUNTRY"].astype(str).str.strip())
+        .map({True: "DOM", False: "INT"})
+    )
+    # Ship Date — coalesce SHIPMENT_DATE → ACTUAL_PICKUP_DATE →
+    # CREATION_DATE → ACTUAL_DELIVERY_DATE. Many raw SHIPMENT_DATEs are
+    # empty (shipments not yet picked up); the operator falls back to
+    # the next available date when pasting. Order chosen empirically —
+    # delivery as last resort since it can be later than the actual ship.
+    ship_date = pd.to_datetime(raw["SHIPMENT_DATE"], errors="coerce")
+    pickup = pd.to_datetime(raw["ACTUAL_PICKUP_DATE"], errors="coerce")
+    creation = pd.to_datetime(raw["CREATION_DATE"], errors="coerce")
+    delivery = pd.to_datetime(raw["ACTUAL_DELIVERY_DATE"], errors="coerce")
+    out["Ship Date"] = (
+        ship_date.fillna(pickup).fillna(creation).fillna(delivery)
+    )
+
+    for hist_col, raw_col in _RENAME.items():
+        out[hist_col] = raw[raw_col]
+    for col in _OPERATOR_FILLED:
+        out[col] = pd.Series([None] * len(raw), dtype="string", index=raw.index)
+    # Weight per package = total / count, both numeric.
+    weight = pd.to_numeric(raw["TOTAL_WEIGHT"], errors="coerce")
+    count = pd.to_numeric(raw["PACKAGE_COUNT"], errors="coerce")
+    out["Weight per package"] = weight / count
+    return out[list(WWEX_COLUMNS)]
+
+
 def coerce_wwex_dtypes(df: pd.DataFrame) -> pd.DataFrame:
+    """Coerce a 44-col Wwex-historical-shaped DataFrame."""
     df = df.copy()
     for col in DATE_COLUMNS:
         df[col] = pd.to_datetime(df[col], errors="coerce")
@@ -135,30 +262,53 @@ def coerce_wwex_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _read_raw(path: Path) -> pd.DataFrame:
+    """Read Wwex raw data across the three observed formats."""
+    suffix = path.suffix.lower()
+    if suffix == ".xlsx":
+        return pd.read_excel(
+            path, sheet_name=0, engine="openpyxl", dtype=str,
+            usecols=range(len(WWEX_RAW_COLUMNS)),
+        )
+    if suffix == ".xls":
+        # xlrd reads the 97-2003 binary format. usecols=range works the
+        # same way as for xlsx.
+        return pd.read_excel(
+            path, sheet_name=0, engine="xlrd", dtype=str,
+            usecols=range(len(WWEX_RAW_COLUMNS)),
+        )
+    if suffix == ".csv":
+        # Wwex CSVs from the SpeedShip export are semicolon-separated.
+        return pd.read_csv(
+            path, sep=";", dtype=str, encoding="utf-8",
+            usecols=range(len(WWEX_RAW_COLUMNS)),
+            engine="python",
+            quoting=csv.QUOTE_MINIMAL,
+        )
+    raise ParserError(
+        f"Wwex parser doesn't recognise extension {suffix!r}; "
+        "expected .xlsx, .xls, or .csv."
+    )
+
+
 class WwexParser:
     carrier: ClassVar[str] = "wwex"
-    expected_columns: ClassVar[tuple[str, ...]] = WWEX_RAW_COLUMNS
+    expected_columns: ClassVar[tuple[str, ...]] = WWEX_COLUMNS
 
     def parse(self, path: Path) -> ParseResult:
         path = Path(path)
         if not path.exists():
             raise ParserError(f"Wwex invoice file not found: {path}")
-        if path.suffix.lower() not in {".xlsx"}:
-            raise ParserError(
-                f"Wwex parser only supports .xlsx today; got {path.suffix!r}. "
-                "Add xlrd>=2.0.1 + a .csv reader (semicolon separator) for "
-                "full coverage — see parser module docstring."
-            )
 
         try:
-            df = pd.read_excel(
-                path, sheet_name=0, engine="openpyxl",
-                dtype=str, usecols=range(len(WWEX_RAW_COLUMNS)),
-            )
+            raw = _read_raw(path)
+        except ParserError:
+            raise
         except Exception as e:  # noqa: BLE001
             raise ParserError(f"could not read {path.name}: {e}") from e
 
-        assert_schema(df, WWEX_RAW_COLUMNS)
+        assert_schema(raw, WWEX_RAW_COLUMNS)
+        df = _map_to_historical(raw)
         df = coerce_wwex_dtypes(df)
         assert_plausible(
             df,
@@ -166,9 +316,9 @@ class WwexParser:
             date_range=PLAUSIBILITY_DATE_RANGE,
         )
 
-        # Wwex raw doesn't contain an explicit invoice number. The whole
-        # file IS the invoice for that month; we use the SHIPMENT_DATE
-        # year-month as the synthetic invoice key.
+        # Wwex raw doesn't carry an explicit invoice number; one file is
+        # one month of shipments. Use the year-month from Ship Date as
+        # the synthetic invoice key.
         invoice_date = self._derive_invoice_date(df)
         invoice_number = f"wwex-{invoice_date.year}-{invoice_date.month:02d}"
         file_hash = compute_file_hash(path)
@@ -187,7 +337,7 @@ class WwexParser:
 
     @staticmethod
     def _derive_invoice_date(df: pd.DataFrame) -> date:
-        s = df["SHIPMENT_DATE"].dropna()
+        s = df["Ship Date"].dropna()
         if s.empty:
-            raise ParserError("no SHIPMENT_DATE values to derive invoice_date from")
+            raise ParserError("no Ship Date values to derive invoice_date from")
         return s.iloc[0].date()
