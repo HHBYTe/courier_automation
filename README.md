@@ -35,8 +35,19 @@ python -m venv .venv
     --file "Operations - Couriers\01. Seur\Facturas\2025\04 - Abril\0289992025DXXXXXX.xlsx" `
     --workbook "Operations - Couriers\01. Seur\NEW Análisis expediciones SEUR.xlsx"
 
-# Ingest a whole month's folder
+# Ingest the latest available month automatically
+.venv\Scripts\python -m courier_automation.cli ingest seur --workbook "Operations - Couriers\01. Seur\NEW Análisis expediciones SEUR.xlsx"
+
+# Ingest a whole month's folder explicitly
 .venv\Scripts\python -m courier_automation.cli ingest seur --month 2025-04
+
+# Ingest one Seitrans invoice into a workbook
+.venv\Scripts\python -m courier_automation.cli ingest seitrans `
+    --file "Operations - Couriers\04. Seitrans\Facturas\2025_04_30_INVXXXXXX.xlsx" `
+    --workbook "Operations - Couriers\04. Seitrans\Análisis envíos Seitrans.xlsx"
+
+# Ingest the latest available month automatically
+.venv\Scripts\python -m courier_automation.cli ingest seitrans --workbook "Operations - Couriers\04. Seitrans\Análisis envíos Seitrans.xlsx"
 ```
 
 ## Layout

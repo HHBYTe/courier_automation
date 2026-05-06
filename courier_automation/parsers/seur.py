@@ -17,6 +17,7 @@ from courier_automation.parsers.base import (
     assert_schema,
     compute_file_hash,
     extract_seur_invoice_number,
+    to_clean_string,
 )
 from courier_automation.parsers.plausibility import assert_plausible
 
@@ -194,31 +195,6 @@ STRING_COLUMNS: tuple[str, ...] = (
 )
 
 
-def _to_clean_string(value: object) -> object:
-    """Normalise a single value to a clean string, dropping the spurious `.0`
-    that Excel introduces when it auto-stores a code field as a number.
-
-    Examples: 685 -> "685", 685.0 -> "685", "685.0" -> "685", "ABC" -> "ABC".
-    Returns None for nulls so the resulting Series can be `astype("string")`.
-    """
-    if value is None:
-        return None
-    if isinstance(value, float):
-        if pd.isna(value):
-            return None
-        if value.is_integer():
-            return str(int(value))
-        return str(value)
-    if isinstance(value, str):
-        stripped = value.strip()
-        if stripped.endswith(".0"):
-            core = stripped[:-2]
-            if core.lstrip("-").isdigit():
-                return core
-        return stripped
-    return str(value)
-
-
 def coerce_seur_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     """Coerce a Seur-shaped DataFrame to the parser's canonical dtypes
     (dates, ints, floats, strings).
@@ -244,7 +220,7 @@ def coerce_seur_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     for col in df.columns:
         if col in typed:
             continue
-        df[col] = df[col].map(_to_clean_string).astype("string")
+        df[col] = df[col].map(to_clean_string).astype("string")
     return df
 
 

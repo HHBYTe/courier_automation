@@ -19,7 +19,12 @@ from courier_automation.cli import (
 )
 from courier_automation.parsers.seur import SEUR_COLUMNS
 from courier_automation.store.workbook_appender import LOCK_SUFFIX
-from tests.conftest import make_empty_seur_workbook, make_seur_invoice
+from tests.conftest import (
+    make_empty_seur_workbook,
+    make_empty_seitrans_workbook,
+    make_seur_invoice,
+    make_seitrans_invoice,
+)
 
 runner = CliRunner()
 
@@ -154,10 +159,101 @@ def test_ingest_month_with_no_files_exits_usage(tmp_path):
     assert result.exit_code == EXIT_USAGE
 
 
-def test_neither_file_nor_month_is_usage_error(tmp_path):
+def test_ingest_seitrans_single_file_end_to_end(tmp_path, default_seitrans_row):
+    workbook = make_empty_seitrans_workbook(tmp_path / "wb.xlsx")
+    invoice = make_seitrans_invoice(
+        tmp_path / "2025_04_30_INV0289264.xlsx",
+        rows=[default_seitrans_row(1)],
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "ingest",
+            "seitrans",
+            "--file",
+            str(invoice),
+            "--workbook",
+            str(workbook),
+        ],
+    )
+    assert result.exit_code == EXIT_OK, result.output
+    assert _datos_row_count(workbook) == 1
+
+
+def test_ingest_seitrans_auto_discovers_latest_month(tmp_path, default_seitrans_row):
+    workbook = make_empty_seitrans_workbook(tmp_path / "wb.xlsx")
+    facturas = tmp_path / "Facturas" / "2025"
+    facturas.mkdir(parents=True)
+
+    make_seitrans_invoice(
+        facturas / "2025_03_10_INV000001.xlsx",
+        rows=[default_seitrans_row(1)],
+    )
+    make_seitrans_invoice(
+        facturas / "2025_04_15_INV000002.xlsx",
+        rows=[default_seitrans_row(2)],
+    )
+    make_seitrans_invoice(
+        facturas / "2025_04_20_INV000003.xlsx",
+        rows=[default_seitrans_row(3)],
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "ingest",
+            "seitrans",
+            "--folder",
+            str(tmp_path / "Facturas"),
+            "--workbook",
+            str(workbook),
+        ],
+    )
+    assert result.exit_code == EXIT_OK, result.output
+    assert _datos_row_count(workbook) == 2
+
+
+def test_auto_discovers_latest_month(tmp_path, default_seur_row):
+    workbook = make_empty_seur_workbook(tmp_path / "wb.xlsx")
+    facturas = tmp_path / "Facturas"
+    make_seur_invoice(
+        facturas / "2025" / "03 - Marzo" / "0289992025D0000001.xlsx",
+        rows=[default_seur_row(1)],
+    )
+    make_seur_invoice(
+        facturas / "2025" / "04 - Abril" / "0289992025D0000002.xlsx",
+        rows=[default_seur_row(2)],
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "ingest",
+            "seur",
+            "--folder",
+            str(facturas),
+            "--workbook",
+            str(workbook),
+        ],
+    )
+    assert result.exit_code == EXIT_OK, result.output
+    assert _datos_row_count(workbook) == 1
+    assert "ingested" in result.output
+
+
+def test_no_files_under_folder_exits_usage(tmp_path):
     workbook = make_empty_seur_workbook(tmp_path / "wb.xlsx")
     result = runner.invoke(
-        app, ["ingest", "seur", "--workbook", str(workbook)]
+        app,
+        [
+            "ingest",
+            "seur",
+            "--folder",
+            str(tmp_path / "Facturas"),
+            "--workbook",
+            str(workbook),
+        ],
     )
     assert result.exit_code == EXIT_USAGE
 

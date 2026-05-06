@@ -82,6 +82,35 @@ def compute_file_hash(path: Path, *, chunk_size: int = 1 << 20) -> str:
     return h.hexdigest()
 
 
+def to_clean_string(value: object) -> object:
+    """Normalise a single value to a clean string, dropping the spurious `.0`
+    that Excel introduces when it auto-stores a code field as a number.
+
+    Examples: 685 -> "685", 685.0 -> "685", "685.0" -> "685", "ABC" -> "ABC".
+    Returns None for nulls so the resulting Series can be `astype("string")`.
+
+    Used by every per-courier parser to keep raw-vs-Datos comparison
+    type-consistent (Excel auto-converts code columns to numbers in some files
+    but not others; cleaning uniformly is what makes the golden test sound).
+    """
+    if value is None:
+        return None
+    if isinstance(value, float):
+        if pd.isna(value):
+            return None
+        if value.is_integer():
+            return str(int(value))
+        return str(value)
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.endswith(".0"):
+            core = stripped[:-2]
+            if core.lstrip("-").isdigit():
+                return core
+        return stripped
+    return str(value)
+
+
 # Seur uses 10 digits + a 1-3 letter prefix + 7 digits. Observed prefixes:
 # D (domestic ES), AD (Andorra), FR (France). The regex is permissive about
 # the letters so a new prefix from Seur doesn't break ingest silently.

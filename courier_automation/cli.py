@@ -22,6 +22,7 @@ from courier_automation.manifest.registry import ManifestRegistry
 from courier_automation.parsers.base import ParserError, SchemaMismatch
 from courier_automation.parsers.plausibility import PlausibilityError
 from courier_automation.parsers.seur import SeurParser
+from courier_automation.parsers.seitrans import SeitransParser
 from courier_automation.store.workbook_appender import (
     WorkbookAppender,
     WorkbookLocked,
@@ -38,6 +39,10 @@ DEFAULT_SEUR_WORKBOOK = Path(
     "Operations - Couriers/01. Seur/NEW Análisis expediciones SEUR.xlsx"
 )
 DEFAULT_SEUR_FACTURAS = Path("Operations - Couriers/01. Seur/Facturas")
+DEFAULT_SEITRANS_WORKBOOK = Path(
+    "Operations - Couriers/04. Seitrans/Análisis envíos Seitrans.xlsx"
+)
+DEFAULT_SEITRANS_FACTURAS = Path("Operations - Couriers/04. Seitrans/Facturas")
 
 log = logging.getLogger("courier_automation.cli")
 
@@ -87,13 +92,13 @@ def ingest_seur(
     """Ingest one or many Seur invoice files into the Datos sheet."""
     _setup_logging()
 
-    if (file is None) == (month is None):
-        typer.echo("error: pass exactly one of --file or --month", err=True)
+    if file is not None and month is not None:
+        typer.echo("error: pass at most one of --file or --month", err=True)
         raise typer.Exit(code=EXIT_USAGE)
 
     if file is not None:
         files = [file]
-    else:
+    elif month is not None:
         files = _discover_month_files(month, folder or DEFAULT_SEUR_FACTURAS)
         if not files:
             typer.echo(
@@ -101,8 +106,101 @@ def ingest_seur(
                 err=True,
             )
             raise typer.Exit(code=EXIT_USAGE)
+    else:
+        files = _discover_latest_month_files(folder or DEFAULT_SEUR_FACTURAS)
+        if not files:
+            typer.echo(
+                f"no .xlsx invoices found under {folder or DEFAULT_SEUR_FACTURAS}",
+                err=True,
+            )
+            raise typer.Exit(code=EXIT_USAGE)
 
     parser = SeurParser()
+    registry = ManifestRegistry()
+    appender = WorkbookAppender()
+
+    summary = {"appended": 0, "skipped": 0, "rows_written": 0}
+    for path in files:
+        result = _ingest_one(
+            path,
+            parser=parser,
+            registry=registry,
+            appender=appender,
+            workbook=workbook,
+            dry_run=dry_run,
+        )
+        summary["appended"] += int(result["appended"])
+        summary["skipped"] += int(result["skipped"])
+        summary["rows_written"] += int(result["rows_written"])
+
+    typer.echo(
+        f"done: {summary['appended']} ingested, {summary['skipped']} skipped, "
+        f"{summary['rows_written']} rows written"
+        + (" (dry-run)" if dry_run else "")
+    )
+
+
+@ingest_app.command("seitrans")
+def ingest_seitrans(
+    file: Optional[Path] = typer.Option(
+        None,
+        "--file",
+        "-f",
+        help="Path to a single raw Seitrans invoice .xlsx.",
+    ),
+    month: Optional[str] = typer.Option(
+        None,
+        "--month",
+        help="Month to ingest in YYYY-MM form (scans the folder).",
+    ),
+    folder: Optional[Path] = typer.Option(
+        None,
+        "--folder",
+        help=f"Root Facturas folder (default: {DEFAULT_SEITRANS_FACTURAS}).",
+    ),
+    workbook: Path = typer.Option(
+        DEFAULT_SEITRANS_WORKBOOK,
+        "--workbook",
+        "-w",
+        help="Target Seitrans historical workbook.",
+    ),
+    dry_run: bool = typer.Option(
+        False,
+        "--dry-run",
+        help="Parse + manifest-check only; never write to the workbook.",
+    ),
+) -> None:
+    """Ingest one or many Seitrans invoice files into the Datos sheet."""
+    _setup_logging()
+
+    if file is not None and month is not None:
+        typer.echo("error: pass at most one of --file or --month", err=True)
+        raise typer.Exit(code=EXIT_USAGE)
+
+    if file is not None:
+        files = [file]
+    elif month is not None:
+        files = _discover_seitrans_month_files(
+            month, folder or DEFAULT_SEITRANS_FACTURAS
+        )
+        if not files:
+            typer.echo(
+                f"no .xlsx invoices found for month {month} under {folder or DEFAULT_SEITRANS_FACTURAS}",
+                err=True,
+            )
+            raise typer.Exit(code=EXIT_USAGE)
+    else:
+        files = _discover_latest_seitrans_month_files(
+            folder or DEFAULT_SEITRANS_FACTURAS
+        )
+        if not files:
+            typer.echo(
+                f"no .xlsx invoices found under {folder or DEFAULT_SEITRANS_FACTURAS}",
+                err=True,
+            )
+            raise typer.Exit(code=EXIT_USAGE)
+
+    parser = SeitransParser()
     registry = ManifestRegistry()
     appender = WorkbookAppender()
 
@@ -217,6 +315,96 @@ def _discover_month_files(month: str, root: Path) -> list[Path]:
         if sub.is_dir():
             candidates.extend(sub.glob("*.xlsx"))
     return sorted(candidates)
+
+
+def _discover_latest_month_files(root: Path) -> list[Path]:
+    """Find raw Seur invoices for the latest available month under `Facturas/`.
+
+    This scans `Facturas/<YYYY>/<MM> - <Mes>/` and chooses the newest
+    year/month that contains `.xlsx` invoices.
+    """
+    if not root.exists():
+        return []
+
+    latest_candidates: dict[tuple[int, int], list[Path]] = {}
+    for year_dir in sorted(root.iterdir()):
+        if not year_dir.is_dir() or not year_dir.name.isdigit():
+            continue
+        year = int(year_dir.name)
+        for month_dir in sorted(year_dir.iterdir()):
+            if not month_dir.is_dir() or len(month_dir.name) < 2:
+                continue
+            month_prefix = month_dir.name[:2]
+            if not month_prefix.isdigit():
+                continue
+            month = int(month_prefix)
+            if month < 1 or month > 12:
+                continue
+            files = sorted(month_dir.glob("*.xlsx"))
+            if files:
+                latest_candidates.setdefault((year, month), []).extend(files)
+
+    if not latest_candidates:
+        return []
+
+    latest_year_month = max(latest_candidates)
+    return sorted(latest_candidates[latest_year_month])
+
+
+_SEITRANS_FILE_RE = re.compile(r"^(\d{4})_(\d{2})_(\d{2})_.+$")
+
+
+def _discover_seitrans_month_files(month: str, root: Path) -> list[Path]:
+    """Find raw Seitrans invoices for a month under `Facturas/<YYYY>/`."""
+    m = _MONTH_RE.match(month)
+    if not m:
+        typer.echo(f"--month must be YYYY-MM, got {month!r}", err=True)
+        raise typer.Exit(code=EXIT_USAGE)
+    year, mm = m.group(1), m.group(2)
+
+    if not root.exists():
+        return []
+
+    candidates: list[Path] = []
+    year_dir = root / year
+    if not year_dir.exists():
+        return []
+
+    for path in sorted(year_dir.glob("*.xlsx")):
+        stem = path.stem
+        match = _SEITRANS_FILE_RE.match(stem)
+        if not match:
+            continue
+        if match.group(1) == year and match.group(2) == mm:
+            candidates.append(path)
+    return sorted(candidates)
+
+
+def _discover_latest_seitrans_month_files(root: Path) -> list[Path]:
+    """Find raw Seitrans invoices for the latest available month under `Facturas/`."""
+    if not root.exists():
+        return []
+
+    latest_candidates: dict[tuple[int, int], list[Path]] = {}
+    for year_dir in sorted(root.iterdir()):
+        if not year_dir.is_dir() or not year_dir.name.isdigit():
+            continue
+        for path in sorted(year_dir.glob("*.xlsx")):
+            stem = path.stem
+            match = _SEITRANS_FILE_RE.match(stem)
+            if not match:
+                continue
+            year = int(match.group(1))
+            month = int(match.group(2))
+            if month < 1 or month > 12:
+                continue
+            latest_candidates.setdefault((year, month), []).append(path)
+
+    if not latest_candidates:
+        return []
+
+    latest_year_month = max(latest_candidates)
+    return sorted(latest_candidates[latest_year_month])
 
 
 if __name__ == "__main__":

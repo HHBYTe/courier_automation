@@ -11,11 +11,14 @@ import pytest
 from openpyxl import Workbook
 
 from courier_automation.parsers.seur import SEUR_COLUMNS
+from courier_automation.parsers.seitrans import SEITRANS_COLUMNS, SEITRANS_RAW_COLUMNS
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 SEUR_RAW_DIR = FIXTURES_DIR / "seur" / "raw"
 SEUR_GOLDEN_DIR = FIXTURES_DIR / "seur" / "golden"
 SEUR_SYNTHETIC_DIR = FIXTURES_DIR / "seur" / "synthetic"
+SEITRANS_RAW_DIR = FIXTURES_DIR / "seitrans" / "raw"
+SEITRANS_GOLDEN_DIR = FIXTURES_DIR / "seitrans" / "golden"
 
 
 def _make_default_row(line_number: int = 1) -> dict[str, Any]:
@@ -139,6 +142,72 @@ def make_empty_seur_workbook(path: Path) -> Path:
     return path
 
 
+def _make_default_seitrans_row(line_number: int = 1) -> dict[str, Any]:
+    row: dict[str, Any] = {
+        "CLIENTE_RAGIONE_SOCIALE": "Cliente Srl",
+        # Real Seitrans: one DOCUMENTO_NUMERO per file, multiple SPEDIZIONE_NUMERO
+        # rows underneath. Constant default mirrors that.
+        "DOCUMENTO_NUMERO": 289264,
+        "SPEDIZIONE_NUMERO": f"S{line_number:08d}",
+        "MITTENTE_RAGIONE_SOCIALE": "Artero",
+        "MITTENTE_NAZIONE_DESCRIZIONE": "Italia",
+        "MITTENTE_CAP": "00100",
+        "DESTINATARIO_RAGIONE_SOCIALE": "Cliente SL",
+        "DESTINATARIO_LOCALITA": "Madrid",
+        "DESTINATARIO_CAP": "28001",
+        "DESTINATARIO_NAZIONE_DESCRIZIONE": "España",
+        "IMBALLI": 1,
+        "PESO_LORDO": 12.5,
+        "VOLUME": 0.85,
+        "PESO_TASSABILE": 12.5,
+        "METRI_LINEARI": 0.0,
+        "VOCE_DESCRIZIONE": "Documento",
+        "IMPORTO_TOTALE_VALUTA": 120.0,
+        "RIFERIMENTO_COMMITTENTE": f"REF{line_number:04d}",
+        "RESA_DESCRIZIONE": "DAP",
+        "SETTORE_DESCRIZIONE": "Logistica",
+        "DOCUMENTO_DATA": datetime(2025, 4, 30),
+    }
+    assert set(row) == set(SEITRANS_RAW_COLUMNS), (
+        f"default row schema drift: missing={set(SEITRANS_RAW_COLUMNS) - set(row)}, "
+        f"extra={set(row) - set(SEITRANS_RAW_COLUMNS)}"
+    )
+    return row
+
+
+def make_seitrans_invoice(
+    path: Path,
+    rows: Iterable[dict[str, Any]] | None = None,
+    *,
+    columns: tuple[str, ...] = SEITRANS_RAW_COLUMNS,
+    sheet_name: str = "Risultato",
+) -> Path:
+    """Write a Seitrans-shaped xlsx at `path` using openpyxl directly."""
+    if rows is None:
+        rows = [_make_default_seitrans_row()]
+    rows = list(rows)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = sheet_name
+    ws.append(list(columns))
+    for row in rows:
+        ws.append([row.get(col) for col in columns])
+    path.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(path)
+    return path
+
+
+def make_empty_seitrans_workbook(path: Path) -> Path:
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Datos"
+    ws.append(list(SEITRANS_COLUMNS))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(path)
+    return path
+
+
 @pytest.fixture
 def seur_invoice_factory(tmp_path: Path):
     """Returns a callable that writes a synthetic Seur invoice xlsx into tmp_path."""
@@ -164,17 +233,41 @@ def default_seur_row():
     return _make_default_row
 
 
-def _real_seur_invoices() -> list[Path]:
-    if not SEUR_RAW_DIR.exists():
-        return []
-    return sorted(SEUR_RAW_DIR.glob("*.xlsx"))
+@pytest.fixture
+def seitrans_invoice_factory(tmp_path: Path):
+    """Returns a callable that writes a synthetic Seitrans invoice xlsx into tmp_path."""
+
+    def _factory(
+        rows: Iterable[dict[str, Any]] | None = None,
+        *,
+        filename: str = "2025_04_30_INV0289264.xlsx",
+        columns: tuple[str, ...] = SEITRANS_RAW_COLUMNS,
+    ) -> Path:
+        return make_seitrans_invoice(tmp_path / filename, rows, columns=columns)
+
+    return _factory
 
 
-_REAL_INVOICES = _real_seur_invoices()
+@pytest.fixture
+def empty_seitrans_workbook(tmp_path: Path) -> Path:
+    return make_empty_seitrans_workbook(tmp_path / "seitrans_workbook.xlsx")
+
+
+@pytest.fixture
+def default_seitrans_row():
+    return _make_default_seitrans_row
+
+
+def _glob_xlsx(d: Path) -> list[Path]:
+    return sorted(d.glob("*.xlsx")) if d.exists() else []
+
+
+_REAL_SEUR_INVOICES = _glob_xlsx(SEUR_RAW_DIR)
+_REAL_SEITRANS_INVOICES = _glob_xlsx(SEITRANS_RAW_DIR)
 
 
 @pytest.fixture(
-    params=_REAL_INVOICES or [None],
+    params=_REAL_SEUR_INVOICES or [None],
     ids=lambda p: p.name if p else "no-fixtures",
 )
 def real_seur_invoice(request) -> Path:
@@ -183,6 +276,20 @@ def real_seur_invoice(request) -> Path:
     if request.param is None:
         pytest.skip(
             f"no real Seur fixtures at {SEUR_RAW_DIR} "
+            "(copy a real invoice in to enable real-data tests)"
+        )
+    return request.param
+
+
+@pytest.fixture(
+    params=_REAL_SEITRANS_INVOICES or [None],
+    ids=lambda p: p.name if p else "no-fixtures",
+)
+def real_seitrans_invoice(request) -> Path:
+    """Parametrized over every .xlsx in tests/fixtures/seitrans/raw/."""
+    if request.param is None:
+        pytest.skip(
+            f"no real Seitrans fixtures at {SEITRANS_RAW_DIR} "
             "(copy a real invoice in to enable real-data tests)"
         )
     return request.param
