@@ -1,22 +1,27 @@
 """UPS (UK) parser.
 
-Raw invoices are **headerless CSV** files dumped from the UPS Billing
-Center, one CSV per weekly invoice. Filename pattern:
-`Invoice_<Invoice Number>_<MMDDYY>.csv` (e.g. `Invoice_3961958_012225.csv`).
+Raw invoices come from the UPS Billing Center as headerless tabular dumps,
+one file per weekly invoice. Filename pattern:
+`Invoice_<Invoice Number>_<MMDDYY>.{csv,xlsx}`.
+
+  - 2023–2025: `.csv` (250 cols, comma-separated, headerless).
+  - 2026+:     `.xlsx` (same 250-col schema, but Excel trims trailing
+               empty columns so reads can land at 244–250 cols; we
+               right-pad to 250 to match the historical schema).
 
 The historical workbook (`UPS Shippings Report.xlsx`, sheet `Data`) preserves
-the same 250-column UPS schema verbatim, with column names that we
-hard-code below (since the CSV ships without a header row).
+the 250-column UPS schema verbatim, with column names hard-coded below
+(since the source ships without a header row in either format).
 
 No derived columns. The parser is a passthrough that:
-  1. Reads CSV with `header=None, names=UPS_COLUMNS`.
-  2. Validates 250 columns.
+  1. Reads file (CSV or XLSX) with `header=None, dtype=str`.
+  2. Pads to 250 columns if XLSX trimmed trailing empties.
   3. Coerces dates/numerics by column-name heuristics ("Date", "Amount",
      "Weight", etc.) — UPS has too many columns to enumerate manually.
   4. Returns rows ready to append to the Data sheet.
 
 `invoice_number` and `invoice_date` are taken from the data (every row
-within a single CSV shares the same Invoice Number / Invoice Date).
+within a single file shares the same Invoice Number / Invoice Date).
 """
 
 from __future__ import annotations
@@ -196,19 +201,38 @@ class UpsParser:
         if not path.exists():
             raise ParserError(f"UPS invoice file not found: {path}")
 
+        suffix = path.suffix.lower()
         try:
-            # Read without names first so a CSV with the wrong column count
-            # surfaces here instead of getting NaN-padded silently.
-            df = pd.read_csv(
-                path,
-                header=None,
-                dtype=str,
-                encoding="utf-8",
-                low_memory=False,
-            )
+            if suffix == ".csv":
+                df = pd.read_csv(
+                    path,
+                    header=None,
+                    dtype=str,
+                    encoding="utf-8",
+                    low_memory=False,
+                )
+            elif suffix == ".xlsx":
+                df = pd.read_excel(
+                    path,
+                    header=None,
+                    dtype=str,
+                    engine="openpyxl",
+                )
+            else:
+                raise ParserError(
+                    f"{path.name}: unsupported extension {suffix!r} "
+                    "(expected .csv or .xlsx)"
+                )
+        except ParserError:
+            raise
         except Exception as e:  # noqa: BLE001
-            raise ParserError(f"could not read CSV {path.name}: {e}") from e
+            raise ParserError(f"could not read {path.name}: {e}") from e
 
+        # XLSX legitimately trims trailing empty columns; right-pad to 250.
+        # CSV with the wrong column count is malformed input — surface loudly.
+        if suffix == ".xlsx" and df.shape[1] < len(UPS_COLUMNS):
+            for i in range(df.shape[1], len(UPS_COLUMNS)):
+                df[i] = pd.NA
         if df.shape[1] != len(UPS_COLUMNS):
             raise ParserError(
                 f"{path.name}: expected {len(UPS_COLUMNS)} columns, got "

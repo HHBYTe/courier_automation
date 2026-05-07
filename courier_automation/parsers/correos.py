@@ -27,6 +27,7 @@ Derived-column rules (reverse-engineered from real Datos, n=53,076 rows):
 from __future__ import annotations
 
 import logging
+import re
 from datetime import date
 from pathlib import Path
 from typing import ClassVar
@@ -258,9 +259,27 @@ def _iso_code(c_pais: object) -> str | None:
     return ISO_LOOKUP.get(key)
 
 
+_DDMMYYYY_RE = re.compile(r"^\d{8}$")
+
+
+def _parse_correos_date(value: object) -> object:
+    """Coerce a single F.FACTURA / F.ADMISION cell to a pandas Timestamp.
+
+    Correos historically shipped real Excel dates; starting March 2026 the
+    same fields arrive as plain 8-digit strings in DDMMYYYY form
+    (e.g. `'31032026'` for 2026-03-31). Handle both transparently.
+    """
+    if value is None or value == "":
+        return pd.NaT
+    if isinstance(value, str) and _DDMMYYYY_RE.match(value):
+        return pd.to_datetime(value, format="%d%m%Y", errors="coerce")
+    return pd.to_datetime(value, errors="coerce")
+
+
 def _add_derived(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
-    admision = pd.to_datetime(df["F.ADMISION"], errors="coerce")
+    admision = df["F.ADMISION"].map(_parse_correos_date)
+    admision = pd.to_datetime(admision, errors="coerce")
     df["Año"] = admision.dt.year.astype("Int64")
     df["Mes"] = admision.dt.month.astype("Int64")
     df["Tipo Bulto"] = df["PESO KILOS"].map(_tipo_bulto).astype("string")
@@ -276,7 +295,7 @@ def coerce_correos_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     parser and golden-extraction script."""
     df = df.copy()
     for col in DATE_COLUMNS:
-        df[col] = pd.to_datetime(df[col], errors="coerce")
+        df[col] = pd.to_datetime(df[col].map(_parse_correos_date), errors="coerce")
     for col in INT_COLUMNS:
         df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
     for col in FLOAT_COLUMNS:
@@ -312,7 +331,7 @@ def _read_invoice_metadata(path: Path) -> tuple[str, date]:
     invoice_number = str(inv).strip()
 
     raw_date = label_to_value.get("F.FACTURA")
-    parsed_date = pd.to_datetime(raw_date, errors="coerce")
+    parsed_date = _parse_correos_date(raw_date)
     if pd.isna(parsed_date):
         raise ParserError(
             f"{path.name}: row 1 'F.FACTURA' is not parseable: {raw_date!r}"

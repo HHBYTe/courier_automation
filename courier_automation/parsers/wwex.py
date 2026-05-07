@@ -262,17 +262,31 @@ def coerce_wwex_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+# Wwex 2026 portal change: REFERENCE_NUMBER was split into REFERENCE1 +
+# REFERENCE2, and a new Column1 was inserted between PACKAGE_COUNT and
+# TOTAL_WEIGHT. Reshape to the canonical 42-col layout: keep REFERENCE1 as
+# REFERENCE_NUMBER and drop the other two new columns.
+def _reshape_v2_to_v1(df: pd.DataFrame) -> pd.DataFrame:
+    out = df.copy()
+    if "REFERENCE1" in out.columns:
+        out = out.rename(columns={"REFERENCE1": "REFERENCE_NUMBER"})
+    for col in ("REFERENCE2", "Column1"):
+        if col in out.columns:
+            out = out.drop(columns=col)
+    return out
+
+
 def _read_raw(path: Path) -> pd.DataFrame:
-    """Read Wwex raw data across the three observed formats."""
+    """Read Wwex raw data across the four observed formats (xlsx v1/v2, xls, csv)."""
     suffix = path.suffix.lower()
     if suffix == ".xlsx":
-        return pd.read_excel(
-            path, sheet_name=0, engine="openpyxl", dtype=str,
-            usecols=range(len(WWEX_RAW_COLUMNS)),
-        )
+        # Read all columns (no usecols clip) so we can detect v2 by header.
+        df = pd.read_excel(path, sheet_name=0, engine="openpyxl", dtype=str)
+        if "REFERENCE1" in df.columns:
+            df = _reshape_v2_to_v1(df)
+        # Now clip phantom trailing columns to the canonical 42.
+        return df.iloc[:, : len(WWEX_RAW_COLUMNS)]
     if suffix == ".xls":
-        # xlrd reads the 97-2003 binary format. usecols=range works the
-        # same way as for xlsx.
         return pd.read_excel(
             path, sheet_name=0, engine="xlrd", dtype=str,
             usecols=range(len(WWEX_RAW_COLUMNS)),

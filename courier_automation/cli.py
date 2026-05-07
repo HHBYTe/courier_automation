@@ -283,12 +283,12 @@ def ingest_ups(
         help="Parse + manifest-check only; never write to the workbook.",
     ),
 ) -> None:
-    """Ingest one or many UPS billing CSV files."""
+    """Ingest one or many UPS billing files (CSV pre-2026, XLSX 2026+)."""
     _setup_logging()
     files = _resolve_files(
         file=file, month=month, folder=folder,
         default_facturas=DEFAULT_UPS_FACTURAS,
-        file_globs=("*.csv",),
+        file_globs=("*.csv", "*.xlsx"),
     )
 
     parser = UpsParser()
