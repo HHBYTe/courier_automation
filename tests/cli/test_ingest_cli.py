@@ -187,8 +187,7 @@ def test_ingest_seitrans_auto_discovers_latest_month(tmp_path, default_seitrans_
     DOCUMENTO_NUMERO per file — otherwise they'd all share the conftest
     default and trigger a manifest conflict."""
     workbook = make_empty_seitrans_workbook(tmp_path / "wb.xlsx")
-    facturas = tmp_path / "Facturas" / "2025"
-    facturas.mkdir(parents=True)
+    facturas = tmp_path / "Facturas"
 
     def _row(line_number: int, doc_num: int):
         r = default_seitrans_row(line_number)
@@ -196,13 +195,16 @@ def test_ingest_seitrans_auto_discovers_latest_month(tmp_path, default_seitrans_
         return r
 
     make_seitrans_invoice(
-        facturas / "2025_03_10_INV000001.xlsx", rows=[_row(1, 1001)]
+        facturas / "2025" / "03 - Marzo" / "2025_03_10_INV000001.xlsx",
+        rows=[_row(1, 1001)],
     )
     make_seitrans_invoice(
-        facturas / "2025_04_15_INV000002.xlsx", rows=[_row(1, 1002)]
+        facturas / "2025" / "04 - Abril" / "2025_04_15_INV000002.xlsx",
+        rows=[_row(1, 1002)],
     )
     make_seitrans_invoice(
-        facturas / "2025_04_20_INV000003.xlsx", rows=[_row(1, 1003)]
+        facturas / "2025" / "04 - Abril" / "2025_04_20_INV000003.xlsx",
+        rows=[_row(1, 1003)],
     )
 
     result = runner.invoke(
@@ -211,7 +213,7 @@ def test_ingest_seitrans_auto_discovers_latest_month(tmp_path, default_seitrans_
             "ingest",
             "seitrans",
             "--folder",
-            str(tmp_path / "Facturas"),
+            str(facturas),
             "--workbook",
             str(workbook),
         ],

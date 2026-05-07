@@ -1,5 +1,11 @@
 """Typer-based CLI for ingesting courier invoices.
 
+After Facturas-tree normalization, every carrier's invoices live under
+`<carrier-root>/<YYYY>/<MM> - <Mes>/`. The CLI treats one month as the
+unit of work: ingest all parser-eligible files under a chosen month, with
+the manifest registry handling per-file idempotency. With no `--file` or
+`--month`, each command auto-discovers the latest populated month.
+
 Exit codes:
   0  success
   1  usage error
@@ -14,7 +20,7 @@ from __future__ import annotations
 import logging
 import re
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 import typer
 
@@ -53,11 +59,11 @@ DEFAULT_CORREOS_FACTURAS = Path("Operations - Couriers/05. Correos Express/Factu
 DEFAULT_UPS_WORKBOOK = Path(
     "Operations - Couriers/07. UPS (UK)/UPS Shippings Report.xlsx"
 )
-DEFAULT_UPS_INVOICES = Path("Operations - Couriers/07. UPS (UK)/Invoices")
+DEFAULT_UPS_FACTURAS = Path("Operations - Couriers/07. UPS (UK)/Facturas")
 DEFAULT_WWEX_WORKBOOK = Path(
     "Operations - Couriers/11. Wwex (US)/Wwex USA Shippings Report.xlsx"
 )
-DEFAULT_WWEX_FOLDER = Path("Operations - Couriers/11. Wwex (US)")
+DEFAULT_WWEX_FACTURAS = Path("Operations - Couriers/11. Wwex (US)")
 
 log = logging.getLogger("courier_automation.cli")
 
@@ -106,29 +112,11 @@ def ingest_seur(
 ) -> None:
     """Ingest one or many Seur invoice files into the Datos sheet."""
     _setup_logging()
-
-    if file is not None and month is not None:
-        typer.echo("error: pass at most one of --file or --month", err=True)
-        raise typer.Exit(code=EXIT_USAGE)
-
-    if file is not None:
-        files = [file]
-    elif month is not None:
-        files = _discover_month_files(month, folder or DEFAULT_SEUR_FACTURAS)
-        if not files:
-            typer.echo(
-                f"no .xlsx invoices found for month {month} under {folder or DEFAULT_SEUR_FACTURAS}",
-                err=True,
-            )
-            raise typer.Exit(code=EXIT_USAGE)
-    else:
-        files = _discover_latest_month_files(folder or DEFAULT_SEUR_FACTURAS)
-        if not files:
-            typer.echo(
-                f"no .xlsx invoices found under {folder or DEFAULT_SEUR_FACTURAS}",
-                err=True,
-            )
-            raise typer.Exit(code=EXIT_USAGE)
+    files = _resolve_files(
+        file=file, month=month, folder=folder,
+        default_facturas=DEFAULT_SEUR_FACTURAS,
+        file_globs=("*.xlsx",),
+    )
 
     parser = SeurParser()
     registry = ManifestRegistry()
@@ -187,33 +175,11 @@ def ingest_seitrans(
 ) -> None:
     """Ingest one or many Seitrans invoice files into the Datos sheet."""
     _setup_logging()
-
-    if file is not None and month is not None:
-        typer.echo("error: pass at most one of --file or --month", err=True)
-        raise typer.Exit(code=EXIT_USAGE)
-
-    if file is not None:
-        files = [file]
-    elif month is not None:
-        files = _discover_seitrans_month_files(
-            month, folder or DEFAULT_SEITRANS_FACTURAS
-        )
-        if not files:
-            typer.echo(
-                f"no .xlsx invoices found for month {month} under {folder or DEFAULT_SEITRANS_FACTURAS}",
-                err=True,
-            )
-            raise typer.Exit(code=EXIT_USAGE)
-    else:
-        files = _discover_latest_seitrans_month_files(
-            folder or DEFAULT_SEITRANS_FACTURAS
-        )
-        if not files:
-            typer.echo(
-                f"no .xlsx invoices found under {folder or DEFAULT_SEITRANS_FACTURAS}",
-                err=True,
-            )
-            raise typer.Exit(code=EXIT_USAGE)
+    files = _resolve_files(
+        file=file, month=month, folder=folder,
+        default_facturas=DEFAULT_SEITRANS_FACTURAS,
+        file_globs=("*.xlsx",),
+    )
 
     parser = SeitransParser()
     registry = ManifestRegistry()
@@ -263,26 +229,11 @@ def ingest_correos(
 ) -> None:
     """Ingest one or many Correos Express invoice files."""
     _setup_logging()
-
-    if file is not None and month is not None:
-        typer.echo("error: pass at most one of --file or --month", err=True)
-        raise typer.Exit(code=EXIT_USAGE)
-
-    root = folder or DEFAULT_CORREOS_FACTURAS
-    if file is not None:
-        files = [file]
-    elif month is not None:
-        # Correos uses the same date-prefix filename layout as Seitrans
-        # (`YYYY_MM_DD <stuff>.xlsx`), so the same discoverer works.
-        files = _discover_seitrans_month_files(month, root)
-        if not files:
-            typer.echo(f"no .xlsx invoices found for month {month} under {root}", err=True)
-            raise typer.Exit(code=EXIT_USAGE)
-    else:
-        files = _discover_latest_seitrans_month_files(root)
-        if not files:
-            typer.echo(f"no .xlsx invoices found under {root}", err=True)
-            raise typer.Exit(code=EXIT_USAGE)
+    files = _resolve_files(
+        file=file, month=month, folder=folder,
+        default_facturas=DEFAULT_CORREOS_FACTURAS,
+        file_globs=("*.xlsx",),
+    )
 
     parser = CorreosParser()
     registry = ManifestRegistry()
@@ -315,10 +266,13 @@ def ingest_ups(
         None, "--file", "-f",
         help="Path to a single raw UPS billing CSV.",
     ),
+    month: Optional[str] = typer.Option(
+        None, "--month",
+        help="Month to ingest in YYYY-MM form (scans the folder).",
+    ),
     folder: Optional[Path] = typer.Option(
         None, "--folder",
-        help=f"Root Invoices folder (default: {DEFAULT_UPS_INVOICES}). "
-             "When given without --file, ingests every .csv under it.",
+        help=f"Root Facturas folder (default: {DEFAULT_UPS_FACTURAS}).",
     ),
     workbook: Path = typer.Option(
         DEFAULT_UPS_WORKBOOK, "--workbook", "-w",
@@ -331,17 +285,11 @@ def ingest_ups(
 ) -> None:
     """Ingest one or many UPS billing CSV files."""
     _setup_logging()
-    if file is None and folder is None:
-        typer.echo("error: pass --file or --folder", err=True)
-        raise typer.Exit(code=EXIT_USAGE)
-
-    if file is not None:
-        files = [file]
-    else:
-        files = sorted((folder or DEFAULT_UPS_INVOICES).rglob("*.csv"))
-        if not files:
-            typer.echo(f"no .csv invoices under {folder}", err=True)
-            raise typer.Exit(code=EXIT_USAGE)
+    files = _resolve_files(
+        file=file, month=month, folder=folder,
+        default_facturas=DEFAULT_UPS_FACTURAS,
+        file_globs=("*.csv",),
+    )
 
     parser = UpsParser()
     registry = ManifestRegistry()
@@ -370,9 +318,13 @@ def ingest_wwex(
         None, "--file", "-f",
         help="Path to a single raw Wwex shipment-detail file (.xlsx, .xls, .csv).",
     ),
+    month: Optional[str] = typer.Option(
+        None, "--month",
+        help="Month to ingest in YYYY-MM form (scans the folder).",
+    ),
     folder: Optional[Path] = typer.Option(
         None, "--folder",
-        help=f"Root folder to scan (default: {DEFAULT_WWEX_FOLDER}).",
+        help=f"Root folder to scan (default: {DEFAULT_WWEX_FACTURAS}).",
     ),
     workbook: Path = typer.Option(
         DEFAULT_WWEX_WORKBOOK, "--workbook", "-w",
@@ -385,24 +337,12 @@ def ingest_wwex(
 ) -> None:
     """Ingest one or many Wwex shipment-detail files into the Data sheet."""
     _setup_logging()
-    if file is None and folder is None:
-        typer.echo("error: pass --file or --folder", err=True)
-        raise typer.Exit(code=EXIT_USAGE)
-
-    if file is not None:
-        files = [file]
-    else:
-        # Wwex files: `YYYY_MM_DD shipment_detail_report.{xlsx,xls,csv}`
-        # under year folders. Use rglob to catch all years + extensions.
-        root = folder or DEFAULT_WWEX_FOLDER
-        files = sorted(
-            p for ext in ("*.xlsx", "*.xls", "*.csv")
-            for p in root.rglob(ext)
-            if "shipment_detail_report" in p.name.lower()
-        )
-        if not files:
-            typer.echo(f"no shipment_detail_report files under {root}", err=True)
-            raise typer.Exit(code=EXIT_USAGE)
+    files = _resolve_files(
+        file=file, month=month, folder=folder,
+        default_facturas=DEFAULT_WWEX_FACTURAS,
+        file_globs=("*.xlsx", "*.xls", "*.csv"),
+        name_filter=lambda p: "shipment" in p.name.lower(),
+    )
 
     parser = WwexParser()
     registry = ManifestRegistry()
@@ -497,119 +437,105 @@ def _ingest_one(
 
 
 _MONTH_RE = re.compile(r"^(\d{4})-(\d{2})$")
+_MONTH_DIR_RE = re.compile(r"^(\d{2})\s*-\s*")
 
 
-def _discover_month_files(month: str, root: Path) -> list[Path]:
-    """Find raw Seur invoices for a month under `Facturas/<YYYY>/<MM> - <Mes>/`."""
+def _parse_month_arg(month: str) -> tuple[int, int]:
     m = _MONTH_RE.match(month)
     if not m:
         typer.echo(f"--month must be YYYY-MM, got {month!r}", err=True)
         raise typer.Exit(code=EXIT_USAGE)
-    year, mm = m.group(1), m.group(2)
-
-    year_dir = root / year
-    if not year_dir.exists():
-        return []
-    candidates: list[Path] = []
-    for sub in year_dir.glob(f"{mm} - *"):
-        if sub.is_dir():
-            candidates.extend(sub.glob("*.xlsx"))
-    return sorted(candidates)
+    return int(m.group(1)), int(m.group(2))
 
 
-def _discover_latest_month_files(root: Path) -> list[Path]:
-    """Find raw Seur invoices for the latest available month under `Facturas/`.
+def _discover_month_folder(root: Path, year: int, month: int) -> Path | None:
+    year_dir = root / str(year)
+    if not year_dir.is_dir():
+        return None
+    for sub in sorted(year_dir.iterdir()):
+        if not sub.is_dir():
+            continue
+        m = _MONTH_DIR_RE.match(sub.name)
+        if m and int(m.group(1)) == month:
+            return sub
+    return None
 
-    This scans `Facturas/<YYYY>/<MM> - <Mes>/` and chooses the newest
-    year/month that contains `.xlsx` invoices.
-    """
-    if not root.exists():
-        return []
 
-    latest_candidates: dict[tuple[int, int], list[Path]] = {}
-    for year_dir in sorted(root.iterdir()):
-        if not year_dir.is_dir() or not year_dir.name.isdigit():
+def _discover_latest_month(root: Path) -> tuple[int, int, Path] | None:
+    """Return (year, month, folder) for the most recent populated month, or
+    None if `root` has no valid `<YYYY>/<MM> - <Mes>/` folders."""
+    if not root.is_dir():
+        return None
+    best: tuple[int, int, Path] | None = None
+    for year_dir in root.iterdir():
+        if not (year_dir.is_dir() and year_dir.name.isdigit()):
             continue
         year = int(year_dir.name)
-        for month_dir in sorted(year_dir.iterdir()):
-            if not month_dir.is_dir() or len(month_dir.name) < 2:
+        for sub in year_dir.iterdir():
+            if not sub.is_dir():
                 continue
-            month_prefix = month_dir.name[:2]
-            if not month_prefix.isdigit():
+            m = _MONTH_DIR_RE.match(sub.name)
+            if not m:
                 continue
-            month = int(month_prefix)
-            if month < 1 or month > 12:
+            month = int(m.group(1))
+            if not (1 <= month <= 12):
                 continue
-            files = sorted(month_dir.glob("*.xlsx"))
-            if files:
-                latest_candidates.setdefault((year, month), []).extend(files)
-
-    if not latest_candidates:
-        return []
-
-    latest_year_month = max(latest_candidates)
-    return sorted(latest_candidates[latest_year_month])
+            if best is None or (year, month) > (best[0], best[1]):
+                best = (year, month, sub)
+    return best
 
 
-# Seitrans filenames have an inconsistent separator after the date: observed
-# `2025_01_31 3065.xlsx`, `2024_12_31 Factura 48172.xlsx`, `2025_06_30_24633.xlsx`.
-# The pattern matches a YYYY_MM_DD prefix followed by anything that doesn't
-# start with another digit (so we don't accidentally absorb extra digits into
-# the date and produce wrong year/month groups).
-_SEITRANS_FILE_RE = re.compile(r"^(\d{4})_(\d{2})_(\d{2})(?:\D.*)?$")
+def _resolve_files(
+    *,
+    file: Optional[Path],
+    month: Optional[str],
+    folder: Optional[Path],
+    default_facturas: Path,
+    file_globs: tuple[str, ...] = ("*.xlsx",),
+    name_filter: Optional[Callable[[Path], bool]] = None,
+) -> list[Path]:
+    """Resolve which files to ingest from one of:
+      --file PATH           : single file
+      --month YYYY-MM       : that month under `folder` (or default_facturas)
+      (none of the above)   : the latest populated month under same root
 
-
-def _discover_seitrans_month_files(month: str, root: Path) -> list[Path]:
-    """Find raw Seitrans invoices for a month under `Facturas/<YYYY>/`."""
-    m = _MONTH_RE.match(month)
-    if not m:
-        typer.echo(f"--month must be YYYY-MM, got {month!r}", err=True)
+    Raises typer.Exit(EXIT_USAGE) if both --file and --month given, or if
+    the chosen path yields no files.
+    """
+    if file is not None and month is not None:
+        typer.echo("error: pass at most one of --file or --month", err=True)
         raise typer.Exit(code=EXIT_USAGE)
-    year, mm = m.group(1), m.group(2)
 
-    if not root.exists():
-        return []
+    if file is not None:
+        return [file]
 
-    candidates: list[Path] = []
-    year_dir = root / year
-    if not year_dir.exists():
-        return []
+    root = folder if folder is not None else default_facturas
+    if month is not None:
+        year, mm = _parse_month_arg(month)
+        month_folder = _discover_month_folder(root, year, mm)
+        descriptor = f"{month} under {root}"
+    else:
+        latest = _discover_latest_month(root)
+        month_folder = latest[2] if latest else None
+        descriptor = f"latest month under {root}"
 
-    for path in sorted(year_dir.glob("*.xlsx")):
-        stem = path.stem
-        match = _SEITRANS_FILE_RE.match(stem)
-        if not match:
-            continue
-        if match.group(1) == year and match.group(2) == mm:
-            candidates.append(path)
-    return sorted(candidates)
+    if month_folder is None:
+        typer.echo(f"no invoices found for {descriptor}", err=True)
+        raise typer.Exit(code=EXIT_USAGE)
 
+    files: list[Path] = []
+    for g in file_globs:
+        files.extend(month_folder.glob(g))
+    if name_filter is not None:
+        files = [f for f in files if name_filter(f)]
+    files = sorted(files)
 
-def _discover_latest_seitrans_month_files(root: Path) -> list[Path]:
-    """Find raw Seitrans invoices for the latest available month under `Facturas/`."""
-    if not root.exists():
-        return []
+    if not files:
+        typer.echo(f"no invoices found for {descriptor}", err=True)
+        raise typer.Exit(code=EXIT_USAGE)
 
-    latest_candidates: dict[tuple[int, int], list[Path]] = {}
-    for year_dir in sorted(root.iterdir()):
-        if not year_dir.is_dir() or not year_dir.name.isdigit():
-            continue
-        for path in sorted(year_dir.glob("*.xlsx")):
-            stem = path.stem
-            match = _SEITRANS_FILE_RE.match(stem)
-            if not match:
-                continue
-            year = int(match.group(1))
-            month = int(match.group(2))
-            if month < 1 or month > 12:
-                continue
-            latest_candidates.setdefault((year, month), []).append(path)
-
-    if not latest_candidates:
-        return []
-
-    latest_year_month = max(latest_candidates)
-    return sorted(latest_candidates[latest_year_month])
+    typer.echo(f"resolved {len(files)} files from {month_folder}")
+    return files
 
 
 if __name__ == "__main__":

@@ -1,16 +1,590 @@
 Invoice Audit Report
-Timestamp: 2026-05-06 12:53:59
+Timestamp: 2026-05-07 09:06:21
 Root: C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers
+Manifest: C:\Users\Hermes Barrerio\.courier_automation\manifest.sqlite
 
-Seur: 319 invoice files
-Seitrans: 48 invoice files
-Correos Express: 30 invoice files
-UPS (UK): 59 invoice files
-Wwex (US): 11 invoice files
-Spring (FR): 23 invoice files
-All invoices from C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur are included in the historical workbook.
-All invoices from C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans are included in the historical workbook.
-All invoices from C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express are included in the historical workbook.
-All invoices from C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK) are included in the historical workbook.
-All invoices from C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US) are included in the historical workbook.
-All invoices from C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR) are included in the historical workbook.
+Summary
+-------
+Seur: 319 invoice files, 319 not in workbook
+Seitrans: 48 invoice files, 48 not in workbook
+Correos Express: 30 invoice files, 30 not in workbook
+UPS (UK): 126 invoice files, 126 not in workbook
+Wwex (US): 14 invoice files, 14 not in workbook
+Spring (FR): 23 invoice files, 23 not in workbook
+
+Total missing invoices: 560
+
+Details
+-------
+
+Seur — missing invoices:
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\11 - Noviembre\0289992022D0274001 SAT2 Nov-22.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\11 - Noviembre\2022D0013763 Valencia Nov-22.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\11 - Noviembre\2022D0263351 Central Nov-22.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\11 - Noviembre\2022D0277270 SAT Nov-22.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\11 - Noviembre\2022D0277345 Barcelona Nov-22.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\11 - Noviembre\2022D0283670 Madrid Nov-22.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\12 - Diciembre\0289992022D0289264.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\12 - Diciembre\0289992022D0289656.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\12 - Diciembre\0289992022D0292552.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\12 - Diciembre\0289992022D0300092.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\12 - Diciembre\0289992022D0302879.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\12 - Diciembre\0289992022D0305781.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2022\12 - Diciembre\0469992022D0015078.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\01 - Enero\0289992023D0006682.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\01 - Enero\0289992023D0013927.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\01 - Enero\0289992023D0018470.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\01 - Enero\0289992023D0019237.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\01 - Enero\0289992023D0022729.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\01 - Enero\0289992023D0022962.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\01 - Enero\0469992023D0000270.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\02 - Febrero\0289992023D0028599.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\02 - Febrero\0289992023D0040697.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\02 - Febrero\0289992023D0042266.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\02 - Febrero\0289992023D0045646.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\02 - Febrero\0289992023D0048610.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\02 - Febrero\0469992023D0001644.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\03 - Marzo\0289992023D0060987.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\03 - Marzo\0289992023D0064956.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\03 - Marzo\0289992023D0065512.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\03 - Marzo\0289992023D0069310.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\03 - Marzo\0289992023D0071703.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\03 - Marzo\0289992023D0077147.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\03 - Marzo\0469992023D0002876.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\04 - Abril\0289992023D0084404.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\04 - Abril\0289992023D0091012.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\04 - Abril\0289992023D0095643.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\04 - Abril\0289992023D0096162.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\04 - Abril\0289992023D0099105.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\04 - Abril\0289992023D0099635.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\04 - Abril\0289992023FR0010579.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\04 - Abril\0289992023FR0010581.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\04 - Abril\0289992023FR0010583.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\04 - Abril\0289992023FR0010584.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\04 - Abril\0469992023D0004179.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\05 - Mayo\0289992023D0106481.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\05 - Mayo\0289992023D0107969.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\05 - Mayo\0289992023D0120155.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\05 - Mayo\0289992023D0120158.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\05 - Mayo\0289992023D0121747.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\05 - Mayo\0289992023D0124100.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\05 - Mayo\0289992023D0124364.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\05 - Mayo\0289992023D0128301.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\05 - Mayo\0289992023D0130009.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\05 - Mayo\0289992023D0132310.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\05 - Mayo\0469992023D0005365.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\06 - Junio\0289992023D0134128.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\06 - Junio\0289992023D0136212.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\06 - Junio\0289992023D0136832.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\06 - Junio\0289992023D0145769.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\06 - Junio\0289992023D0154355.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\06 - Junio\0469992023D0006647.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\07 - Julio\0289992023CL0025932.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\07 - Julio\0289992023CL0026648.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\07 - Julio\0289992023D0158947 - Central.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\07 - Julio\0289992023D0161336 - SAT.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\07 - Julio\0289992023D0161466 - SAT.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\07 - Julio\0289992023D0161467 - SAT2.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\07 - Julio\0289992023D0171920 - Madrid.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\07 - Julio\0289992023D0178529 - Barcelona.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\07 - Julio\0469992023D0007768 - Valencia.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\08 - Agosto\0289992023CLN0001298.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\08 - Agosto\0289992023D0184138.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\08 - Agosto\0289992023D0185990.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\08 - Agosto\0289992023D0186141.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\08 - Agosto\0289992023D0186439.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\08 - Agosto\0289992023D0186526.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\08 - Agosto\0289992023D0194160.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\08 - Agosto\0289992023D0201948.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\08 - Agosto\0469992023D0008972.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\09 - Septiembre\0289992023D0208246.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\09 - Septiembre\0289992023D0216398.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\09 - Septiembre\0289992023D0217447.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\09 - Septiembre\0289992023D0221836.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\09 - Septiembre\0289992023D0222090.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\09 - Septiembre\0289992023D0222761.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\09 - Septiembre\0289992023D0225782.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\09 - Septiembre\0469992023D0010068.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\0289992023D0232538.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\0289992023D0239935.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\0289992023D0244062.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\0289992023D0246368.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\0289992023D0246426.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\0289992023D0247355.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\0289992023D0247356.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\0289992023D0247357.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\0289992023D0251188.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\10 - Octubre\0469992023D0011212.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0256749.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0262825.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0264572.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0264573.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0264574.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0269790.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0269864.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0270749.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0272000.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0272002.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0272009.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0275118.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0289992023D0277396.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\11 - Noviembre\0469992023D0012357.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\12 - Diciembre\0289992023D0283431.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\12 - Diciembre\0289992023D0284467.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\12 - Diciembre\0289992023D0293491.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\12 - Diciembre\0289992023D0296958.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\12 - Diciembre\0289992023D0298654.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\12 - Diciembre\0289992023D0299319.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\12 - Diciembre\0289992023D0301880.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2023\12 - Diciembre\0469992023D0013541.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0289992024D0003663.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0289992024D0003991.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0289992024D0003992.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0289992024D0007838.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0289992024D0009939.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0289992024D0013320.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0289992024D0013321.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0289992024D0013325.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0289992024D0017598.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0289992024D0017689.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0289992024D0018585.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0289992024D0019858.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\01 - Enero\0469992024D0000188.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\02 - Febrero\0289992024D0025091.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\02 - Febrero\0289992024D0027160.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\02 - Febrero\0289992024D0027400.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\02 - Febrero\0289992024D0029322.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\02 - Febrero\0289992024D0032028.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\02 - Febrero\0289992024D0032031.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\02 - Febrero\0289992024D0037272.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\02 - Febrero\0289992024D0039188.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\02 - Febrero\0289992024D0042544.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\02 - Febrero\0289992024D0045193.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\02 - Febrero\0289992024D0045359.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\02 - Febrero\0469992024D0001330.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\03 - Marzo\0289992024D0049107.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\03 - Marzo\0289992024D0064019.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\03 - Marzo\0289992024D0064146.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\03 - Marzo\0289992024D0064771.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\03 - Marzo\0289992024D0065254.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\03 - Marzo\0289992024D0069355.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\03 - Marzo\0289992024D0069356.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\03 - Marzo\0289992024D0070014.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\03 - Marzo\0289992024D0070070.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\03 - Marzo\0469992024D0002421.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024D0083376.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024D0083708.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024D0087652.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024D0106045.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024D0106206.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024D0106393.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024D0106898.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024D0110355.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024D0110357.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024D0110968.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024FR0014940.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024FR0015250.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0289992024FR0018960.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\04 - Abril\0469992024D0003575.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\05 - Mayo\0289992024D0119229.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\05 - Mayo\0289992024D0125399.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\05 - Mayo\0289992024D0125991.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\05 - Mayo\0289992024D0127667.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\05 - Mayo\0289992024D0131023.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\05 - Mayo\0289992024D0132976.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\05 - Mayo\0289992024D0132977.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\05 - Mayo\0289992024D0133655.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\05 - Mayo\0289992024D0133662.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\05 - Mayo\0289992024D0133675.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\05 - Mayo\0469992024D0004713.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\06 - Junio\0289992024D0148413.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\06 - Junio\0289992024D0150968.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\06 - Junio\0289992024D0154134.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\06 - Junio\0289992024D0155785.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\06 - Junio\0289992024D0156363.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\06 - Junio\0469992024D0005834.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\07 - Julio\0289992024D0170878.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\07 - Julio\0289992024D0171304.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\07 - Julio\0289992024D0172845.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\07 - Julio\0289992024D0176613.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\07 - Julio\0289992024D0177983.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\07 - Julio\0289992024D0177984.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\07 - Julio\0289992024D0178649.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\07 - Julio\0289992024D0178669.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\07 - Julio\0469992024D0006922.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\08 - Agosto\0289992024D0192988.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\08 - Agosto\0289992024D0194215.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\08 - Agosto\0289992024D0197975.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\08 - Agosto\0289992024D0199394.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\08 - Agosto\0289992024D0199714.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\08 - Agosto\0469992024D0007976.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\09 - Septiembre\0289992024D0211273.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\09 - Septiembre\0289992024D0215990.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\09 - Septiembre\0289992024D0219606.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\09 - Septiembre\0289992024D0221168.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\09 - Septiembre\0289992024D0221169.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\09 - Septiembre\0289992024D0221678.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\09 - Septiembre\0469992024D0008909.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\10 - Octubre\0289992024D0228375.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\10 - Octubre\0289992024D0238026.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\10 - Octubre\0289992024D0243596.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\10 - Octubre\0289992024D0243597.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\10 - Octubre\0289992024D0243598.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\10 - Octubre\0289992024D0243966.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\10 - Octubre\0289992024D0243979.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\10 - Octubre\0289992024D0244474.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\10 - Octubre\0469992024D0009989.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\11 - Noviembre\0289992024D0253888.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\11 - Noviembre\0289992024D0260704.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\11 - Noviembre\0289992024D0264721.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\11 - Noviembre\0289992024D0266411.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\11 - Noviembre\0289992024D0268511.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\11 - Noviembre\0289992024D0268512.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\12 - Diciembre\0289992024D0278115.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\12 - Diciembre\0289992024D0282816.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\12 - Diciembre\0289992024D0284921.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\12 - Diciembre\0289992024D0290962.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\12 - Diciembre\0289992024D0291152.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\12 - Diciembre\0289992024FR0039513.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\12 - Diciembre\0289992024FR0039516.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\12 - Diciembre\0289992024FR0039517.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2024\12 - Diciembre\0289992024FR0039526.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025AD0001274.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025AD0001394.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0006522.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0012805.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0014789.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0019487.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0026135.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0030854.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0036815.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0040096.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0050900.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0056336.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0058804.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0062288.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0072777.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0077937.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0080710.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0083763.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0095124.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0095224.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0096348.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0101523.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0105927.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0106312.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0106313.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0115764.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0121164.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0121533.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0123711.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0126790.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0136751.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0143099.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0143622.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0145684.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0148521.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0151896.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0157267.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0162060.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0164548.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0167542.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0169696.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0170912.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0177161.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0179257.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0180423.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0184878.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0188120.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0189979.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0191955.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0198799.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0204655.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0205082.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0206349.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0209881.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0213439.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0216938.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0227218.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0229499.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0230790.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0234629.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0235697.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0241761.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0247526.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0247924.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0248985.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0252797.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025D0256239.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025FR0013595.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025FR0019525.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025FR0019526.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2025\0289992025FR0020268.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0005804.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0011447.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0011715.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0012556.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0016700.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0016856.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0016857.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0019171.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0026996.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0031028.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0031282.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0032424.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0036175.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0037514.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0037515.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0039314.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\01. Seur\Facturas\2026\0289992026D0051824.xlsx
+
+Seitrans — missing invoices:
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2022\46075 Diciembre 2022 (tte).xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2022\46185 Diciembre 2022 (eventos).xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\01 - January 3531.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\02 - February 7080.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\03 - March 11937.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\04- April 15540.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\05 - May 20104.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\06- Jun 24420.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\07 - Jul 28547.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\08 - Aug 30907.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\08 - Aug 31026.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\09 - 34894.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\10 - 39155.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\10 - 39257.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\11-43081.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2023\12 - 46167.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_01_31 IN 3977 Seitrans.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_02_29 IN 8079 Seitrans.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_02_29 IN 8240 Seitrans.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_03_31 IN 12139 Seitrans.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_04_30 IN 16276 Seitrans.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_05_31 20668 Seitrans.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_06_30 24580 Seitrans.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_07_31 28838 Seitrans.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_08_31 31586 Seitrans.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_09_30 35267 Seitrans.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_10_31 39919 Seitrans.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_10_31 40215 Seitrans.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_11_30 Factura 44873.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_12_31 Factura 48129.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2024\2024_12_31 Factura 48172.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_01_31 3065.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_01_31 3871.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_02_31 7803.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_02_31 7958.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_03_31 11848.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_04_30 15946.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_05_31_20356.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_06_30_24633.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_07_31_29354.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_08_31_31724.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_09_31_35652.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_11_30_44736.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2025\2025_12_31_47778.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2026\2026_01_FA2997.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2026\2026_01_FA3224.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2026\2026_02_FA7494.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\04. Seitrans\Facturas\2026\2026_03_FA5384.xlsx
+
+Correos Express — missing invoices:
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2022\FAC_UNICO_F2210_17420.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2022\FAC_UNICO_F2211_16907.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2022\FAC_UNICO_F2212_17788.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\01 Enero FAC_UNICO_F2301_16660.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\01312022 - F230116660 - Correos.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\FAC_UNICO_F2302_15447.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\FAC_UNICO_F2303_16387.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2023\FAC_UNICO_F2304_15180.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2406_15508.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2407_16295.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2408_13947.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2409_15439.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2410_16038.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2411_15178.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2024\FAC_UNICO_F2412_15487.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_01_31 FAC_UNICO_F2501_14307.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_02_28 FAC_UNICO_F2501_14307.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_03_31 FAC_UNICO_F2503_13816.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_04_30_FAC_UNICO_F2504_13444.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_05_31_FAC_UNICO_F2505_13824.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_06_30_FAC_UNICO_F2506_14077.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_07_31 FAC_UNICO_F2507_14476.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_08_31 FAC_UNICO_F2508_12181.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_09_30 FAC_UNICO_F2509_14022.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_10_30 FAC_UNICO_F2510_14429.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_11_30 FAC_UNICO_F2510_14429.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2025\2025_12_31 FAC_UNICO_F2512_14663.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2026\FAC_UNICO_F2601_13470.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2026\FAC_UNICO_F2602_12967.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\05. Correos Express\Facturas\2026\FAC_UNICO_F2603_13545.xlsx
+
+UPS (UK) — missing invoices:
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_3580606_041223.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_3635290_070723.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_3697026_102523.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_3715250_112923.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_3730346_122623.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_56202336_011723.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_56306831_012423.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_56379706_013123.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_56458791_020723.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_56529892_021423.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_56602824_022123.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_56676696_022823.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_56750074_030723.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_56822101_031423.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_56895530_032123.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57022122_032823.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57106101_040423.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57166799_041123.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57229672_041823.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57306379_042523.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57379133_050223.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57435997_050923.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57500575_051623.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57563581_052323.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57633776_053023.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57694785_060623.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57760839_061323.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57829320_062023.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57895123_062723.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_57963739_070423.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58022269_071123.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58089027_071823.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58149656_072523.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58213589_080123.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58275065_080823.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58335999_081523.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58393419_082223.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58452358_082923.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58509574_090523.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58555128_091223.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58569020_091223.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58628150_091923.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58687674_092623.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58752575_100323.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58807862_101023.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58871738_101723.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58930974_102423.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_58996083_103123.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_59054062_110723.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_59118442_111423.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_59166034_112123.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_59180220_112123.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_59244676_112823.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_59319470_120523.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_59389700_121223.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_59461520_121923.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2023\Invoice_59535259_122723.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\01 - January\Invoice_59586753_010224.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\01 - January\Invoice_59630624_010924.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\01 - January\Invoice_59690133_011624.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\01 - January\Invoice_59745529_012324.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\01 - January\Invoice_59804307_013024.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\02 - February\Invoice_59856551_020624.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\02 - February\Invoice_59911458_021324.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\02 - February\Invoice_59965796_022024.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\02 - February\Invoice_60020468_022724.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\03 - March\Invoice_3773677_030624.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\03 - March\Invoice_60079078_030524.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\03 - March\Invoice_60135337_031224.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\03 - March\Invoice_60191145_031924.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\03 - March\Invoice_60248124_032624.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\04 - April\Invoice_60302284_040224.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\04 - April\Invoice_60351439_040924.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\04 - April\Invoice_60405581_041624.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\04 - April\Invoice_60460630_042324.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\04 - April\Invoice_60572539_043024.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\04 - April\Invoice_60621407_050724.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\05 - May\Invoice_60673955_051424.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\05 - May\Invoice_60730791_052124.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\05 - May\Invoice_60785736_052824.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\05 - May\Invoice_60842608_060424.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\06 - June\Invoice_60890357_061124.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\06 - June\Invoice_60949741_061824.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\06 - June\Invoice_61007231_062524.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\06 - June\Invoice_61070353_070224.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\07- July\Invoice_61121654_0709241.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\07- July\Invoice_61181225_071624.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\07- July\Invoice_61236198_072324.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\07- July\Invoice_61297158_073024.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\08 - August\Invoice_61352793_080624.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\08 - August\Invoice_61405175_081324.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\08 - August\Invoice_61457045_082024.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\08 - August\Invoice_61509342_082724.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\09- September\Credit_Note_3887241_090424.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\09- September\Invoice_61566246_090324.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\09- September\Invoice_61613978_091024.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\09- September\Invoice_61671839_091724.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\09- September\Invoice_61729844_092424.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\09- September\Invoice_61788859_100124.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\10 - October\Invoice_3904743_100924.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\10 - October\Invoice_61823868_100824.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\10 - October\Invoice_61837169_100824.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\10 - October\Invoice_61888121_101524.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\10 - October\Invoice_61941619_102224.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\10 - October\Invoice_62002605_102924.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\11 - November\Invoice_3928850_112024.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\11 - November\Invoice_62059658_110524.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\11 - November\Invoice_62110711_111224.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\11 - November\Invoice_62162577_111924.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\11 - November\Invoice_62222809_112624.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\12 - December\Invoice_3934469_120424.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\12 - December\Invoice_62289074_120324.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\12 - December\Invoice_62349178_121024.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\12 - December\Invoice_62408109_121724.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\12 - December\Invoice_62457602_122424.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2024\12 - December\Invoice_62525282_123124.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\01 - January\Invoice_3961958_012225.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\01 - January\Invoice_62573562_010725.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\01 - January\Invoice_62620789_011425.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\01 - January\Invoice_62673952_012125.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\01 - January\Invoice_62722857_012825.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\02 - February\Invoice_62789178_020425.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\02 - February\Invoice_62844867_021125.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\02 - February\Invoice_62901872_021825.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2025\02 - February\Invoice_62955575_022525.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\07. UPS (UK)\Invoices\2026\January\Invoice_66092229_012126.csv
+
+Wwex (US) — missing invoices:
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2023\2023- 12 shipment_detail_report.xls
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2023\shipment_detail_report.xls
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_01_31 shipment_detail_report.xls
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_02_28 shipment_detail_report.xls
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_03_31 shipment_detail_report.xls
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_04_30 shipment_detail_report.csv
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_05_31 shipment_detail_report.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_06_30 shipment_detail_report.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_07_31 shipment_detail_report.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_08_31 shipment_detail_report.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_09_31 shipment_detail_report.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_10_30 shipment_detail_report.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_11_30 shipment_detail_report.xlsx
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\11. Wwex (US)\2025\2025_12_31 shipment_detail_report.xlsx
+
+Spring (FR) — missing invoices:
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2509827_ES_Details of Invoice_O_110003790_2511251351.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510060_ES_Details of Invoice_O_110003790_2512030113.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510236_ES_Details of Invoice_O_110003790_2512091847.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510466_ES_Details of Invoice_O_110003790_2512162046.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510668_ES_Details of Invoice_O_110003790_2512231529.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2025\E2510874_ES_Details of Invoice_O_110003790_2512291926.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2600148_ES_Details of Invoice_O_110003790_2601021819.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2600320_ES_Details of Invoice_O_110003790_2601132345.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2600575_ES_Details of Invoice_O_110003790_2601201333.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2600811_ES_Details of Invoice_O_110003790_2601271814.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601050_ES_Details of Invoice_O_110003790_2602030028.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601235_ES_Details of Invoice_O_110003790_2602100047.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601485_ES_Details of Invoice_O_110003790_2602181322.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601730_ES_Details of Invoice_O_110003790_2602232036.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2601975_ES_Details of Invoice_O_110003790_2603031248.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2602159_ES_Details of Invoice_O_110003790_2603101353.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2602417_ES_Details of Invoice_O_110003790_2603171411.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2602640_ES_Details of Invoice_O_110003790_2603232304.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2602873_ES_Details of Invoice_O_110003790_2603310923.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2603031_ES_Details of Invoice_O_110003790_2604061811.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2603220_ES_Details of Invoice_O_110003790_2604091750.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\2026\E2603429_ES_Details of Invoice_O_110003790_2604141531.XLSX
+  C:\Users\Hermes Barrerio\OneDrive - Artero\Escritorio\Courier Automation\Operations - Couriers\13.Spring (FR)\Shipment Report.xlsx
