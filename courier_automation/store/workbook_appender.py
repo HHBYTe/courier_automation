@@ -40,6 +40,7 @@ __all__ = [
     "WorkbookAppender",
     "WorkbookLocked",
     "export_rows",
+    "export_parquet",
 ]
 
 
@@ -246,6 +247,37 @@ def export_rows(
         return written
     finally:
         wb.close()
+
+
+def export_parquet(
+    *,
+    output_path: Path,
+    rows: pd.DataFrame,
+    expected_columns: tuple[str, ...],
+) -> int:
+    """Write `rows` to a parquet file with `expected_columns` as the schema.
+
+    Parallel-write companion to `export_rows`: same input, parquet output.
+    Snappy compression, no index. Object-dtype columns (UPS' mixed
+    int+text Charge Description Code is the live case) are coerced to
+    pandas StringDtype so pyarrow gets a clean type per column.
+    """
+    if output_path.exists():
+        raise FileExistsError(
+            f"parquet target already exists: {output_path} "
+            f"(deal with the prior export before producing a new one)"
+        )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    df = rows.loc[:, list(expected_columns)].copy()
+    for col in df.columns:
+        if df[col].dtype == object:
+            df[col] = df[col].map(
+                lambda v: None
+                if v is None or (isinstance(v, float) and pd.isna(v))
+                else str(v)
+            ).astype("string")
+    df.to_parquet(output_path, engine="pyarrow", compression="snappy", index=False)
+    return len(df)
 
 
 def _to_numeric_or_passthrough(val: object) -> object:

@@ -62,6 +62,18 @@ queries) is the destination once three couriers are running cleanly.
 Choosing Option A first lets us prove the parser end-to-end on the cheapest
 possible substrate.
 
+### Parquet substrate (parallel-write, 2026-05)
+
+Alongside the xlsx sidecar, the writer now emits a per-courier monthly
+parquet file at `data/<carrier>/<YYYY>-<MM>.parquet` (snappy, no index).
+The master xlsx remains authoritative; parquet is the staging layer for
+the eventual DuckDB cutover. Both are written by default
+(`--format both`); use `--format xlsx` or `--format parquet` to opt out
+of either side. Historical months are seeded by one-shot
+`scripts/backfill_<carrier>_parquet.py` runs that read the master sheet,
+re-apply the parser's `coerce_<carrier>_dtypes`, and partition by date.
+Power BI repoint and master decommission stay parked.
+
 ## Module walkthrough
 
 ### `courier_automation/parsers/base.py`

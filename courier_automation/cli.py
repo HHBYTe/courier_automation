@@ -18,6 +18,7 @@ Exit codes:
 from __future__ import annotations
 
 import datetime as dt
+import enum
 import logging
 import re
 from pathlib import Path
@@ -31,6 +32,7 @@ from courier_automation.parsers.base import ParserError, SchemaMismatch
 from courier_automation.parsers.plausibility import PlausibilityError
 from courier_automation.parsers.correos import CorreosParser
 from courier_automation.parsers.seur import SeurParser
+from courier_automation.parsers.dachser import DachserParser
 from courier_automation.parsers.seitrans import SeitransParser
 from courier_automation.parsers.spring import SpringParser
 from courier_automation.parsers.ups import UpsParser
@@ -39,7 +41,23 @@ from courier_automation.store.workbook_appender import (
     DATOS_SHEET,
     WorkbookAppender,
     WorkbookLocked,
+    export_parquet,
     export_rows,
+)
+
+
+class ExportFormat(str, enum.Enum):
+    xlsx = "xlsx"
+    parquet = "parquet"
+    both = "both"
+
+
+PARQUET_ROOT = Path("data")
+FORMAT_OPTION = typer.Option(
+    ExportFormat.both,
+    "--format",
+    case_sensitive=False,
+    help="Sidecar output format: xlsx, parquet, or both (default).",
 )
 
 EXIT_OK = 0
@@ -57,6 +75,10 @@ DEFAULT_SEITRANS_WORKBOOK = Path(
     "Operations - Couriers/04. Seitrans/Análisis envíos Seitrans.xlsx"
 )
 DEFAULT_SEITRANS_FACTURAS = Path("Operations - Couriers/04. Seitrans/Facturas")
+DEFAULT_DACHSER_WORKBOOK = Path(
+    "Operations - Couriers/03. Dachser/Expediciones Dachser.xlsx"
+)
+DEFAULT_DACHSER_FACTURAS = Path("Operations - Couriers/03. Dachser/Facturas")
 DEFAULT_CORREOS_WORKBOOK = Path(
     "Operations - Couriers/05. Correos Express/Análisis Envíos Correos Express V2.xlsx"
 )
@@ -146,6 +168,7 @@ def ingest_seur(
              "Only meaningful with --write-master.",
     ),
     write_master: bool = WRITE_MASTER_OPTION,
+    format: ExportFormat = FORMAT_OPTION,
 ) -> None:
     """Ingest one or many Seur invoice files (default: write a sidecar)."""
     _setup_logging()
@@ -161,6 +184,7 @@ def ingest_seur(
         sheet_name=DATOS_SHEET,
         dry_run=dry_run,
         write_master=write_master,
+        format=format,
     )
 
 
@@ -194,6 +218,7 @@ def ingest_seitrans(
              "Only meaningful with --write-master.",
     ),
     write_master: bool = WRITE_MASTER_OPTION,
+    format: ExportFormat = FORMAT_OPTION,
 ) -> None:
     """Ingest one or many Seitrans invoice files (default: write a sidecar)."""
     _setup_logging()
@@ -209,6 +234,49 @@ def ingest_seitrans(
         sheet_name=DATOS_SHEET,
         dry_run=dry_run,
         write_master=write_master,
+        format=format,
+    )
+
+
+@ingest_app.command("dachser")
+def ingest_dachser(
+    file: Optional[Path] = typer.Option(
+        None, "--file", "-f", help="Path to a single raw Dachser invoice .xlsx."
+    ),
+    month: Optional[str] = typer.Option(
+        None, "--month", help="Month to ingest in YYYY-MM form (scans the folder).",
+    ),
+    folder: Optional[Path] = typer.Option(
+        None, "--folder",
+        help=f"Root Facturas folder (default: {DEFAULT_DACHSER_FACTURAS}).",
+    ),
+    workbook: Path = typer.Option(
+        DEFAULT_DACHSER_WORKBOOK, "--workbook", "-w",
+        help="Target Dachser historical workbook.",
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run",
+        help="Parse + manifest-check only; never write anywhere. "
+             "Only meaningful with --write-master.",
+    ),
+    write_master: bool = WRITE_MASTER_OPTION,
+    format: ExportFormat = FORMAT_OPTION,
+) -> None:
+    """Ingest one or many Dachser invoice files (default: write a sidecar)."""
+    _setup_logging()
+    files = _resolve_files(
+        file=file, month=month, folder=folder,
+        default_facturas=DEFAULT_DACHSER_FACTURAS,
+        file_globs=("*.xlsx", "*.XLSX", "*.xls", "*.XLS"),
+    )
+    _run_ingest(
+        files=files,
+        parser=DachserParser(),
+        workbook=workbook,
+        sheet_name="New Datos",
+        dry_run=dry_run,
+        write_master=write_master,
+        format=format,
     )
 
 
@@ -234,6 +302,7 @@ def ingest_correos(
              "Only meaningful with --write-master.",
     ),
     write_master: bool = WRITE_MASTER_OPTION,
+    format: ExportFormat = FORMAT_OPTION,
 ) -> None:
     """Ingest one or many Correos Express invoice files (default: sidecar)."""
     _setup_logging()
@@ -249,6 +318,7 @@ def ingest_correos(
         sheet_name=DATOS_SHEET,
         dry_run=dry_run,
         write_master=write_master,
+        format=format,
     )
 
 
@@ -276,6 +346,7 @@ def ingest_ups(
              "Only meaningful with --write-master.",
     ),
     write_master: bool = WRITE_MASTER_OPTION,
+    format: ExportFormat = FORMAT_OPTION,
 ) -> None:
     """Ingest one or many UPS billing files (default: sidecar)."""
     _setup_logging()
@@ -295,6 +366,7 @@ def ingest_ups(
         sheet_name="Data",  # UPS uses 'Data' not 'Datos'
         dry_run=dry_run,
         write_master=write_master,
+        format=format,
     )
 
 
@@ -322,6 +394,7 @@ def ingest_wwex(
              "Only meaningful with --write-master.",
     ),
     write_master: bool = WRITE_MASTER_OPTION,
+    format: ExportFormat = FORMAT_OPTION,
 ) -> None:
     """Ingest one or many Wwex shipment-detail files (default: sidecar)."""
     _setup_logging()
@@ -338,6 +411,7 @@ def ingest_wwex(
         sheet_name="Data",
         dry_run=dry_run,
         write_master=write_master,
+        format=format,
     )
 
 
@@ -365,6 +439,7 @@ def ingest_spring(
              "Only meaningful with --write-master.",
     ),
     write_master: bool = WRITE_MASTER_OPTION,
+    format: ExportFormat = FORMAT_OPTION,
 ) -> None:
     """Ingest one or many Spring invoice files (default: sidecar)."""
     _setup_logging()
@@ -381,6 +456,7 @@ def ingest_spring(
         sheet_name="INVOICES",
         dry_run=dry_run,
         write_master=write_master,
+        format=format,
     )
 
 
@@ -392,6 +468,7 @@ def _run_ingest(
     sheet_name: str,
     dry_run: bool,
     write_master: bool,
+    format: ExportFormat = ExportFormat.both,
 ) -> None:
     """Dispatch one ingest run to either the master-workbook appender or the
     sidecar exporter, based on `write_master`."""
@@ -406,12 +483,15 @@ def _run_ingest(
             )
             raise typer.Exit(code=EXIT_USAGE)
         export_path = _export_sidecar_path(workbook, files)
+        parquet_path = _export_parquet_path(parser.carrier, files)
         _ingest_export(
             files=files,
             parser=parser,
             registry=registry,
             export_path=export_path,
+            parquet_path=parquet_path,
             sheet_name=sheet_name,
+            format=format,
         )
         return
 
@@ -514,10 +594,13 @@ def _ingest_export(
     parser,
     registry: ManifestRegistry,
     export_path: Path,
+    parquet_path: Path,
     sheet_name: str = DATOS_SHEET,
+    format: ExportFormat = ExportFormat.both,
 ) -> None:
     """Parse files, register in manifest, and write rows to a sidecar .xlsx
-    instead of appending to the master workbook."""
+    and/or a per-month parquet (per `format`) instead of appending to the
+    master workbook."""
     frames: list[pd.DataFrame] = []
     appended = 0
     skipped = 0
@@ -571,19 +654,49 @@ def _ingest_export(
         return
 
     combined = pd.concat(frames, ignore_index=True)
-    written = export_rows(
-        output_path=export_path,
-        rows=combined,
-        expected_columns=parser.expected_columns,
-        sheet_name=sheet_name,
-        numeric_columns=getattr(parser, "export_numeric_columns", ()),
-        date_formats=getattr(parser, "export_date_formats", None),
-        number_formats=getattr(parser, "export_number_formats", None),
-    )
-    typer.echo(f"exported {written} rows to {export_path}")
+    written = 0
+    if format in (ExportFormat.xlsx, ExportFormat.both):
+        written = export_rows(
+            output_path=export_path,
+            rows=combined,
+            expected_columns=parser.expected_columns,
+            sheet_name=sheet_name,
+            numeric_columns=getattr(parser, "export_numeric_columns", ()),
+            date_formats=getattr(parser, "export_date_formats", None),
+            number_formats=getattr(parser, "export_number_formats", None),
+        )
+        typer.echo(f"exported {written} rows to {export_path}")
+    if format in (ExportFormat.parquet, ExportFormat.both):
+        pq_written = export_parquet(
+            output_path=parquet_path,
+            rows=combined,
+            expected_columns=parser.expected_columns,
+        )
+        written = pq_written if written == 0 else written
+        typer.echo(f"exported {pq_written} rows to {parquet_path}")
     typer.echo(
         f"done: {appended} ingested, {skipped} skipped, {written} rows exported"
     )
+
+
+def _month_stamp(files: list[Path]) -> str:
+    """`YYYY-MM` if all files share a `<YYYY>/<MM> - <Mes>/` parent,
+    otherwise a wall-clock timestamp."""
+    parent_names = {f.parent.name for f in files}
+    if len(parent_names) == 1:
+        only = next(iter(parent_names))
+        m = _MONTH_DIR_RE.match(only)
+        if m:
+            year_dir = next(iter(files)).parent.parent
+            if year_dir.name.isdigit():
+                return f"{year_dir.name}-{int(m.group(1)):02d}"
+    return dt.datetime.now().strftime("%Y%m%d-%H%M%S")
+
+
+def _export_parquet_path(carrier: str, files: list[Path]) -> Path:
+    """`data/<carrier>/<YYYY>-<MM>.parquet` when all files come from one
+    canonical month folder; falls back to a timestamped name otherwise."""
+    return PARQUET_ROOT / carrier / f"{_month_stamp(files)}.parquet"
 
 
 def _export_sidecar_path(workbook: Path, files: list[Path]) -> Path:
