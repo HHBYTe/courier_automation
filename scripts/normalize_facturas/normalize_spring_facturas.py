@@ -24,7 +24,7 @@ from pathlib import Path
 from _duplicates import dedupe
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_FACTURAS = ROOT / "Operations - Couriers" / "13. Spring (FR)"
+DEFAULT_FACTURAS = ROOT / "Operations - Couriers" / "13. Spring (FR)" / "Facturas"
 
 SPANISH_MONTHS: dict[int, str] = {
     1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril",

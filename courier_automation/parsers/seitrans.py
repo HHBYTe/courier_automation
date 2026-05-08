@@ -213,6 +213,17 @@ class SeitransParser:
     carrier: ClassVar[str] = "seitrans"
     expected_columns: ClassVar[tuple[str, ...]] = SEITRANS_COLUMNS
     sheet_name: ClassVar[str] = "Risultato"
+    # Parser keeps SPEDIZIONE NUMERO as a string (raw IDs can have leading
+    # zeros), but the master Datos sheet stores it as a number.
+    export_numeric_columns: ClassVar[tuple[str, ...]] = (
+        "SPEDIZIONE NUMERO",
+    )
+    # `Mes` is a real date (first of month) but the master displays it as
+    # Spanish abbreviated month + 2-digit year (e.g. mar-26). Force Spanish
+    # locale ([$-0C0A]) so the format renders the same on non-Spanish Excel.
+    export_date_formats: ClassVar[dict[str, str]] = {
+        "Mes": "[$-0C0A]mmm-yy",
+    }
 
     def parse(self, path: Path) -> ParseResult:
         path = Path(path)

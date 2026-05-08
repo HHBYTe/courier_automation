@@ -1,28 +1,20 @@
-"""Spring (FR) parser — **partial implementation**.
+"""Spring (FR) parser.
 
 Real Spring invoices arrive as a single `.XLSX` (uppercase extension)
 with a sheet named after the invoice ID (`E2509827`, `E2510060`, …) and
 a tiny `Summary` sheet that's effectively empty. The data sheet has 22
-columns: `Invoice Number, Invoice Date, Account Number, CONNOTE, …,
-Amount, Amount Incl. VAT`.
+columns: `Invoice Number, Invoice Date, …, Amount, Amount Incl. VAT`.
 
-The data-exploration doc mentions a 114-col `REPORT` sheet, but that
-schema appears in the historical workbook (Spring's "operations" stream)
-rather than per-invoice files. The per-invoice files we actually receive
-are the 22-col billing detail.
+The historical workbook (`Shipment Report.xlsx`, sheet `INVOICES`) has
+24 columns: the same 22 raw columns plus `MONTH` and `YEAR` derived from
+`Shipment Date`. The historical sheet stores those derived columns as
+Excel formulas (`=MONTH(Table3[[#This Row],[Shipment Date]])`); we write
+computed integer values instead, since appended rows aren't guaranteed
+to fall inside the table that the formulas reference.
 
 Deferred work:
-- The historical workbook has a separate `INVOICES` sheet with 24 cols
-  that's the closest match to per-invoice files. Mapping the parser's
-  22 cols → the historical 24 cols hasn't been done. Today the parser
-  is raw-passthrough; not yet wired into the CLI for the same reason
-  as Wwex.
-- Golden test against historical Datos.
-- The 114-col `REPORT` operations stream is a separate parser job.
-
-For now: schema validation against the 22-col layout, dtype coercion,
-plausibility on the key fields. Sheet read by index 0 (the invoice-ID
-sheet name varies per file).
+- Golden test against historical INVOICES.
+- The 114-col `REPORT` operations stream (separate parser).
 """
 
 from __future__ import annotations
@@ -71,8 +63,11 @@ SPRING_RAW_COLUMNS: tuple[str, ...] = (
 )
 assert len(SPRING_RAW_COLUMNS) == 22
 
+SPRING_HISTORICAL_COLUMNS: tuple[str, ...] = SPRING_RAW_COLUMNS + ("MONTH", "YEAR")
+assert len(SPRING_HISTORICAL_COLUMNS) == 24
+
 DATE_COLUMNS: tuple[str, ...] = ("Invoice Date", "Shipment Date")
-INT_COLUMNS: tuple[str, ...] = ("Items",)
+INT_COLUMNS: tuple[str, ...] = ("Items", "MONTH", "YEAR")
 FLOAT_COLUMNS: tuple[str, ...] = (
     "Item Charge",
     "Actual Kilos",
@@ -94,10 +89,28 @@ PLAUSIBILITY_DATE_RANGE: dict[str, tuple[date, date]] = {
 }
 
 
+# Spring's French invoices use dd/mm/yy uniformly across both date
+# columns. Without an explicit format pandas defaults to mm/dd-first,
+# silently flipping ambiguous dates (e.g. 06/04/26 → June 4 instead of
+# April 6). Pin the format so parsing is deterministic.
+_DATE_FORMAT = "%d/%m/%y"
+
+
+def _add_derived(df: pd.DataFrame) -> pd.DataFrame:
+    """Add MONTH and YEAR columns from `Shipment Date`. Matches the
+    historical INVOICES sheet's two formula-derived columns, but stores
+    integer values rather than formulas."""
+    df = df.copy()
+    shipment = pd.to_datetime(df["Shipment Date"], format=_DATE_FORMAT, errors="coerce")
+    df["MONTH"] = shipment.dt.month.astype("Int64")
+    df["YEAR"] = shipment.dt.year.astype("Int64")
+    return df[list(SPRING_HISTORICAL_COLUMNS)]
+
+
 def coerce_spring_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     for col in DATE_COLUMNS:
-        df[col] = pd.to_datetime(df[col], errors="coerce")
+        df[col] = pd.to_datetime(df[col], format=_DATE_FORMAT, errors="coerce")
     for col in INT_COLUMNS:
         df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
     for col in FLOAT_COLUMNS:
@@ -112,7 +125,13 @@ def coerce_spring_dtypes(df: pd.DataFrame) -> pd.DataFrame:
 
 class SpringParser:
     carrier: ClassVar[str] = "spring"
-    expected_columns: ClassVar[tuple[str, ...]] = SPRING_RAW_COLUMNS
+    expected_columns: ClassVar[tuple[str, ...]] = SPRING_HISTORICAL_COLUMNS
+    # Source files use dd/mm/yy; render the same way in the sidecar so the
+    # operator's eye can scan the export against the original invoice.
+    export_date_formats: ClassVar[dict[str, str]] = {
+        "Invoice Date": "dd/mm/yy",
+        "Shipment Date": "dd/mm/yy",
+    }
 
     def parse(self, path: Path) -> ParseResult:
         path = Path(path)
@@ -127,6 +146,7 @@ class SpringParser:
             raise ParserError(f"could not read {path.name}: {e}") from e
 
         assert_schema(df, SPRING_RAW_COLUMNS)
+        df = _add_derived(df)
         df = coerce_spring_dtypes(df)
         assert_plausible(
             df,

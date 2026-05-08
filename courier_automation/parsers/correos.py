@@ -142,21 +142,36 @@ FLOAT_COLUMNS: tuple[str, ...] = (
     "SUPLEMENTO DESTINO INGLATERRA",
     "SUPLEMENTO COMBUSTIBLE",
     "IMP. TOTAL",
-    "TIPO IMPOSITIVO",
-    "T. PORTE",
+    # NOTE: TIPO IMPOSITIVO and T. PORTE are text in real invoices ("IVA",
+    # "P"/"D"). They were previously listed here, which silently coerced them
+    # to NaN. The golden extractor applies the same coercion so the golden
+    # test couldn't catch the mistake. Now treated as plain text via the
+    # fall-through cleaner.
     "V. ASEGURADO",
     "IMP. REEMBOLSO",
     "IMP. DESEMBOLSO",
 )
 
+# Columns the master Datos stores as zero-padded text. Same idea as
+# POSTCODE_COLUMNS but parameterised by width.
+ZFILL_COLUMNS: dict[str, int] = {
+    "C. LLAMADA": 4,
+    "PLAZA ORIGEN": 3,
+    "PLAZA DESTINO": 3,
+    "PLAZA FACTURACION": 3,
+}
+
 PLAUSIBILITY_NO_NULL: tuple[str, ...] = (
     "Nº ENVIO",
-    "F.ADMISION",
-    "BULTOS",
     "PESO KILOS",
 )
+# F.ADMISION and BULTOS are routinely empty on surcharge-only lines
+# ("Recogida fuera del centro principal", etc.). Use a min-rate instead of
+# no_null so legitimate surcharge rows don't fail ingest.
 PLAUSIBILITY_MIN_NON_NULL_RATE: dict[str, float] = {
     "F.ALBARAN": 0.95,
+    "F.ADMISION": 0.95,
+    "BULTOS": 0.95,
     "PORTE": 0.95,
     "IMP. TOTAL": 0.95,
 }
@@ -226,23 +241,28 @@ def _tipo_exp(peso: float) -> str | None:
     return "PALLET" if peso > 50 else "BULTO"
 
 
-def _to_postcode(value: object) -> object:
-    """Normalise a postcode value: zero-pad numeric values to 5 digits
-    (Spanish format), pass alphanumeric values through unchanged."""
+def _zfill_value(value: object, width: int) -> object:
+    """Normalise a value to a `width`-digit zero-padded string. Numeric
+    values get padded; non-numeric strings pass through unchanged."""
     if value is None:
         return None
     if isinstance(value, float):
         if pd.isna(value):
             return None
-        return f"{int(value):05d}" if value.is_integer() else str(value)
+        return f"{int(value):0{width}d}" if value.is_integer() else str(value)
     if isinstance(value, int):
-        return f"{value:05d}"
+        return f"{value:0{width}d}"
     s = str(value).strip()
     if s == "":
         return None
     if s.lstrip("-").isdigit():
-        return s.zfill(5)
+        return s.zfill(width)
     return s
+
+
+def _to_postcode(value: object) -> object:
+    """Spanish 5-digit postcode (legacy alias for `_zfill_value(v, 5)`)."""
+    return _zfill_value(value, 5)
 
 
 def _pais(c_pais: object) -> str | None:
@@ -266,13 +286,19 @@ def _parse_correos_date(value: object) -> object:
     """Coerce a single F.FACTURA / F.ADMISION cell to a pandas Timestamp.
 
     Correos historically shipped real Excel dates; starting March 2026 the
-    same fields arrive as plain 8-digit strings in DDMMYYYY form
-    (e.g. `'31032026'` for 2026-03-31). Handle both transparently.
+    same fields arrive as plain 8-digit DDMMYYYY values (e.g. `31032026`
+    for 2026-03-31). pandas auto-infers all-digit cells as int, which then
+    `pd.to_datetime` would interpret as Unix-epoch nanoseconds (giving
+    1970-01-01 for any 7-9 digit value). Match int form explicitly.
     """
-    if value is None or value == "":
+    if value is None or value == "" or pd.isna(value):
         return pd.NaT
-    if isinstance(value, str) and _DDMMYYYY_RE.match(value):
-        return pd.to_datetime(value, format="%d%m%Y", errors="coerce")
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        s = str(int(value)).zfill(8)
+        if _DDMMYYYY_RE.match(s):
+            return pd.to_datetime(s, format="%d%m%Y", errors="coerce")
+    if isinstance(value, str) and _DDMMYYYY_RE.match(value.strip()):
+        return pd.to_datetime(value.strip(), format="%d%m%Y", errors="coerce")
     return pd.to_datetime(value, errors="coerce")
 
 
@@ -307,6 +333,9 @@ def coerce_correos_dtypes(df: pd.DataFrame) -> pd.DataFrame:
             continue
         if col in postcode_set:
             df[col] = df[col].map(_to_postcode).astype("string")
+        elif col in ZFILL_COLUMNS:
+            width = ZFILL_COLUMNS[col]
+            df[col] = df[col].map(lambda v, w=width: _zfill_value(v, w)).astype("string")
         else:
             df[col] = df[col].map(to_clean_string).astype("string")
     return df

@@ -1,24 +1,28 @@
 """UPS (UK) parser.
 
-Raw invoices come from the UPS Billing Center as headerless tabular dumps,
-one file per weekly invoice. Filename pattern:
+Raw invoices come from the UPS Billing Center as headerless dumps, one
+file per weekly invoice. Filename pattern:
 `Invoice_<Invoice Number>_<MMDDYY>.{csv,xlsx}`.
 
-  - 2023–2025: `.csv` (250 cols, comma-separated, headerless).
-  - 2026+:     `.xlsx` (same 250-col schema, but Excel trims trailing
-               empty columns so reads can land at 244–250 cols; we
-               right-pad to 250 to match the historical schema).
+The CSVs are the authoritative source — two delimiter variants coexist
+across years (comma for some files, semicolon for the GB-locale variant)
+and are detected per-file. The `.xlsx` files are operator-converted from
+those same CSVs and are accepted as a fallback when no CSV is available
+for a month; they may carry data-quality issues from the manual step.
 
-The historical workbook (`UPS Shippings Report.xlsx`, sheet `Data`) preserves
-the 250-column UPS schema verbatim, with column names hard-coded below
-(since the source ships without a header row in either format).
+The historical workbook (`UPS Shippings Report.xlsx`, sheet `Data`)
+preserves the 250-column UPS schema verbatim, with column names hard-coded
+below (since the source ships without a header row).
 
 No derived columns. The parser is a passthrough that:
-  1. Reads file (CSV or XLSX) with `header=None, dtype=str`.
-  2. Pads to 250 columns if XLSX trimmed trailing empties.
-  3. Coerces dates/numerics by column-name heuristics ("Date", "Amount",
-     "Weight", etc.) — UPS has too many columns to enumerate manually.
-  4. Returns rows ready to append to the Data sheet.
+  1. Reads the file with `header=None, dtype=str` (CSV: sniff separator;
+     XLSX: openpyxl).
+  2. Drops a leading header row if the XLSX variant has one.
+  3. Right-pads to 250 columns when the source trimmed trailing empties.
+  4. Coerces dates/numerics by column-name heuristics ("Date", "Amount",
+     "Weight", etc.) with explicit overrides for identifier-like columns
+     ("Charge Category Code", "Basis Currency Code", …).
+  5. Returns rows ready to append to the Data sheet.
 
 `invoice_number` and `invoice_date` are taken from the data (every row
 within a single file shares the same Invoice Number / Invoice Date).
@@ -145,6 +149,15 @@ _FLOAT_KEYWORDS = (
     "Basis", "Quantity",
 )
 
+# A keyword-matched column whose name ends in one of these suffixes is an
+# identifier or label, not a numeric value. Without this guard, columns
+# like `Charge Category Code` ("ADJ"), `Charge Description` ("20.000 %
+# Tax"), `Basis Currency Code` ("GBP"), or `Billed Weight Unit of Measure`
+# ("K") would be coerced to NaN by `pd.to_numeric` and silently blanked.
+_NEVER_FLOAT_SUFFIXES: tuple[str, ...] = (
+    " Code", " Description", " Source", " Type", " of Measure",
+)
+
 
 # Columns that real Data stores as numeric (int, not zero-padded string).
 # Hard-coded rather than keyword-matched because most "Number" columns
@@ -152,7 +165,27 @@ _FLOAT_KEYWORDS = (
 # string. Validated against the production `Data` sheet.
 _INT_COLUMNS: tuple[str, ...] = (
     "Invoice Number",
+    "Invoice Type Detail Code",
+    "Line Item Number",
+    "SIMA Access",
+    "Scale weight quantity",
+    "Freight Sequence Number",
+    "Place Holder 53",
+    "Payor Role Code",
+    "Tax Indicator",
+    "Billed Weight Type",
 )
+
+# Zone is stored zero-padded ("001"); the master sheet wants a plain
+# integer with 0 displayed as blank. Handled inline in coerce.
+_ZONE_COL = "Zone"
+# Charge Description Code is a mixed-type column ("FSC", "RES", "WSC" for
+# surcharges; "001", "003", "01" for adjustments/taxes). Strip leading
+# zeros from numeric values, leave letter codes alone. Handled inline.
+_CHARGE_DESC_CODE_COL = "Charge Description Code"
+# Version ships as "2.1" and the master sheet renders it with a comma
+# decimal in the Spanish locale. Coerce to float and format on export.
+_VERSION_COL = "Version"
 
 
 def _is_date_col(name: str) -> bool:
@@ -162,17 +195,47 @@ def _is_date_col(name: str) -> bool:
 def _is_float_col(name: str) -> bool:
     if _is_date_col(name):
         return False
+    if name in _INT_COLUMNS:
+        return False
+    if any(name.endswith(s) for s in _NEVER_FLOAT_SUFFIXES):
+        return False
     return any(k in name for k in _FLOAT_KEYWORDS)
+
+
+def _strip_leading_zeros_or_keep(value: object) -> object:
+    """For Charge Description Code: digit-only → int, anything else → text."""
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return None
+    s = str(value).strip()
+    if not s:
+        return None
+    if s.lstrip("-").isdigit():
+        return int(s)
+    return s
 
 
 PLAUSIBILITY_NO_NULL: tuple[str, ...] = (
     "Invoice Number",
     "Invoice Date",
-    "Tracking Number",
 )
+# No min-rate rules: Tracking Number was a candidate but it's empty on
+# invoice-level charges (Charge Category ADJ/MIS) and some invoices are
+# entirely such charges (e.g. weekly fuel-surcharge corrections). Invoice
+# Number + Invoice Date no_null and the Invoice Date range catch the
+# realistic drift modes.
 PLAUSIBILITY_DATE_RANGE: dict[str, tuple[date, date]] = {
     "Invoice Date": (date(2018, 1, 1), date(2035, 12, 31)),
 }
+
+
+def _sniff_separator(path: Path) -> str:
+    """UPS Billing Center exports both comma- and semicolon-separated CSVs
+    (the GB locale switches to ``;`` so commas can be used as decimal
+    separators). Picking the wrong delimiter collapses the row to one
+    column, so we detect by reading the header and comparing counts."""
+    with path.open("r", encoding="utf-8") as f:
+        first = f.readline()
+    return ";" if first.count(";") > first.count(",") else ","
 
 
 def coerce_ups_dtypes(df: pd.DataFrame) -> pd.DataFrame:
@@ -181,10 +244,24 @@ def coerce_ups_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     int_cols = set(_INT_COLUMNS)
     for col in df.columns:
-        if col in int_cols:
+        if col == _ZONE_COL:
+            zone = pd.to_numeric(df[col], errors="coerce").astype("Int64")
+            # 0 renders as blank in the master; keep only meaningful zones.
+            df[col] = zone.where(zone != 0, pd.NA)
+        elif col == _CHARGE_DESC_CODE_COL:
+            # Mixed int/string column — keep as object so int and text
+            # values both write through openpyxl with their native types.
+            df[col] = df[col].map(_strip_leading_zeros_or_keep)
+        elif col == _VERSION_COL:
+            df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")
+        elif col in int_cols:
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
         elif _is_date_col(col):
-            df[col] = pd.to_datetime(df[col], errors="coerce")
+            # UPS ships dates in two formats across years: ISO YYYY-MM-DD
+            # in the comma-separated CSVs and DD/MM/YYYY in the semicolon
+            # variant. dayfirst=True correctly parses both (ISO is
+            # unambiguous; the European order disambiguates the rest).
+            df[col] = pd.to_datetime(df[col], errors="coerce", dayfirst=True)
         elif _is_float_col(col):
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")
         else:
@@ -195,6 +272,12 @@ def coerce_ups_dtypes(df: pd.DataFrame) -> pd.DataFrame:
 class UpsParser:
     carrier: ClassVar[str] = "ups"
     expected_columns: ClassVar[tuple[str, ...]] = UPS_COLUMNS
+    # Version is a float ("2.1") that the master sheet displays with a
+    # comma decimal under the Spanish locale ([$-0C0A]). Force the locale
+    # in the format string so it renders the same on non-Spanish Excel.
+    export_number_formats: ClassVar[dict[str, str]] = {
+        "Version": "[$-0C0A]0.0",
+    }
 
     def parse(self, path: Path) -> ParseResult:
         path = Path(path)
@@ -202,35 +285,44 @@ class UpsParser:
             raise ParserError(f"UPS invoice file not found: {path}")
 
         suffix = path.suffix.lower()
-        try:
-            if suffix == ".csv":
+        if suffix == ".csv":
+            sep = _sniff_separator(path)
+            try:
                 df = pd.read_csv(
                     path,
                     header=None,
                     dtype=str,
+                    sep=sep,
                     encoding="utf-8",
                     low_memory=False,
                 )
-            elif suffix == ".xlsx":
+            except Exception as e:  # noqa: BLE001
+                raise ParserError(f"could not read {path.name}: {e}") from e
+        elif suffix == ".xlsx":
+            try:
                 df = pd.read_excel(
-                    path,
-                    header=None,
-                    dtype=str,
-                    engine="openpyxl",
+                    path, header=None, dtype=str, engine="openpyxl",
                 )
-            else:
-                raise ParserError(
-                    f"{path.name}: unsupported extension {suffix!r} "
-                    "(expected .csv or .xlsx)"
-                )
-        except ParserError:
-            raise
-        except Exception as e:  # noqa: BLE001
-            raise ParserError(f"could not read {path.name}: {e}") from e
+            except Exception as e:  # noqa: BLE001
+                raise ParserError(f"could not read {path.name}: {e}") from e
+            # Operator-converted XLSX sometimes carry a leading header row
+            # ("Version", "Recipient Number", …). Drop it when the cell at
+            # the canonical Invoice Number position holds the literal name.
+            if len(df) > 0:
+                inv_pos = UPS_COLUMNS.index("Invoice Number")
+                first = str(df.iloc[0, inv_pos]).strip() if inv_pos < df.shape[1] else ""
+                if first == "Invoice Number":
+                    df = df.iloc[1:].reset_index(drop=True)
+        else:
+            raise ParserError(
+                f"{path.name}: unsupported extension {suffix!r} "
+                "(expected .csv or .xlsx)"
+            )
 
-        # XLSX legitimately trims trailing empty columns; right-pad to 250.
-        # CSV with the wrong column count is malformed input — surface loudly.
-        if suffix == ".xlsx" and df.shape[1] < len(UPS_COLUMNS):
+        # CSV semicolon variant and XLSX both sometimes trim the trailing
+        # always-empty placeholder columns ("Place Holder 54"–"Place
+        # Holder 59"); pad them back so the schema is uniform.
+        if df.shape[1] < len(UPS_COLUMNS):
             for i in range(df.shape[1], len(UPS_COLUMNS)):
                 df[i] = pd.NA
         if df.shape[1] != len(UPS_COLUMNS):

@@ -60,6 +60,7 @@ def test_ingest_single_file_end_to_end(tmp_path, default_seur_row):
             str(invoice),
             "--workbook",
             str(workbook),
+            "--write-master",
         ],
     )
     assert result.exit_code == EXIT_OK, result.output
@@ -74,13 +75,13 @@ def test_ingest_is_idempotent(tmp_path, default_seur_row):
     )
 
     first = runner.invoke(
-        app, ["ingest", "seur", "--file", str(invoice), "--workbook", str(workbook)]
+        app, ["ingest", "seur", "--file", str(invoice), "--workbook", str(workbook), "--write-master"]
     )
     assert first.exit_code == EXIT_OK
     assert _datos_row_count(workbook) == 1
 
     second = runner.invoke(
-        app, ["ingest", "seur", "--file", str(invoice), "--workbook", str(workbook)]
+        app, ["ingest", "seur", "--file", str(invoice), "--workbook", str(workbook), "--write-master"]
     )
     assert second.exit_code == EXIT_OK
     assert "already ingested" in second.output
@@ -104,6 +105,7 @@ def test_ingest_dry_run_writes_nothing(tmp_path, default_seur_row):
             "--workbook",
             str(workbook),
             "--dry-run",
+            "--write-master",
         ],
     )
     assert result.exit_code == EXIT_OK
@@ -134,6 +136,7 @@ def test_ingest_month_processes_all_in_folder(tmp_path, default_seur_row):
             str(tmp_path / "Facturas"),
             "--workbook",
             str(workbook),
+            "--write-master",
         ],
     )
     assert result.exit_code == EXIT_OK, result.output
@@ -175,6 +178,7 @@ def test_ingest_seitrans_single_file_end_to_end(tmp_path, default_seitrans_row):
             str(invoice),
             "--workbook",
             str(workbook),
+            "--write-master",
         ],
     )
     assert result.exit_code == EXIT_OK, result.output
@@ -216,6 +220,7 @@ def test_ingest_seitrans_auto_discovers_latest_month(tmp_path, default_seitrans_
             str(facturas),
             "--workbook",
             str(workbook),
+            "--write-master",
         ],
     )
     assert result.exit_code == EXIT_OK, result.output
@@ -243,6 +248,7 @@ def test_auto_discovers_latest_month(tmp_path, default_seur_row):
             str(facturas),
             "--workbook",
             str(workbook),
+            "--write-master",
         ],
     )
     assert result.exit_code == EXIT_OK, result.output
@@ -336,6 +342,7 @@ def test_lock_timeout_exits_3(tmp_path, default_seur_row):
                 str(invoice),
                 "--workbook",
                 str(workbook),
+                "--write-master",
             ],
         )
         assert result.exit_code == EXIT_LOCK

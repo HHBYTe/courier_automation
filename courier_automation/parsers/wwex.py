@@ -167,10 +167,40 @@ _RENAME: dict[str, str] = {
     "Ship To Postal Code": "DESTINATION_ZIP",
     "Ship To Country": "DESTINATION_COUNTRY",
     "Package Weight": "TOTAL_WEIGHT",
-    "Billed Weight": "TOTAL_RATED_WEIGHT",
+    # Billed Weight is derived from PACKAGE_WEIGHT via _sum_package_weight
+    # below — see that function for the format details.
     "Est Transportation Charges": "ESTIMATED_TOTAL_PRICE",
     "Package Count": "PACKAGE_COUNT",
 }
+
+
+def _sum_package_weight(value: object) -> float | None:
+    """Parse a PACKAGE_WEIGHT cell into the billed weight.
+
+    The raw column stores a `lo-hi` tier range per package. Multi-package
+    shipments live on a single row with the per-package ranges joined by
+    ``|`` (so a 2-package shipment looks like ``"0-26|0-5"``). The billed
+    weight for the shipment is the sum of the upper bounds — verified
+    against TOTAL_RATED_WEIGHT in the v1 export (e.g. ``"0-26|0-5"`` →
+    26+5 = 31, matching the courier's own rated total).
+    """
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return None
+    s = str(value).strip()
+    if not s:
+        return None
+    total = 0.0
+    matched = False
+    for seg in s.split("|"):
+        seg = seg.strip()
+        if not seg:
+            continue
+        try:
+            total += float(seg.rsplit("-", 1)[-1])
+            matched = True
+        except ValueError:
+            return None
+    return total if matched else None
 
 # Columns the operator fills in manually after pasting (no raw source);
 # parser emits None and the golden test excludes them from comparison.
@@ -234,6 +264,8 @@ def _map_to_historical(raw: pd.DataFrame) -> pd.DataFrame:
         ship_date.fillna(pickup).fillna(creation).fillna(delivery)
     )
 
+    out["Billed Weight"] = raw["PACKAGE_WEIGHT"].map(_sum_package_weight)
+
     for hist_col, raw_col in _RENAME.items():
         out[hist_col] = raw[raw_col]
     for col in _OPERATOR_FILLED:
@@ -262,17 +294,41 @@ def coerce_wwex_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# Wwex 2026 portal change: REFERENCE_NUMBER was split into REFERENCE1 +
-# REFERENCE2, and a new Column1 was inserted between PACKAGE_COUNT and
-# TOTAL_WEIGHT. Reshape to the canonical 42-col layout: keep REFERENCE1 as
-# REFERENCE_NUMBER and drop the other two new columns.
+# Wwex 2026 portal change: the export schema mutates from one month to the
+# next. Two independent shifts:
+#   1. REFERENCE_NUMBER → REFERENCE1..N (observed N=2 in Feb 2026, N=5 in
+#      Jan 2026 and Nov 2025). Only REFERENCE1 carries data; the rest are
+#      empty. Keep #1, drop the rest.
+#   2. A "packaging type" column was inserted under the existing
+#      PACKAGE_COUNT name (containing labels like "Custom-1", "Custom-3"),
+#      pushing the real numeric package count to the next column. That
+#      next column has different names depending on the file: "Column1"
+#      (Feb 2026), "Unnamed: 33" (Jan 2026), or "PACKAGE_COUNT.1" (Nov
+#      2025 — pandas auto-suffix for duplicated headers).
+# Reshape to the canonical 42-col layout: drop the label, promote the
+# numeric column to PACKAGE_COUNT.
 def _reshape_v2_to_v1(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
-    if "REFERENCE1" in out.columns:
-        out = out.rename(columns={"REFERENCE1": "REFERENCE_NUMBER"})
-    for col in ("REFERENCE2", "Column1"):
+    for col in ("REFERENCE2", "REFERENCE3", "REFERENCE4", "REFERENCE5"):
         if col in out.columns:
             out = out.drop(columns=col)
+    if "REFERENCE1" in out.columns:
+        out = out.rename(columns={"REFERENCE1": "REFERENCE_NUMBER"})
+
+    # Detect the "Custom-N" packaging-type column masquerading as
+    # PACKAGE_COUNT. If the values are non-numeric labels, drop the column
+    # and promote the next one over to PACKAGE_COUNT.
+    if "PACKAGE_COUNT" in out.columns:
+        sample = out["PACKAGE_COUNT"].dropna().astype(str)
+        is_label = (
+            not sample.empty and sample.str.startswith("Custom-").any()
+        )
+        if is_label:
+            idx = list(out.columns).index("PACKAGE_COUNT")
+            out = out.drop(columns="PACKAGE_COUNT")
+            cols = list(out.columns)
+            if idx < len(cols):
+                out = out.rename(columns={cols[idx]: "PACKAGE_COUNT"})
     return out
 
 
@@ -308,6 +364,14 @@ def _read_raw(path: Path) -> pd.DataFrame:
 class WwexParser:
     carrier: ClassVar[str] = "wwex"
     expected_columns: ClassVar[tuple[str, ...]] = WWEX_COLUMNS
+    # Postal codes are stored as text by the parser (to preserve leading
+    # zeros for codes like "07105"); the master sheet wants them as
+    # numbers. The export helper coerces digits-only strings to int and
+    # leaves leading-zero strings as text, which is what we want.
+    export_numeric_columns: ClassVar[tuple[str, ...]] = (
+        "Ship From Postal Code",
+        "Ship To Postal Code",
+    )
 
     def parse(self, path: Path) -> ParseResult:
         path = Path(path)

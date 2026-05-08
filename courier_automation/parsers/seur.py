@@ -228,6 +228,17 @@ class SeurParser:
     carrier: ClassVar[str] = "seur"
     expected_columns: ClassVar[tuple[str, ...]] = SEUR_COLUMNS
     sheet_name: ClassVar[str] = "Sheet1"
+    # Columns the parser keeps as strings (to preserve leading zeros / letters)
+    # but the master Datos sheet stores as numbers. Export coerces these to int
+    # so the sidecar matches the master's display.
+    export_numeric_columns: ClassVar[tuple[str, ...]] = (
+        "Codigo Cliente",
+        "U.A. Exp.",
+        "Centro",
+        "Numero Expedicion",
+        "U.A. Consol.",
+        "Codigo Cliente Consolidado",
+    )
 
     def parse(self, path: Path) -> ParseResult:
         path = Path(path)

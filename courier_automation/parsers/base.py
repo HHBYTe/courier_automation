@@ -103,11 +103,18 @@ def to_clean_string(value: object) -> object:
         return str(value)
     if isinstance(value, str):
         stripped = value.strip()
+        if stripped == "" or stripped == "<NA>":
+            return None
         if stripped.endswith(".0"):
             core = stripped[:-2]
             if core.lstrip("-").isdigit():
                 return core
         return stripped
+    try:
+        if pd.isna(value):
+            return None
+    except (TypeError, ValueError):
+        pass
     return str(value)
 
 

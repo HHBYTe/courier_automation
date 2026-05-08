@@ -14,6 +14,7 @@ when Excel is open or the process dies mid-save.
 
 from __future__ import annotations
 
+import datetime as _dt
 import logging
 import os
 import shutil
@@ -25,7 +26,7 @@ from pathlib import Path
 from typing import Iterator
 
 import pandas as pd
-from openpyxl import load_workbook
+from openpyxl import Workbook, load_workbook
 
 from courier_automation.parsers.base import SchemaMismatch, assert_schema
 
@@ -33,6 +34,13 @@ log = logging.getLogger(__name__)
 
 DATOS_SHEET = "Datos"
 LOCK_SUFFIX = ".courier-automation.lock"
+
+__all__ = [
+    "DATOS_SHEET",
+    "WorkbookAppender",
+    "WorkbookLocked",
+    "export_rows",
+]
 
 
 class WorkbookLocked(RuntimeError):
@@ -171,6 +179,87 @@ class WorkbookAppender:
         os.replace(staging, target)
 
 
+def export_rows(
+    *,
+    output_path: Path,
+    rows: pd.DataFrame,
+    expected_columns: tuple[str, ...],
+    sheet_name: str = DATOS_SHEET,
+    numeric_columns: tuple[str, ...] = (),
+    date_formats: dict[str, str] | None = None,
+    number_formats: dict[str, str] | None = None,
+) -> int:
+    """Write `rows` to a fresh xlsx with `expected_columns` as the header row.
+
+    Use this to stage append-ready output without loading the master workbook.
+    The caller is responsible for ensuring the master's schema matches
+    `expected_columns` (this helper does no live header check).
+    """
+    if output_path.exists():
+        raise FileExistsError(
+            f"export target already exists: {output_path} "
+            f"(deal with the prior export before producing a new one)"
+        )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    numeric_set = set(numeric_columns)
+    fmt_overrides = date_formats or {}
+    num_fmt_overrides = number_formats or {}
+    # Map column index (1-based) → number format. Columns not listed get the
+    # default dd/mm/yyyy when the cell value is a date/datetime.
+    column_format_by_idx = {
+        i + 1: fmt_overrides[col]
+        for i, col in enumerate(expected_columns)
+        if col in fmt_overrides
+    }
+    numeric_format_by_idx = {
+        i + 1: num_fmt_overrides[col]
+        for i, col in enumerate(expected_columns)
+        if col in num_fmt_overrides
+    }
+    wb = Workbook()
+    try:
+        ws = wb.active
+        ws.title = sheet_name
+        ws.append(list(expected_columns))
+        written = 0
+        for record in rows.to_dict(orient="records"):
+            ws.append([
+                _to_numeric_or_passthrough(record[col]) if col in numeric_set
+                else _to_excel_value(record[col])
+                for col in expected_columns
+            ])
+            written += 1
+        # Apply per-column number-format overrides. Date cells default to
+        # the master's Spanish dd/mm/yyyy; numeric cells without an override
+        # are left at General (Excel's default).
+        for row in ws.iter_rows(min_row=2, max_row=written + 1):
+            for cell in row:
+                if isinstance(cell.value, (_dt.date, _dt.datetime)):
+                    cell.number_format = column_format_by_idx.get(
+                        cell.column, "dd/mm/yyyy"
+                    )
+                elif isinstance(cell.value, (int, float)):
+                    fmt = numeric_format_by_idx.get(cell.column)
+                    if fmt is not None:
+                        cell.number_format = fmt
+        wb.save(output_path)
+        return written
+    finally:
+        wb.close()
+
+
+def _to_numeric_or_passthrough(val: object) -> object:
+    """For export numeric columns: turn an all-digit string into int.
+    Leave anything else (None, NaN, embedded letters, leading zeros) as-is so
+    we don't silently drop information."""
+    cleaned = _to_excel_value(val)
+    if isinstance(cleaned, str) and cleaned.isdigit() and not (
+        len(cleaned) > 1 and cleaned.startswith("0")
+    ):
+        return int(cleaned)
+    return cleaned
+
+
 def _to_excel_value(val: object) -> object:
     """Convert a pandas/numpy value into something openpyxl writes cleanly.
 
@@ -181,7 +270,10 @@ def _to_excel_value(val: object) -> object:
     if isinstance(val, pd.Timestamp):
         if pd.isna(val):
             return None
-        return val.to_pydatetime()
+        py = val.to_pydatetime()
+        if py.hour == 0 and py.minute == 0 and py.second == 0 and py.microsecond == 0:
+            return py.date()
+        return py
     try:
         if pd.isna(val):
             return None

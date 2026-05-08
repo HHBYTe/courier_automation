@@ -184,6 +184,18 @@ SQLite-backed registry of ingested files at
   if the same invoice was previously ingested with a *different* hash —
   the "carrier reissued the file" signal. CLI exits **4** on this.
 
+> **Manifest pipeline temporarily disabled (2026-05-08).** While we
+> iterate on per-courier parser fixes (wwex `<NA>` → blank, etc.) and
+> regenerate sidecars repeatedly, the CLI uses a `_NullRegistry` shim
+> in [cli.py](../courier_automation/cli.py) that no-ops `has_seen` /
+> `supersedes` / `register`. The `ManifestRegistry` class, its SQLite
+> file, and the existing manifest rows are left untouched — re-enabling
+> is a one-line swap (`_NullRegistry()` → `ManifestRegistry()` in
+> `_dispatch_ingest`). Re-enable once the parsers stabilise and we
+> resume single-pass ingest. Sidecar collisions are still guarded by
+> `export_rows`'s `FileExistsError` check, so accidental
+> double-exports remain loud.
+
 ### `courier_automation/store/workbook_appender.py`
 
 OneDrive-safe writer for the historical workbook.
