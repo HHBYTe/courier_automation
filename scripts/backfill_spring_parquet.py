@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from courier_automation.parsers.spring import (  # noqa: E402
+    INT_COLUMNS,
     SPRING_HISTORICAL_COLUMNS,
     coerce_spring_dtypes,
 )
@@ -52,7 +53,17 @@ def main() -> int:
     print(f"reading {WORKBOOK.name} (sheet={SHEET})...")
     df = _read_master_readonly(WORKBOOK, SHEET)
     print(f"  {len(df):,} rows, {len(df.columns)} columns")
-    df = coerce_spring_dtypes(df[list(SPRING_HISTORICAL_COLUMNS)].copy())
+    df = df[list(SPRING_HISTORICAL_COLUMNS)].copy()
+    # Master xlsx occasionally carries non-integer typos in int columns
+    # (observed: Items = 3.08, n=1). The parser never sees these because
+    # raw invoices are clean; null them out so the Int64 cast doesn't blow.
+    for col in INT_COLUMNS:
+        s = pd.to_numeric(df[col], errors="coerce")
+        bad = s.notna() & (s != s.round())
+        if bad.any():
+            print(f"  WARN: {int(bad.sum())} non-integer value(s) in {col!r} -> NaN")
+            df.loc[bad, col] = pd.NA
+    df = coerce_spring_dtypes(df)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     dates = pd.to_datetime(df[DATE_COLUMN], errors="coerce")

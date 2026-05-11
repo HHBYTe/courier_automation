@@ -31,6 +31,7 @@ within a single file shares the same Invoice Number / Invoice Date).
 from __future__ import annotations
 
 import logging
+import re
 from datetime import date
 from pathlib import Path
 from typing import ClassVar
@@ -202,6 +203,48 @@ def _is_float_col(name: str) -> bool:
     return any(k in name for k in _FLOAT_KEYWORDS)
 
 
+_DATE_AMBIG_RE = re.compile(r"^(\d{1,2})/(\d{1,2})/(\d{2,4})\b")
+
+
+def _sniff_dayfirst(df: pd.DataFrame) -> bool:
+    """Decide dd/mm vs mm/dd from string-format date cells in `df`.
+
+    UPS ships date columns in three observed formats: ISO `YYYY-MM-DD` in
+    comma-separated CSVs, `DD/MM/YYYY` in the semicolon GB-locale CSV,
+    and `MM/DD/YY` in operator-converted xlsx (the US Excel default on
+    the operator's machine when it converts the CSV). Two pandas-2.2.3
+    gotchas drive the design:
+      1. `dayfirst=True` is *destructive* on ISO strings — pandas flips
+         month/day even though the format is unambiguous, so
+         `2025-03-04 00:00:00` becomes `2025-04-03`. Default must be
+         `dayfirst=False`.
+      2. With `dayfirst=False`, `13/03/25` (a real DD/MM/YYYY date) is
+         silently NaT'd because there's no 13th month — so the semicolon
+         CSV variant still needs `dayfirst=True`.
+    Sniffer returns True only when a slash-format value with first slot
+    > 12 proves DD/MM. Everything else (ISO, MM/DD, ambiguous) gets
+    `dayfirst=False`, which parses both correctly.
+    """
+    for col in df.columns:
+        if not _is_date_col(col):
+            continue
+        s = df[col]
+        # Already-typed datetime columns (e.g. backfill reading master)
+        # need no sniffing.
+        if s.dtype != object and str(s.dtype) != "string":
+            continue
+        for v in s.dropna().astype(str).head(500):
+            m = _DATE_AMBIG_RE.match(v.strip())
+            if not m:
+                continue
+            a, b = int(m.group(1)), int(m.group(2))
+            if a > 12:
+                return True
+            if b > 12:
+                return False
+    return False
+
+
 def _strip_leading_zeros_or_keep(value: object) -> object:
     """For Charge Description Code: digit-only → int, anything else → text."""
     if value is None or (isinstance(value, float) and pd.isna(value)):
@@ -243,6 +286,7 @@ def coerce_ups_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     golden-extraction script."""
     df = df.copy()
     int_cols = set(_INT_COLUMNS)
+    dayfirst = _sniff_dayfirst(df)
     for col in df.columns:
         if col == _ZONE_COL:
             zone = pd.to_numeric(df[col], errors="coerce").astype("Int64")
@@ -257,11 +301,10 @@ def coerce_ups_dtypes(df: pd.DataFrame) -> pd.DataFrame:
         elif col in int_cols:
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
         elif _is_date_col(col):
-            # UPS ships dates in two formats across years: ISO YYYY-MM-DD
-            # in the comma-separated CSVs and DD/MM/YYYY in the semicolon
-            # variant. dayfirst=True correctly parses both (ISO is
-            # unambiguous; the European order disambiguates the rest).
-            df[col] = pd.to_datetime(df[col], errors="coerce", dayfirst=True)
+            # Format varies by source (ISO CSV, DD/MM/YYYY semicolon CSV,
+            # MM/DD/YY operator-converted xlsx). `_sniff_dayfirst` picks
+            # the right interpretation per file; ISO is unaffected.
+            df[col] = pd.to_datetime(df[col], errors="coerce", dayfirst=dayfirst)
         elif _is_float_col(col):
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("float64")
         else:

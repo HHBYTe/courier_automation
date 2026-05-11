@@ -62,6 +62,31 @@ queries) is the destination once three couriers are running cleanly.
 Choosing Option A first lets us prove the parser end-to-end on the cheapest
 possible substrate.
 
+### UPS date-format sniffer (2026-05-08)
+
+UPS ships dates in three observed formats: ISO `YYYY-MM-DD HH:MM:SS` in
+the comma-separated billing CSVs, `DD/MM/YYYY` in the semicolon
+GB-locale variant, and `MM/DD/YY` in operator-converted xlsx (Excel
+on a US-locale machine renders the cell that way when the operator
+converts a CSV by hand). Two pandas 2.2.3 quirks force a per-file
+sniffer in [parsers/ups.py](../courier_automation/parsers/ups.py):
+
+1. `pd.to_datetime(s, dayfirst=True)` flips month/day even on
+   unambiguous ISO strings — `"2025-03-04 00:00:00"` parses to
+   `2025-04-03`. So `dayfirst=True` cannot be the default.
+2. With `dayfirst=False`, real `DD/MM/YYYY` values like `"13/03/25"`
+   silently NaT (no 13th month). So the semicolon CSV path still
+   needs `dayfirst=True`.
+
+`_sniff_dayfirst` reads up to 500 string values out of any date
+column, looks for slash-separated dates, and returns `True` only when
+a first-slot value > 12 proves DD/MM ordering. Everything else (ISO,
+MM/DD, all-ambiguous) gets `dayfirst=False`, which parses ISO and
+MM/DD correctly. The backfill path is unaffected — the master xlsx
+stores dates as native datetime cells, so the sniffer skips them.
+Validated by ingesting UPS 2025-03 from raw xlsx and confirming
+zero per-column differences against the master-derived parquet.
+
 ### Parquet substrate (parallel-write, 2026-05)
 
 Alongside the xlsx sidecar, the writer now emits a per-courier monthly
