@@ -1,6 +1,6 @@
-"""One-shot: backfill historical UPS months from the master workbook into
-`data/ups/<YYYY>-<MM>.parquet`. Rows with no Invoice Date land in
-`data/ups/undated.parquet`.
+"""One-shot: backfill historical Seitrans months from the master workbook
+into `data/seitrans/<YYYY>-<MM>.parquet`. Rows with no DOCUMENTO_DATA land
+in `data/seitrans/undated.parquet`.
 """
 
 from __future__ import annotations
@@ -13,20 +13,20 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
-from courier_automation.parsers.ups import (  # noqa: E402
-    UPS_COLUMNS,
-    coerce_ups_dtypes,
+from courier_automation.parsers.seitrans import (  # noqa: E402
+    SEITRANS_COLUMNS,
+    coerce_seitrans_dtypes,
 )
 from courier_automation.store.workbook_appender import export_parquet  # noqa: E402
 
-CARRIER = "ups"
-DATE_COLUMN = "Invoice Date"
-SHEET = "Data"
+CARRIER = "seitrans"
+DATE_COLUMN = "DOCUMENTO_DATA"
+SHEET = "Datos"
 WORKBOOK = (
-    ROOT / "Operations - Couriers" / "07. UPS (UK)" / "UPS Shippings Report.xlsx"
+    ROOT / "Operations - Couriers" / "04. Seitrans" / "Análisis envíos Seitrans.xlsx"
 )
 OUT_DIR = ROOT / "data" / CARRIER
 
@@ -52,7 +52,7 @@ def main() -> int:
     print(f"reading {WORKBOOK.name} (sheet={SHEET})...")
     df = _read_master_readonly(WORKBOOK, SHEET)
     print(f"  {len(df):,} rows, {len(df.columns)} columns")
-    df = coerce_ups_dtypes(df[list(UPS_COLUMNS)].copy())
+    df = coerce_seitrans_dtypes(df[list(SEITRANS_COLUMNS)].copy())
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     dates = pd.to_datetime(df[DATE_COLUMN], errors="coerce")
@@ -63,13 +63,13 @@ def main() -> int:
     months = 0
     for (year, month), part in dated.groupby([dates.dt.year, dates.dt.month]):
         out_path = OUT_DIR / f"{int(year):04d}-{int(month):02d}.parquet"
-        n = _write_partition(part, out_path, UPS_COLUMNS)
+        n = _write_partition(part, out_path, SEITRANS_COLUMNS)
         print(f"  wrote {n:>6} rows -> {out_path.relative_to(ROOT)}")
         written += n
         months += 1
 
     if not undated.empty:
-        n = _write_partition(undated, OUT_DIR / "undated.parquet", UPS_COLUMNS)
+        n = _write_partition(undated, OUT_DIR / "undated.parquet", SEITRANS_COLUMNS)
         print(f"  wrote {n:>6} rows -> data/{CARRIER}/undated.parquet (no {DATE_COLUMN})")
         written += n
 

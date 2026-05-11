@@ -1,6 +1,6 @@
-"""One-shot: backfill historical Spring months from the master workbook into
-`data/spring/<YYYY>-<MM>.parquet`. Rows with no Invoice Date land in
-`data/spring/undated.parquet`.
+"""One-shot: backfill historical UPS months from the master workbook into
+`data/ups/<YYYY>-<MM>.parquet`. Rows with no Invoice Date land in
+`data/ups/undated.parquet`.
 """
 
 from __future__ import annotations
@@ -13,21 +13,20 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
-from courier_automation.parsers.spring import (  # noqa: E402
-    INT_COLUMNS,
-    SPRING_HISTORICAL_COLUMNS,
-    coerce_spring_dtypes,
+from courier_automation.parsers.ups import (  # noqa: E402
+    UPS_COLUMNS,
+    coerce_ups_dtypes,
 )
 from courier_automation.store.workbook_appender import export_parquet  # noqa: E402
 
-CARRIER = "spring"
+CARRIER = "ups"
 DATE_COLUMN = "Invoice Date"
-SHEET = "INVOICES"
+SHEET = "Data"
 WORKBOOK = (
-    ROOT / "Operations - Couriers" / "13. Spring (FR)" / "Shipment Report.xlsx"
+    ROOT / "Operations - Couriers" / "07. UPS (UK)" / "UPS Shippings Report.xlsx"
 )
 OUT_DIR = ROOT / "data" / CARRIER
 
@@ -53,17 +52,7 @@ def main() -> int:
     print(f"reading {WORKBOOK.name} (sheet={SHEET})...")
     df = _read_master_readonly(WORKBOOK, SHEET)
     print(f"  {len(df):,} rows, {len(df.columns)} columns")
-    df = df[list(SPRING_HISTORICAL_COLUMNS)].copy()
-    # Master xlsx occasionally carries non-integer typos in int columns
-    # (observed: Items = 3.08, n=1). The parser never sees these because
-    # raw invoices are clean; null them out so the Int64 cast doesn't blow.
-    for col in INT_COLUMNS:
-        s = pd.to_numeric(df[col], errors="coerce")
-        bad = s.notna() & (s != s.round())
-        if bad.any():
-            print(f"  WARN: {int(bad.sum())} non-integer value(s) in {col!r} -> NaN")
-            df.loc[bad, col] = pd.NA
-    df = coerce_spring_dtypes(df)
+    df = coerce_ups_dtypes(df[list(UPS_COLUMNS)].copy())
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     dates = pd.to_datetime(df[DATE_COLUMN], errors="coerce")
@@ -74,15 +63,13 @@ def main() -> int:
     months = 0
     for (year, month), part in dated.groupby([dates.dt.year, dates.dt.month]):
         out_path = OUT_DIR / f"{int(year):04d}-{int(month):02d}.parquet"
-        n = _write_partition(part, out_path, SPRING_HISTORICAL_COLUMNS)
+        n = _write_partition(part, out_path, UPS_COLUMNS)
         print(f"  wrote {n:>6} rows -> {out_path.relative_to(ROOT)}")
         written += n
         months += 1
 
     if not undated.empty:
-        n = _write_partition(
-            undated, OUT_DIR / "undated.parquet", SPRING_HISTORICAL_COLUMNS
-        )
+        n = _write_partition(undated, OUT_DIR / "undated.parquet", UPS_COLUMNS)
         print(f"  wrote {n:>6} rows -> data/{CARRIER}/undated.parquet (no {DATE_COLUMN})")
         written += n
 
