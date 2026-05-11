@@ -24,7 +24,7 @@ five other shipping datasets unchanged except for paths.
 
 ## Substrate layout
 
-After running `python scripts/backfill_<carrier>_parquet.py` and one
+After running `python scripts/backfill/backfill_<carrier>_parquet.py` and one
 or more `python -m courier_automation.cli ingest <carrier>` invocations:
 
 ```
@@ -45,7 +45,7 @@ data/
 
 The monthly parquets are written by `export_parquet` in
 `courier_automation/store/workbook_appender.py`; the lookup CSVs were
-dumped one-off by `scripts/extract_seur_lookups.py`.
+dumped one-off by `scripts/lookups/extract_seur_lookups.py`.
 
 ## Fact-table repoint (the Datos query)
 
@@ -110,10 +110,18 @@ in
     Typed
 ```
 
-**Derived** queries should reference `Datos` directly so they
-auto-refresh with the parquet (snapshotting them as CSV would freeze
-the customer list at extraction time, breaking joins for any new
-shipment whose recipient code isn't in the snapshot):
+**Derived** queries have two viable shapes:
+
+1. **Re-derive in Power Query at refresh time** — query references
+   `Datos` directly. Auto-syncs with the parquet, no extra moving parts.
+2. **Re-derive in a Python script and re-load the CSV** — run
+   `python scripts/lookups/derive_seur_lookups.py` after every ingest
+   to refresh `data/seur/other/Códigos IC.csv` and
+   `data/seur/other/SERVICIOS.csv`. Power BI then loads them with the
+   same Csv.Document recipe as the static lookups. Useful if you don't
+   want the Power Query to depend on the Datos query's load order.
+
+Snippets for **option 1** (in-Power-Query derivation):
 
 ```m
 // Códigos IC — distinct customers seen in Datos
@@ -224,9 +232,14 @@ the query is cleaner than maintaining it.
 ## Related code and docs
 
 - `courier_automation/store/workbook_appender.py` — `export_parquet`.
-- `scripts/backfill_<carrier>_parquet.py` — per-courier historical
-  backfill scripts.
-- `scripts/extract_seur_lookups.py` — one-off dump of Seur's lookup
-  sheets to `data/seur/other/`.
+- `scripts/backfill/backfill_<carrier>_parquet.py` — per-courier
+  historical backfill scripts (run `backfill_all_parquet.py` to do
+  every carrier in one shot).
+- `scripts/lookups/extract_seur_lookups.py` — one-off dump of Seur's
+  lookup sheets from the master xlsx into `data/seur/other/`.
+- `scripts/lookups/derive_seur_lookups.py` — re-derive the non-static
+  Seur lookups (Códigos IC, SERVICIOS) from the parquet substrate.
+  Run after every ingest if you load these via CSV in Power BI rather
+  than computing them inline from Datos.
 - `docs/architecture.md` — overall pipeline, parquet substrate, UPS
   date sniffer.

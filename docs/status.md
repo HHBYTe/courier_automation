@@ -2,8 +2,8 @@
 
 ## TL;DR
 
-**Six courier parsers in tree:** Seur, Seitrans, Correos Express, UPS (UK),
-Wwex (US), Spring (FR). Three have full pipelines (parser → CLI → golden test
+**Seven courier parsers in tree:** Seur, Seitrans, Correos Express, UPS (UK),
+Wwex (US), Spring (FR), Royal Mail (UK). Three have full pipelines (parser → CLI → golden test
 against real Datos); three are at varying degrees of partial-implementation.
 n8n / Power Automate orchestrator not started; no parser has yet written to a
 real production workbook.
@@ -18,6 +18,7 @@ real production workbook.
 | UPS (UK) | ✅ CSV, 250 cols | ✅ | ✅ 3 rows / 1 fixture | Place Holder columns excluded. Numeric-string normalisation handles leading-zero/`.0` mismatches. |
 | Wwex (US) | ✅ multi-format, 42→44 mapping | ✅ | ✅ 4 stable cols / 425 rows | Heavy operator post-processing on the historical sheet (Ship Date filled from external sources, addresses cleaned, weights overridden) — golden compares only the operator-stable columns: `Source System`, `Account#`, `Tracking#`, `Package Count`. |
 | Spring (FR) | ⚠️ raw passthrough | ❌ | ⏸ deferred | 22-col single-sheet parser works against real fixtures; mapping to the historical 24-col `INVOICES` schema and the separate 114-col `REPORT` operations stream are TODO. |
+| Royal Mail (UK) | ✅ pipe-CSV, 34→17 mapping | ✅ | n/a (no master) | Pipe-separated cp1252 invoices with three row kinds under one header: one invoice-summary row, one row per docket, and free-text surcharge/total sub-rows. Parser drops sub-rows and propagates invoice fields (`Document Number`, `Account Number`, `Invoice Date`, `Pay By`) onto each docket. No historical workbook exists yet — golden deferred until one is created. |
 
 ## What's done
 
@@ -31,17 +32,18 @@ real production workbook.
 | `parsers/correos.py` | ✅ Done. 51-col raw → 58-col historical. Header band on rows 0-2 (real header is row 2). 6 derived columns (`Año, Mes, Tipo Bulto, Tipo Exp., Q Expediciones, País`) computed from `F.ADMISION` / `PESO KILOS` / `C. PAIS`. Spanish 5-digit postcode normaliser (`_to_postcode`). |
 | `parsers/ups.py` | ✅ Done. Headerless 250-column CSVs. Column tuple hard-coded from production `Data` sheet. Auto-detected dtype groups by name keywords (`Date`, `Amount`, `Weight`, …). Each CSV asserts a single Invoice Number. `Invoice Number` coerced to Int64 to match production storage. |
 | `parsers/wwex.py` | ✅ Done. Multi-format reader (`.xlsx`, `.xls` via xlrd, `.csv` with delimiter sniffed between `;` and `,`). v2-export reshape handles two `Custom-N` packaging-label variants: older xlsx exports shift the numeric count one column right under anomalous names (`Column1` / `Unnamed: 33` / `PACKAGE_COUNT.1`); the Mar/Apr 2026 CSV variant keeps canonical column order and encodes the count inside the label (`Custom-4` → 4). 42-col raw → 44-col historical mapping reverse-engineered: 21 direct renames, derived `Source System` constant + `Domestic/International` from country comparison + `Weight per package = TOTAL_WEIGHT / PACKAGE_COUNT` + `Ship Date` coalesced across SHIPMENT_DATE → ACTUAL_PICKUP_DATE → CREATION_DATE → ACTUAL_DELIVERY_DATE. 20 operator-filled columns emitted as None. |
+| `parsers/royalmail.py` | ✅ Done. Pipe-separated cp1252 CSV. 34-col raw with three row kinds: one invoice summary (`Document Number`/`Account Number`/`Invoice Date` populated, docket cols blank), one row per docket (docket cols populated, invoice cols blank), and free-text sub-rows for surcharges/totals (no `Docket Number`). Parser keeps only docket rows, propagates the 4 invoice fields onto each, and derives `Año`/`Mes` from `Posting Date` → 17-col output. No historical workbook exists; the sidecar lands beside a placeholder `Royal Mail Shipments Report.xlsx` stem. |
 | `parsers/spring.py` | ⚠️ Partial. 22-col single-sheet parser; sheet name varies per invoice (read by index 0). Tolerant of extra portal-inserted metadata columns (observed Mar 2026: `ALBARÁN`, `EMRPRESA`) — any non-canonical columns are dropped before schema validation. Mapping to historical 24-col `INVOICES` schema and the 114-col `REPORT` operations stream are TODO. |
 | `parsers/plausibility.py` | ✅ Done. Three rule kinds (`no_null`, `min_non_null_rate`, `date_range`), aggregated error message. |
 | `manifest/registry.py` | ✅ Done. SQLite + WAL, idempotent `register`, `supersedes` for reissue detection. |
 | `store/workbook_appender.py` | ✅ Done. Sidecar lock, working-copy in `%TEMP%`, atomic replace, schema validation against the live workbook before writing. |
-| `cli.py` | ✅ Done. `ingest seur`, `ingest seitrans`, `ingest correos`, `ingest ups`, `ingest wwex` — Seur/Seitrans/Correos use `--file/--month/--folder/--dry-run`; UPS and Wwex use `--file/--folder/--dry-run` (their folder layouts have unique conventions). UPS writes to the `Data` sheet (UPS-specific naming), Wwex also writes to `Data`. Spring **not yet wired into the CLI** pending column mapping. Exit codes 0–5. |
-| `scripts/extract_seur_golden.py` | ✅ Done. Matches on `(year, trailing-int)`. |
-| `scripts/extract_seitrans_golden.py` | ✅ Done. Matches on `(year, DOCUMENTO_NUMERO)`. |
-| `scripts/extract_correos_golden.py` | ✅ Done. Matches on the `Nº ENVIO` set. |
-| `scripts/extract_ups_golden.py` | ✅ Done. Matches on Invoice Number (normalised to int across both sides). |
-| `scripts/extract_wwex_golden.py` | ✅ Done. Matches on the `Tracking#` set. |
-| `scripts/_find_golden_candidates.py` | ✅ Done (Seur dev tool). |
+| `cli.py` | ✅ Done. `ingest seur`, `ingest seitrans`, `ingest correos`, `ingest ups`, `ingest wwex`, `ingest spring`, `ingest royalmail` — all share `--file/--month/--folder/--workbook/--dry-run/--format`. UPS and Wwex write to the `Data` sheet (UPS-specific naming); Royal Mail writes to `Datos` (no master sheet exists yet). Exit codes 0–5. |
+| `scripts/golden/extract_seur_golden.py` | ✅ Done. Matches on `(year, trailing-int)`. |
+| `scripts/golden/extract_seitrans_golden.py` | ✅ Done. Matches on `(year, DOCUMENTO_NUMERO)`. |
+| `scripts/golden/extract_correos_golden.py` | ✅ Done. Matches on the `Nº ENVIO` set. |
+| `scripts/golden/extract_ups_golden.py` | ✅ Done. Matches on Invoice Number (normalised to int across both sides). |
+| `scripts/golden/extract_wwex_golden.py` | ✅ Done. Matches on the `Tracking#` set. |
+| `scripts/golden/_find_golden_candidates.py` | ✅ Done (Seur dev tool). |
 
 ### Tests (99 passing)
 

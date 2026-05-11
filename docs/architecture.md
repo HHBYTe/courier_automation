@@ -95,7 +95,7 @@ The master xlsx remains authoritative; parquet is the staging layer for
 the eventual DuckDB cutover. Both are written by default
 (`--format both`); use `--format xlsx` or `--format parquet` to opt out
 of either side. Historical months are seeded by one-shot
-`scripts/backfill_<carrier>_parquet.py` runs that read the master sheet,
+`scripts/backfill/backfill_<carrier>_parquet.py` runs that read the master sheet,
 re-apply the parser's `coerce_<carrier>_dtypes`, and partition by date.
 Power BI repoint and master decommission stay parked.
 
@@ -272,7 +272,7 @@ under the courier's Facturas folder. Exit codes:
 
 `--dry-run` parses and manifest-checks without writing.
 
-### `scripts/extract_seur_golden.py` and `scripts/extract_seitrans_golden.py`
+### `scripts/golden/extract_seur_golden.py` and `scripts/golden/extract_seitrans_golden.py`
 
 One-off scripts (run by the operator, not in the runtime). Each reads
 `Datos` from the courier's production workbook, slices to rows whose
@@ -292,7 +292,7 @@ Identity tuples differ per courier:
 Both scripts read from `Operations - Couriers/` but **only write** to
 `tests/fixtures/.../golden/` — the production folder is read-only.
 
-### `scripts/_find_golden_candidates.py`
+### `scripts/golden/_find_golden_candidates.py`
 
 Dev-only tool (`_`-prefixed; ruff-excluded). Cross-references invoice
 numbers in Seur `Datos` against files in

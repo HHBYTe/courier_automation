@@ -35,6 +35,7 @@ from courier_automation.parsers.seur import SeurParser
 from courier_automation.parsers.dachser import DachserParser
 from courier_automation.parsers.seitrans import SeitransParser
 from courier_automation.parsers.spring import SpringParser
+from courier_automation.parsers.royalmail import RoyalMailParser
 from courier_automation.parsers.ups import UpsParser
 from courier_automation.parsers.wwex import WwexParser
 from courier_automation.store.workbook_appender import (
@@ -95,6 +96,12 @@ DEFAULT_SPRING_WORKBOOK = Path(
     "Operations - Couriers/13. Spring (FR)/Shipment Report.xlsx"
 )
 DEFAULT_SPRING_FACTURAS = Path("Operations - Couriers/13. Spring (FR)/Facturas")
+# No historical workbook exists for Royal Mail yet; the sidecar lands
+# alongside this stem so the operator can promote it when one is created.
+DEFAULT_ROYALMAIL_WORKBOOK = Path(
+    "Operations - Couriers/12. Royal Mail (UK)/Royal Mail Shipments Report.xlsx"
+)
+DEFAULT_ROYALMAIL_FACTURAS = Path("Operations - Couriers/12. Royal Mail (UK)/Facturas")
 
 # Manifest pipeline is disabled while we iterate on parser fixes — see
 # docs/architecture.md. The shim below matches the ManifestRegistry surface
@@ -409,6 +416,52 @@ def ingest_wwex(
         parser=WwexParser(),
         workbook=workbook,
         sheet_name="Data",
+        dry_run=dry_run,
+        write_master=write_master,
+        format=format,
+    )
+
+
+@ingest_app.command("royalmail")
+def ingest_royalmail(
+    file: Optional[Path] = typer.Option(
+        None, "--file", "-f",
+        help="Path to a single raw Royal Mail invoice .csv.",
+    ),
+    month: Optional[str] = typer.Option(
+        None, "--month",
+        help="Month to ingest in YYYY-MM form (scans the folder).",
+    ),
+    folder: Optional[Path] = typer.Option(
+        None, "--folder",
+        help=f"Root Facturas folder (default: {DEFAULT_ROYALMAIL_FACTURAS}).",
+    ),
+    workbook: Path = typer.Option(
+        DEFAULT_ROYALMAIL_WORKBOOK, "--workbook", "-w",
+        help="Target Royal Mail historical workbook (does not yet exist; the "
+             "sidecar lands beside this stem).",
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run",
+        help="Parse + manifest-check only; never write anywhere. "
+             "Only meaningful with --write-master.",
+    ),
+    write_master: bool = WRITE_MASTER_OPTION,
+    format: ExportFormat = FORMAT_OPTION,
+) -> None:
+    """Ingest one or many Royal Mail invoice files (default: sidecar)."""
+    _setup_logging()
+    files = _resolve_files(
+        file=file, month=month, folder=folder,
+        default_facturas=DEFAULT_ROYALMAIL_FACTURAS,
+        file_globs=("*.csv",),
+        name_filter=lambda p: "invoice" in p.name.lower(),
+    )
+    _run_ingest(
+        files=files,
+        parser=RoyalMailParser(),
+        workbook=workbook,
+        sheet_name=DATOS_SHEET,
         dry_run=dry_run,
         write_master=write_master,
         format=format,

@@ -191,7 +191,7 @@ Correos Express → VASP → Lynda's → etc. For each carrier:
 4. Mirror `tests/parsers/test_<carrier>.py` and the conftest's
    `real_<carrier>_invoice` parametrized fixture.
 5. Once one or two real invoices land in fixtures, write
-   `scripts/extract_<carrier>_golden.py` (mirror the Seur or Seitrans
+   `scripts/golden/extract_<carrier>_golden.py` (mirror the Seur or Seitrans
    one) and run it against the historical workbook. **Expect surprises**
    — every drift the Seur and Seitrans golden tests caught will probably
    recur in some shape.
