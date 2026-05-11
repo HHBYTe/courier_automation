@@ -21,6 +21,8 @@ import datetime as dt
 import enum
 import logging
 import re
+import subprocess
+import sys
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -727,9 +729,39 @@ def _ingest_export(
         )
         written = pq_written if written == 0 else written
         typer.echo(f"exported {pq_written} rows to {parquet_path}")
+        _run_derive_hook(parser.carrier)
     typer.echo(
         f"done: {appended} ingested, {skipped} skipped, {written} rows exported"
     )
+
+
+def _run_derive_hook(carrier: str) -> None:
+    """Run `scripts/lookups/derive_<carrier>_lookups.py` if it exists.
+
+    Lets the parquet writer drive the per-carrier derived-lookup CSVs
+    (e.g. Seur's Códigos IC, SERVICIOS) as a one-step ingest. Carriers
+    without a derive script are simply skipped. Failures log a warning
+    but don't fail the ingest — the parquet is already on disk.
+    """
+    repo_root = Path(__file__).resolve().parent.parent
+    script = repo_root / "scripts" / "lookups" / f"derive_{carrier}_lookups.py"
+    if not script.is_file():
+        return
+    typer.echo(f"running post-ingest derive: {script.relative_to(repo_root)}")
+    result = subprocess.run(
+        [sys.executable, str(script)],
+        cwd=str(repo_root),
+        capture_output=True,
+        text=True,
+    )
+    if result.stdout:
+        for line in result.stdout.rstrip().splitlines():
+            typer.echo(f"  {line}")
+    if result.returncode != 0:
+        log.warning(
+            "derive hook for %s exited %d: %s",
+            carrier, result.returncode, result.stderr.strip(),
+        )
 
 
 def _month_stamp(files: list[Path]) -> str:
