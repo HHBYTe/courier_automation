@@ -300,13 +300,16 @@ def coerce_wwex_dtypes(df: pd.DataFrame) -> pd.DataFrame:
 #      Jan 2026 and Nov 2025). Only REFERENCE1 carries data; the rest are
 #      empty. Keep #1, drop the rest.
 #   2. A "packaging type" column was inserted under the existing
-#      PACKAGE_COUNT name (containing labels like "Custom-1", "Custom-3"),
-#      pushing the real numeric package count to the next column. That
-#      next column has different names depending on the file: "Column1"
-#      (Feb 2026), "Unnamed: 33" (Jan 2026), or "PACKAGE_COUNT.1" (Nov
-#      2025 — pandas auto-suffix for duplicated headers).
-# Reshape to the canonical 42-col layout: drop the label, promote the
-# numeric column to PACKAGE_COUNT.
+#      PACKAGE_COUNT name (containing labels like "Custom-1", "Custom-3").
+#      Two sub-variants observed:
+#      (a) The real numeric count was pushed to a new next column with an
+#          anomalous name: "Column1" (Feb 2026 xlsx), "Unnamed: 33" (Jan
+#          2026), or "PACKAGE_COUNT.1" (Nov 2025 pandas auto-suffix).
+#          Drop the label column and promote the numeric column.
+#      (b) New SpeedShip CSV exports (Mar/Apr 2026) keep the canonical
+#          header order — TOTAL_WEIGHT, TOTAL_RATED_WEIGHT, ... sit in
+#          their named columns — and encode the count *inside* the label
+#          itself ("Custom-4" → 4 packages). Extract N from the label.
 def _reshape_v2_to_v1(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
     for col in ("REFERENCE2", "REFERENCE3", "REFERENCE4", "REFERENCE5"):
@@ -325,10 +328,20 @@ def _reshape_v2_to_v1(df: pd.DataFrame) -> pd.DataFrame:
         )
         if is_label:
             idx = list(out.columns).index("PACKAGE_COUNT")
-            out = out.drop(columns="PACKAGE_COUNT")
-            cols = list(out.columns)
-            if idx < len(cols):
-                out = out.rename(columns={cols[idx]: "PACKAGE_COUNT"})
+            next_col = out.columns[idx + 1] if idx + 1 < len(out.columns) else None
+            # Variant (a): real count lives in the next column under an
+            # anomalous name. Variant (b): the canonical next column
+            # (TOTAL_WEIGHT) is already in place — extract N from "Custom-N".
+            if next_col in {"Column1", "Unnamed: 33", "PACKAGE_COUNT.1"}:
+                out = out.drop(columns="PACKAGE_COUNT")
+                cols = list(out.columns)
+                if idx < len(cols):
+                    out = out.rename(columns={cols[idx]: "PACKAGE_COUNT"})
+            else:
+                out["PACKAGE_COUNT"] = (
+                    out["PACKAGE_COUNT"].astype(str)
+                    .str.extract(r"Custom-(\d+)", expand=False)
+                )
     return out
 
 
@@ -348,13 +361,18 @@ def _read_raw(path: Path) -> pd.DataFrame:
             usecols=range(len(WWEX_RAW_COLUMNS)),
         )
     if suffix == ".csv":
-        # Wwex CSVs from the SpeedShip export are semicolon-separated.
-        return pd.read_csv(
-            path, sep=";", dtype=str, encoding="utf-8",
-            usecols=range(len(WWEX_RAW_COLUMNS)),
-            engine="python",
-            quoting=csv.QUOTE_MINIMAL,
+        # SpeedShip CSV exports have shipped as both `;`- and `,`-separated
+        # at different times; sniff the header row.
+        with open(path, "r", encoding="utf-8", newline="") as f:
+            header = f.readline()
+        sep = ";" if header.count(";") > header.count(",") else ","
+        df = pd.read_csv(
+            path, sep=sep, dtype=str, encoding="utf-8",
+            engine="python", quoting=csv.QUOTE_MINIMAL,
         )
+        if "REFERENCE1" in df.columns:
+            df = _reshape_v2_to_v1(df)
+        return df.iloc[:, : len(WWEX_RAW_COLUMNS)]
     raise ParserError(
         f"Wwex parser doesn't recognise extension {suffix!r}; "
         "expected .xlsx, .xls, or .csv."

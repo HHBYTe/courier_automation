@@ -145,6 +145,14 @@ class SpringParser:
         except Exception as e:  # noqa: BLE001
             raise ParserError(f"could not read {path.name}: {e}") from e
 
+        # Spring's portal occasionally inserts extra metadata columns
+        # (observed Mar 2026: "ALBARÁN" duplicating Customer Ref, and
+        # "EMRPRESA" — typo of EMPRESA — the buyer company name). Drop
+        # any non-canonical columns before schema validation.
+        extras = [c for c in df.columns if c not in SPRING_RAW_COLUMNS]
+        if extras:
+            log.info("spring parser: dropping extra columns %s", extras)
+            df = df.drop(columns=extras)
         assert_schema(df, SPRING_RAW_COLUMNS)
         df = _add_derived(df)
         df = coerce_spring_dtypes(df)
