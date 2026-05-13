@@ -1,0 +1,150 @@
+// ===================================================================
+// Courier Automation — Power BI DAX measure library
+// Paste these into Power BI Desktop. Create a "Measures" table first
+// (Home → Enter Data → table name "Measures", one dummy column, OK)
+// and right-click → New measure, then paste each block.
+// ===================================================================
+//
+// Conventions
+// - Every cost measure is implicitly filtered by the page-level
+//   currency slicer; do NOT sum cost measures across currencies.
+// - Measures that produce non-meaningful cross-currency results
+//   return BLANK() when more than one currency is in the filter context.
+
+
+// -------------------------------------------------------------------
+// Currency guard
+// -------------------------------------------------------------------
+
+[Currency in Context] =
+SELECTEDVALUE ( unified_shipments[currency], "MULTIPLE" )
+
+[Is Single Currency] =
+IF ( [Currency in Context] = "MULTIPLE", FALSE, TRUE )
+
+
+// -------------------------------------------------------------------
+// Volume measures (currency-agnostic; safe to slice freely)
+// -------------------------------------------------------------------
+
+[Total Shipments] =
+COUNTROWS ( unified_shipments )
+
+[Total Bultos] =
+SUM ( unified_shipments[bultos_count] )
+
+[Total Weight (kg)] =
+SUM ( unified_shipments[weight_kg] )
+
+[Bultos per Shipment] =
+DIVIDE ( [Total Bultos], [Total Shipments] )
+
+[Avg Weight per Shipment (kg)] =
+DIVIDE ( [Total Weight (kg)], [Total Shipments] )
+
+
+// -------------------------------------------------------------------
+// Cost measures — guarded by currency
+// -------------------------------------------------------------------
+
+[Gross Cost] =
+IF ( [Is Single Currency], SUM ( unified_shipments[total_net] ) )
+
+[Base Cost] =
+IF ( [Is Single Currency], SUM ( unified_shipments[base_cost] ) )
+
+[Fuel Surcharge] =
+IF ( [Is Single Currency], SUM ( unified_shipments[fuel_surcharge] ) )
+
+[Other Surcharges] =
+IF ( [Is Single Currency], SUM ( unified_shipments[other_surcharges] ) )
+
+[Refund Total] =
+IF (
+    [Is Single Currency],
+    CALCULATE (
+        SUM ( refunds[total_net] ),
+        TREATAS ( VALUES ( unified_shipments[currency] ), refunds[currency] )
+    )
+)
+
+[Net Cost] =
+[Gross Cost] + COALESCE ( [Refund Total], 0 )
+
+
+// -------------------------------------------------------------------
+// Ratios (currency-agnostic via DIVIDE within single-currency context)
+// -------------------------------------------------------------------
+
+[Cost per Shipment] =
+DIVIDE ( [Gross Cost], [Total Shipments] )
+
+[Cost per Bulto] =
+DIVIDE ( [Gross Cost], [Total Bultos] )
+
+[Cost per kg] =
+DIVIDE ( [Gross Cost], [Total Weight (kg)] )
+
+[Fuel % of Net] =
+DIVIDE ( [Fuel Surcharge], [Gross Cost] )
+
+[Surcharge % of Net] =
+DIVIDE ( [Fuel Surcharge] + [Other Surcharges], [Gross Cost] )
+
+[Refund Rate %] =
+DIVIDE ( -[Refund Total], [Gross Cost] )
+
+
+// -------------------------------------------------------------------
+// Time intelligence
+// -------------------------------------------------------------------
+
+[Shipments MTD] =
+CALCULATE ( [Total Shipments], DATESMTD ( dim_date[date] ) )
+
+[Shipments YTD] =
+CALCULATE ( [Total Shipments], DATESYTD ( dim_date[date] ) )
+
+[Gross Cost MTD] =
+CALCULATE ( [Gross Cost], DATESMTD ( dim_date[date] ) )
+
+[Gross Cost YTD] =
+CALCULATE ( [Gross Cost], DATESYTD ( dim_date[date] ) )
+
+[Gross Cost LY] =
+CALCULATE ( [Gross Cost], SAMEPERIODLASTYEAR ( dim_date[date] ) )
+
+[YoY Δ] =
+[Gross Cost] - [Gross Cost LY]
+
+[YoY %] =
+DIVIDE ( [YoY Δ], [Gross Cost LY] )
+
+[Shipments LY] =
+CALCULATE ( [Total Shipments], SAMEPERIODLASTYEAR ( dim_date[date] ) )
+
+[Shipments YoY %] =
+DIVIDE ( [Total Shipments] - [Shipments LY], [Shipments LY] )
+
+
+// -------------------------------------------------------------------
+// Distribution / mix helpers
+// -------------------------------------------------------------------
+
+[Active Carriers] =
+DISTINCTCOUNT ( unified_shipments[carrier] )
+
+[Active Destinations] =
+DISTINCTCOUNT ( unified_shipments[destination_country] )
+
+[% of Total Shipments] =
+DIVIDE (
+    [Total Shipments],
+    CALCULATE ( [Total Shipments], ALL ( unified_shipments[carrier] ) )
+)
+
+[% of Total Cost] =
+DIVIDE (
+    [Gross Cost],
+    CALCULATE ( [Gross Cost], ALL ( unified_shipments[carrier] ) )
+)

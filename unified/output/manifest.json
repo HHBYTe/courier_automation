@@ -1,0 +1,172 @@
+{
+  "built_at": "2026-05-13T08:44:15.495589+00:00",
+  "total_kept": 362790,
+  "total_refunds": 3284,
+  "total_rejected": 15677,
+  "carriers": [
+    {
+      "carrier": "correos",
+      "files": 29,
+      "raw_rows": 53076,
+      "kept": 52251,
+      "refunds": 0,
+      "rejected": 825,
+      "reject_breakdown": {
+        "posting_date null": 819,
+        "total_net <= 0": 6
+      }
+    },
+    {
+      "carrier": "seitrans",
+      "files": 29,
+      "raw_rows": 3464,
+      "kept": 1988,
+      "refunds": 0,
+      "rejected": 1476,
+      "reject_breakdown": {
+        "posting_date null": 1476
+      }
+    },
+    {
+      "carrier": "seur",
+      "files": 90,
+      "raw_rows": 283889,
+      "kept": 267326,
+      "refunds": 3274,
+      "rejected": 13289,
+      "reject_breakdown": {
+        "Tipo Línea = VENTA": 11967,
+        "Tipo Línea = MANUALES": 1280,
+        "bultos_count < 1": 29,
+        "shipment_id null": 12,
+        "total_net <= 0": 1
+      }
+    },
+    {
+      "carrier": "dachser",
+      "files": 2,
+      "raw_rows": 462,
+      "kept": 424,
+      "refunds": 10,
+      "rejected": 28,
+      "reject_breakdown": {
+        "bultos_count < 1": 18,
+        "Sal./Lleg. = L": 10
+      }
+    },
+    {
+      "carrier": "spring",
+      "files": 7,
+      "raw_rows": 2626,
+      "kept": 1216,
+      "refunds": 0,
+      "rejected": 0,
+      "reject_breakdown": {}
+    },
+    {
+      "carrier": "ups",
+      "files": 40,
+      "raw_rows": 87200,
+      "kept": 17970,
+      "refunds": 0,
+      "rejected": 0,
+      "reject_breakdown": {}
+    },
+    {
+      "carrier": "wwex",
+      "files": 47,
+      "raw_rows": 21674,
+      "kept": 21615,
+      "refunds": 0,
+      "rejected": 59,
+      "reject_breakdown": {
+        "total_net <= 0": 57,
+        "shipment_id null": 1,
+        "bultos_count < 1": 1
+      }
+    }
+  ],
+  "kept_summary": {
+    "by_carrier": [
+      {
+        "carrier": "correos",
+        "rows": 52251,
+        "bultos": 53985,
+        "total_net": 182725.31,
+        "date_min": "2022-10-26",
+        "date_max": "2026-02-27"
+      },
+      {
+        "carrier": "dachser",
+        "rows": 424,
+        "bultos": 452,
+        "total_net": 23752.77,
+        "date_min": "2025-10-01",
+        "date_max": "2025-12-31"
+      },
+      {
+        "carrier": "seitrans",
+        "rows": 1988,
+        "bultos": 3375,
+        "total_net": 177255.69,
+        "date_min": "2023-11-30",
+        "date_max": "2026-03-31"
+      },
+      {
+        "carrier": "seur",
+        "rows": 267326,
+        "bultos": 345064,
+        "total_net": 1854272.87,
+        "date_min": "2018-11-29",
+        "date_max": "2026-04-30"
+      },
+      {
+        "carrier": "spring",
+        "rows": 1216,
+        "bultos": 1216,
+        "total_net": 13371.29,
+        "date_min": "2025-11-20",
+        "date_max": "2026-04-11"
+      },
+      {
+        "carrier": "ups",
+        "rows": 17970,
+        "bultos": 18712,
+        "total_net": 176063.0,
+        "date_min": "2022-12-28",
+        "date_max": "2026-03-20"
+      },
+      {
+        "carrier": "wwex",
+        "rows": 21615,
+        "bultos": 23292,
+        "total_net": 380950.72,
+        "date_min": "2022-04-25",
+        "date_max": "2026-02-28"
+      }
+    ],
+    "by_currency": {
+      "EUR": 323205,
+      "GBP": 17970,
+      "USD": 21615
+    },
+    "date_range": {
+      "min": "2018-11-29",
+      "max": "2026-04-30"
+    }
+  },
+  "refunds_summary": {
+    "by_carrier": [
+      {
+        "carrier": "dachser",
+        "rows": 10,
+        "total": -700.91
+      },
+      {
+        "carrier": "seur",
+        "rows": 3274,
+        "total": -15604.060000000001
+      }
+    ]
+  }
+}
