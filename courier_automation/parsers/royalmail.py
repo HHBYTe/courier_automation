@@ -99,6 +99,10 @@ INVOICE_COLUMNS: tuple[str, ...] = (
     "Account Number",
     "Invoice Date",
     "Pay By",
+    "Total Net",
+    "Total VAT",
+    "Total Gross",
+    "Customer Address",
 )
 
 # Docket-level columns kept verbatim.
@@ -121,7 +125,7 @@ DERIVED_COLUMNS: tuple[str, ...] = ("Año", "Mes")
 ROYALMAIL_COLUMNS: tuple[str, ...] = (
     INVOICE_COLUMNS + DOCKET_COLUMNS + DERIVED_COLUMNS
 )
-assert len(ROYALMAIL_COLUMNS) == 17
+assert len(ROYALMAIL_COLUMNS) == 21
 
 DATE_COLUMNS: tuple[str, ...] = ("Invoice Date", "Posting Date")
 INT_COLUMNS: tuple[str, ...] = ("Año", "Mes")
@@ -130,6 +134,9 @@ FLOAT_COLUMNS: tuple[str, ...] = (
     "Weight (kg)",
     "Unit Cost",
     "Net Value",
+    "Total Net",
+    "Total VAT",
+    "Total Gross",
 )
 
 PLAUSIBILITY_NO_NULL: tuple[str, ...] = (

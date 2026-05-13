@@ -18,7 +18,7 @@ _REAL = sorted(_REAL_DIR.glob("*.csv")) if _REAL_DIR.exists() else []
 
 def test_royalmail_columns_constants():
     assert len(ROYALMAIL_RAW_COLUMNS) == 34
-    assert len(ROYALMAIL_COLUMNS) == 17
+    assert len(ROYALMAIL_COLUMNS) == 21
     assert "Document Number" in ROYALMAIL_COLUMNS
     assert "Docket Number" in ROYALMAIL_COLUMNS
     assert "Año" in ROYALMAIL_COLUMNS
