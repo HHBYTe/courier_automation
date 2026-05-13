@@ -1,0 +1,127 @@
+Courier Automation — Power BI data model
+==========================================
+
+Star schema. Two fact tables (shipments, refunds), three dimensions.
+
+Tables to load in Power BI Desktop
+----------------------------------
+
+Fact:
+  unified_shipments   — unified/output/unified_shipments.parquet  (~363k rows)
+  refunds             — unified/output/refunds.parquet            (~3.3k rows)
+
+Dimension:
+  dim_date            — powerbi/output/dim_date.parquet
+  dim_carrier         — powerbi/output/dim_carrier.parquet
+  dim_service_class   — powerbi/output/dim_service_class.parquet
+
+Measures:
+  Measures            — a dummy in-Power-BI table created via Home →
+                        Enter Data (one column, name = "_"). Mark the
+                        column as Hidden after creating the table.
+                        All measures from measures.dax live here.
+
+
+Relationships
+-------------
+
+  unified_shipments[posting_date]       → dim_date[date]            (many:1, active)
+  unified_shipments[carrier]            → dim_carrier[carrier_code] (many:1)
+  unified_shipments[service_class]      → dim_service_class[service_class] (many:1)
+
+  refunds[posting_date]                 → dim_date[date]            (many:1, active)
+  refunds[carrier]                      → dim_carrier[carrier_code] (many:1)
+
+  No direct relationship between refunds and unified_shipments.
+  Drill-down from a refund to its shipment uses (carrier, shipment_id)
+  as a measure-time filter pair.
+
+  All relationships: cross-filter direction = single (from dim → fact).
+
+
+Column-level settings
+---------------------
+
+unified_shipments:
+  - año, mes:                 hide (use dim_date)
+  - invoice_date, posting_date: format "yyyy-mm-dd", mark posting_date
+                              as the date in Mark as Date Table for
+                              relationships if you skip dim_date
+  - bultos_count, weight_kg, base_cost, fuel_surcharge, other_surcharges,
+    total_net:                summarisation = Sum
+  - shipment_id, invoice_id:  summarisation = Do not summarise
+  - source_file:              hide (debug only)
+
+refunds:
+  - same as shipments
+
+dim_date:
+  - Table Tools → Mark as Date Table → date column
+  - sort `month_name` by `month`, `month_name_short` by `month`,
+    `day_name` by `day_of_week`
+
+
+Page-level slicer
+-----------------
+
+Add a `currency` slicer to every page (top-right corner). Default to
+EUR. The DAX measures return BLANK when multiple currencies are in
+context, so cost cards visibly go empty if a user accidentally clears
+the slicer — that's the safety guard.
+
+
+Suggested 5-page operational drill-down
+---------------------------------------
+
+Page 1 — Overview
+  Cards:    Total Shipments • Total Bultos • Gross Cost • Net Cost
+  Trend:    Gross Cost by year_month, line + column combo
+  Mix:      Total Shipments by carrier (donut)
+  Slicers:  currency, dim_date[year]
+  Filter:   none (page-level only on currency)
+
+Page 2 — Carrier Detail
+  Slicer:   single-select carrier dropdown (top)
+  Cards:    Total Shipments • Cost per Shipment • Fuel % of Net •
+            Refund Rate %
+  Visual:   Gross Cost by year_month (line), with Gross Cost LY overlay
+  Table:    service_raw × Total Shipments × Gross Cost × Cost per Bulto
+  Drill:    enable drill-through to Page 5 (Refunds) on right-click
+
+Page 3 — Service Mix
+  Matrix:   carrier (rows) × service_class (columns), values = Total Shipments
+  100%-stacked bar:  Gross Cost by service_class, broken down by carrier
+  Card:     Active Service Classes count
+  Slicers:  currency, year, month
+
+Page 4 — Destinations
+  Map:      destination_country (filled map), size = Total Shipments
+  Bar:      Top 15 destinations by Gross Cost (filter Top N)
+  Table:    destination_country × Total Shipments × Total Bultos ×
+            Avg Weight per Shipment × Gross Cost × Cost per Bulto
+  Slicers:  carrier, currency
+  Note:     Royal Mail and SEUR don't supply destination_country —
+            those rows will be in a "blank" slice. Either filter them
+            out at the visual level or annotate the page.
+
+Page 5 — Refunds
+  Cards:    Refund Total • Refund Rate %
+  Trend:    Refund Total by year_month (column)
+  Table:    refunds[shipment_id] × refunds[posting_date] × refunds[total_net]
+            with carrier filter on the page
+  Drill:    "View original shipment" — right-click to drill back to Page 2
+            filtered by (carrier, shipment_id)
+
+
+Setup checklist
+---------------
+
+1. Run `python -m unified.build`     (regenerates unified_shipments + refunds)
+2. Run `python -m powerbi.build_dims` (regenerates dim_date covering current range)
+3. Power BI Desktop → Get Data → Parquet → load all 5 files
+4. Modeling → wire the 5 relationships above
+5. Mark dim_date as date table
+6. Home → Enter Data → table "Measures" (one column "_", hidden)
+7. Paste blocks from measures.dax as individual measures into Measures table
+8. Build the 5 pages
+9. Refresh by re-running steps 1-2, then Home → Refresh in Power BI
