@@ -7,6 +7,7 @@
 | [automation.md](automation.md) | The collector: the n8n Cloud workflow, the local Task Scheduler runner, setup steps, env vars, and the operator workflow. |
 | [workflow.md](workflow.md) | Day-to-day developer and operator workflows: setup, testing, ingest, pipeline, collector, picking new fixtures, refreshing the golden snapshot, adding a new courier. |
 | [status.md](status.md) | Snapshot of what's done, what's tested, what's untested against production, known gaps, and the roadmap. |
+| [continuation.md](continuation.md) | Handoff note for picking the project up cold — orientation, current state, and the detailed next-steps for finishing the n8n workflow. |
 | [drift_handling.md](drift_handling.md) | The classes of drift, what each detection layer catches today, and the future LLM-triage strategy for residual cases. |
 | [power_bi.md](power_bi.md) | Repointing the per-courier Power BI datasets from the master xlsx to the parquet substrate. |
 
