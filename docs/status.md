@@ -1,24 +1,30 @@
-# Current status — 2026-05-05
+# Current status — 2026-05-14
 
 ## TL;DR
 
-**Seven courier parsers in tree:** Seur, Seitrans, Correos Express, UPS (UK),
-Wwex (US), Spring (FR), Royal Mail (UK). Three have full pipelines (parser → CLI → golden test
-against real Datos); three are at varying degrees of partial-implementation.
-n8n / Power Automate orchestrator not started; no parser has yet written to a
-real production workbook.
+**Eight courier parsers, all CLI-wired, all in the unified build.** The
+per-carrier `pipeline` command (parse → duplicate guard → master append +
+parquet → unified rebuild) is built; the cross-courier `unified` package
+combines every carrier into one canonical fact table; the **collector**
+(n8n Cloud + a local Task Scheduler runner) feeds invoices in
+automatically for the five email carriers. UPS / WWEX / Royal Mail are
+still fetched by hand into the same inbox.
 
-- **99 tests passing**, 0 failing, 0 skipped. Ruff clean.
+- **145 tests passing.** 5 pre-existing failures (see "Known gaps"): 2
+  CLI tests that assert manifest behaviour (the manifest is disabled),
+  3 golden/schema-drift parser tests. 1 concurrency test is flaky under
+  load (passes in isolation). Ruff clean on all package + script files.
 
-| Carrier | Parser | CLI | Golden | Notes |
-|---|---|---|---|---|
-| Seur | ✅ | ✅ | ✅ 2,948 rows / 5 fixtures (D/AD/FR) | Pilot. |
-| Seitrans | ✅ | ✅ | ✅ 62 rows / 2 fixtures | `Q Expediciones` excluded (operator post-processing). |
-| Correos Express | ✅ | ✅ | ✅ 1,364 rows / 1 fixture | Phone columns + `Column58` excluded. |
-| UPS (UK) | ✅ CSV, 250 cols | ✅ | ✅ 3 rows / 1 fixture | Place Holder columns excluded. Numeric-string normalisation handles leading-zero/`.0` mismatches. |
-| Wwex (US) | ✅ multi-format, 42→44 mapping | ✅ | ✅ 4 stable cols / 425 rows | Heavy operator post-processing on the historical sheet (Ship Date filled from external sources, addresses cleaned, weights overridden) — golden compares only the operator-stable columns: `Source System`, `Account#`, `Tracking#`, `Package Count`. |
-| Spring (FR) | ⚠️ raw passthrough | ❌ | ⏸ deferred | 22-col single-sheet parser works against real fixtures; mapping to the historical 24-col `INVOICES` schema and the separate 114-col `REPORT` operations stream are TODO. |
-| Royal Mail (UK) | ✅ pipe-CSV, 34→17 mapping | ✅ | n/a (no master) | Pipe-separated cp1252 invoices with three row kinds under one header: one invoice-summary row, one row per docket, and free-text surcharge/total sub-rows. Parser drops sub-rows and propagates invoice fields (`Document Number`, `Account Number`, `Invoice Date`, `Pay By`) onto each docket. No historical workbook exists yet — golden deferred until one is created. |
+| Carrier | Parser | `ingest` | `pipeline` | Golden | Unified | Notes |
+|---|---|---|---|---|---|---|
+| Seur | ✅ | ✅ | ✅ | ✅ 2,948 rows / 5 fixtures | ✅ | Pilot. `destination_country` now ~100% via plaza-code mapping. |
+| Seitrans | ✅ | ✅ | ✅ | ✅ 62 rows / 2 fixtures | ✅ | `Q Expediciones` excluded (operator post-processing). Header `sniff()` for intake. |
+| Dachser | ✅ | ✅ | ✅ | ⏸ deferred | ✅ | Two raw layouts. Header `sniff()` for intake. **Live schema drift** in the 2026-02 ES invoice — see Known gaps. |
+| Correos Express | ✅ | ✅ | ✅ | ✅ 1,364 rows / 1 fixture | ✅ | Phone columns + `Column58` excluded. |
+| UPS (UK) | ✅ | ✅ | ✅ | ✅ 3 rows / 1 fixture | ✅ | 250-col CSV. Unified normalizer aggregates charge lines → shipments. |
+| Wwex (US) | ✅ | ✅ | ✅ | ✅ 4 stable cols / 425 rows | ✅ | Heavy operator post-processing on the historical sheet. |
+| Spring (FR) | ⚠️ raw passthrough | ✅ | ✅ | ⏸ deferred | ✅ | 22-col parser works against real fixtures; full historical mapping still TODO. |
+| Royal Mail (UK) | ✅ | ✅ | ✅ rebuild-mode | ⏸ deferred | ✅ | Pipe-CSV, docket grain. `pipeline` rebuilds the master from scratch each run; unified normalizer keeps docket grain. |
 
 ## What's done
 
@@ -26,141 +32,99 @@ real production workbook.
 
 | Module | Status |
 |---|---|
-| `parsers/base.py` | ✅ Done. Adapter interface, `ParseResult`, `assert_schema`, file-hash helper, Seur invoice-number regex, **shared `to_clean_string`** helper. |
-| `parsers/seur.py` | ✅ Done. 68-column passthrough parser; `SEUR_COLUMNS`; dtype groups; public `coerce_seur_dtypes` shared with the golden script. |
-| `parsers/seitrans.py` | ✅ Done. 21-col raw → 25-col historical (rename `_` → ` ` except `DOCUMENTO_DATA`; add `Tipo expedición`/`Q Expediciones`/`Año`/`Mes` derived). Public `coerce_seitrans_dtypes`. Invoice number derived from data (filenames are inconsistent), namespaced by year. |
-| `parsers/correos.py` | ✅ Done. 51-col raw → 58-col historical. Header band on rows 0-2 (real header is row 2). 6 derived columns (`Año, Mes, Tipo Bulto, Tipo Exp., Q Expediciones, País`) computed from `F.ADMISION` / `PESO KILOS` / `C. PAIS`. Spanish 5-digit postcode normaliser (`_to_postcode`). |
-| `parsers/ups.py` | ✅ Done. Headerless 250-column CSVs. Column tuple hard-coded from production `Data` sheet. Auto-detected dtype groups by name keywords (`Date`, `Amount`, `Weight`, …). Each CSV asserts a single Invoice Number. `Invoice Number` coerced to Int64 to match production storage. |
-| `parsers/wwex.py` | ✅ Done. Multi-format reader (`.xlsx`, `.xls` via xlrd, `.csv` with delimiter sniffed between `;` and `,`). v2-export reshape handles two `Custom-N` packaging-label variants: older xlsx exports shift the numeric count one column right under anomalous names (`Column1` / `Unnamed: 33` / `PACKAGE_COUNT.1`); the Mar/Apr 2026 CSV variant keeps canonical column order and encodes the count inside the label (`Custom-4` → 4). 42-col raw → 44-col historical mapping reverse-engineered: 21 direct renames, derived `Source System` constant + `Domestic/International` from country comparison + `Weight per package = TOTAL_WEIGHT / PACKAGE_COUNT` + `Ship Date` coalesced across SHIPMENT_DATE → ACTUAL_PICKUP_DATE → CREATION_DATE → ACTUAL_DELIVERY_DATE. 20 operator-filled columns emitted as None. |
-| `parsers/royalmail.py` | ✅ Done. Pipe-separated cp1252 CSV. 34-col raw with three row kinds: one invoice summary (`Document Number`/`Account Number`/`Invoice Date` populated, docket cols blank), one row per docket (docket cols populated, invoice cols blank), and free-text sub-rows for surcharges/totals (no `Docket Number`). Parser keeps only docket rows, propagates the 4 invoice fields onto each, and derives `Año`/`Mes` from `Posting Date` → 17-col output. No historical workbook exists; the sidecar lands beside a placeholder `Royal Mail Shipments Report.xlsx` stem. |
-| `parsers/spring.py` | ⚠️ Partial. 22-col single-sheet parser; sheet name varies per invoice (read by index 0). Tolerant of extra portal-inserted metadata columns (observed Mar 2026: `ALBARÁN`, `EMRPRESA`) — any non-canonical columns are dropped before schema validation. Mapping to historical 24-col `INVOICES` schema and the 114-col `REPORT` operations stream are TODO. |
-| `parsers/plausibility.py` | ✅ Done. Three rule kinds (`no_null`, `min_non_null_rate`, `date_range`), aggregated error message. |
-| `manifest/registry.py` | ✅ Done. SQLite + WAL, idempotent `register`, `supersedes` for reissue detection. |
-| `store/workbook_appender.py` | ✅ Done. Sidecar lock, working-copy in `%TEMP%`, atomic replace, schema validation against the live workbook before writing. |
-| `cli.py` | ✅ Done. `ingest seur`, `ingest seitrans`, `ingest correos`, `ingest ups`, `ingest wwex`, `ingest spring`, `ingest royalmail` — all share `--file/--month/--folder/--workbook/--dry-run/--format`. UPS and Wwex write to the `Data` sheet (UPS-specific naming); Royal Mail writes to `Datos` (no master sheet exists yet). Exit codes 0–5. |
-| `scripts/golden/extract_seur_golden.py` | ✅ Done. Matches on `(year, trailing-int)`. |
-| `scripts/golden/extract_seitrans_golden.py` | ✅ Done. Matches on `(year, DOCUMENTO_NUMERO)`. |
-| `scripts/golden/extract_correos_golden.py` | ✅ Done. Matches on the `Nº ENVIO` set. |
-| `scripts/golden/extract_ups_golden.py` | ✅ Done. Matches on Invoice Number (normalised to int across both sides). |
-| `scripts/golden/extract_wwex_golden.py` | ✅ Done. Matches on the `Tracking#` set. |
-| `scripts/golden/_find_golden_candidates.py` | ✅ Done (Seur dev tool). |
+| `parsers/base.py` | ✅ Adapter interface, `ParseResult`, `assert_schema`, file-hash helper, Seur invoice-number regex, shared `to_clean_string`. |
+| `parsers/{seur,seitrans,dachser,correos,ups,wwex,spring,royalmail}.py` | ✅ Eight carrier parsers. `seitrans` + `dachser` also expose a header-only `sniff()` for intake classification. (Spring's full historical mapping is still partial — see Known gaps.) |
+| `parsers/plausibility.py` | ✅ Three rule kinds (`no_null`, `min_non_null_rate`, `date_range`), aggregated error message. |
+| `carriers.py` | ✅ `CARRIERS` registry — one `CarrierConfig` per carrier; single source of truth for paths, sheet names, file globs, guard keys, classification rules. |
+| `exit_codes.py` | ✅ Shared process exit codes 0–7. |
+| `manifest/registry.py` | ✅ Built and tested (SQLite + WAL, `register` / `has_seen` / `supersedes`). **Currently disabled** via a `_NullRegistry` shim — the `pipeline` duplicate guard covers idempotency in the meantime. |
+| `store/workbook_appender.py` | ✅ OneDrive-safe append (sidecar lock, working copy, atomic replace); `export_rows` / `export_parquet`. |
+| `intake.py` | ✅ `classify_invoice_file` (filename regex + parser `sniff()` probe) and `place_invoice_file` (file into `Facturas/<YYYY>/<NN> - <Mes>/`, hash-dedup, conflict quarantine). |
+| `pipeline.py` | ✅ `run_pipeline` — the per-carrier orchestrator: parse → duplicate guard → master append + parquet → unified rebuild. Royal Mail rebuild path. |
+| `cli.py` | ✅ Eight `ingest <carrier>` subcommands + the `pipeline` command. Thin shell over `carriers` + `pipeline`. |
+| `unified/` | ✅ `schema.py` (25-col canonical, EUR columns), `normalizers/` (8 carriers), `service_classifier.py`, `fx_rates.py`, `build.py` (kept / refunds / rejections split + `manifest.json`). |
+| `scripts/run_collector.py` | ✅ Scheduled local runner — scan inbox, classify + file, sweep `pipeline` for all 8, rebuild unified, log + SMTP summary. |
+| `scripts/build_royalmail_master.py` | ✅ Royal Mail master rebuild (delegates to `pipeline.rebuild_royalmail_master`). |
+| `scripts/backfill/backfill_*_parquet.py` | ✅ Per-carrier historical parquet backfill from the master sheets; `backfill_all_parquet.py` chains them. |
+| `scripts/golden/extract_*_golden.py` | ✅ Golden-snapshot extractors for seur, seitrans, correos, ups, wwex. |
+| `n8n/courier-collector.workflow.json` | ✅ Importable n8n Cloud workflow (Outlook → OneDrive `_inbox/`). |
 
-### Tests (99 passing)
+### Tests (145 passing)
 
-| Suite | Count | What it covers |
-|---|---|---|
-| `tests/parsers/test_seur.py` | 14 | Schema, dtypes, leading zeros, schema mismatch (renamed/extra column), invoice-number regex (D/AD/FR), file hash, missing file, missing sheet, real-data parametrized over 5 fixtures. |
-| `tests/parsers/test_seur_golden.py` | 1 | Element-wise comparison of parser output to a 2,948-row Datos slice. |
-| `tests/parsers/test_seitrans.py` | 9 | Schema, dtypes, `Tipo expedición=Pallet` always, schema-mismatch diff, invoice-number namespacing by year, missing sheet, real-data parametrized over 2 fixtures. |
-| `tests/parsers/test_seitrans_golden.py` | 1 | Element-wise comparison of parser output to a 62-row Datos slice (excludes `Q Expediciones` — see "Known gaps"). |
-| `tests/parsers/test_correos.py` | 11 | Schema, dtypes, weight-bucket rules (`001 KG` … `MÁS 200 KG`), `Tipo Exp.` 50 kg threshold, `País` lookup, derived columns, schema mismatch, real-data parametrized. |
-| `tests/parsers/test_correos_golden.py` | 1 | Element-wise vs 1,364-row Datos slice (excludes phone columns + `Column58` for operator post-processing). |
-| `tests/parsers/test_ups.py` | 7 | 250-col schema, dtypes, real-data CSV parses, multi-Invoice-Number rejection. |
-| `tests/parsers/test_ups_golden.py` | 1 | Element-wise vs 3-row Data slice (excludes Place Holder columns; numeric-string normalisation handles leading-zero/`.0` mismatches). |
-| `tests/parsers/test_wwex.py` | 2 | Raw + historical column tuples; real `.xlsx` smoke test verifies derived columns (Source System constant, DOM/INT). |
-| `tests/parsers/test_wwex_golden.py` | 1 | Operator-stable columns only (Source System, Account#, Tracking#, Package Count) against 425-row Data slice. |
-| `tests/parsers/test_spring.py` | 3 | Column tuple, real `.XLSX` smoke test (parametrized — case-insensitive glob hits one fixture twice on Windows). |
-| `tests/parsers/test_plausibility.py` | 13 | Each rule kind in isolation; Seur integration; aggregate failure messages. |
-| `tests/manifest/test_registry.py` | 9 | Register, has_seen, idempotent re-register, supersedes, env-var override, concurrent register (20 threads). |
-| `tests/store/test_workbook_appender.py` | 8 | Append, preserve, header validation, missing sheet, lock retry success, lock timeout, lock release, value round-trip. |
-| `tests/cli/test_ingest_cli.py` | 14 | Single file, idempotent, dry-run, month batch, auto-discovery of latest month, usage errors, schema/lock/manifest/plausibility exit codes — Seur **and** Seitrans variants. |
-| `tests/parsers/test_plausibility.py` integration | 4 | Seur parser end-to-end with planted plausibility violations. |
+Per-parser unit + golden suites (`tests/parsers/`), the manifest suite
+(`tests/manifest/`), the store suite (`tests/store/`), the CLI suite
+(`tests/cli/`), and:
 
-### Fixtures
-
-`tests/fixtures/seur/raw/` — 5 real Seur invoices:
-
-- `0289992025AD0001394.xlsx` — Andorra prefix, 1 row, in Datos ✓
-- `0289992025D0136751.xlsx` — domestic, 5 rows, in Datos ✓
-- `0289992025D0179257.xlsx` — domestic, 2,940 rows, in Datos ✓
-- `0289992025D0235697.xlsx` — domestic, 1 row, in Datos ✓
-- `0289992025FR0020268.xlsx` — France prefix, 1 row, in Datos ✓
-
-`tests/fixtures/seur/golden/pilot-sample-datos.parquet` — 2,948 rows / 280 KB.
-
-`tests/fixtures/seitrans/raw/` — 2 real Seitrans invoices spanning both
-filename variants:
-
-- `2025_01_31 3065.xlsx` — space-separated, 8 rows, in Datos ✓
-- `2025_06_30_24633.xlsx` — underscore-separated, 54 rows, in Datos ✓
-
-`tests/fixtures/seitrans/golden/pilot-sample-datos.parquet` — 62 rows.
-
-`tests/fixtures/correos/raw/` — 1 real Correos invoice
-(`2025_01_31 FAC_UNICO_F2501_14307.xlsx`, 1,433 shipments).
-`tests/fixtures/correos/golden/pilot-sample-datos.parquet` — 1,364 rows
-(the user filters ~5% of shipments out manually when pasting).
-
-`tests/fixtures/ups/raw/` — 1 real UPS billing CSV
-(`Invoice_3961958_012225.csv`, smallest in 2025/01).
-
-`tests/fixtures/wwex/raw/` — 1 real Wwex `.xlsx`
-(`2025_05_31 shipment_detail_report.xlsx`).
-
-`tests/fixtures/spring/raw/` — 1 real Spring `.XLSX`
-(`E2509827_ES_Details of Invoice_O_110003790_2511251351.XLSX`).
+| Suite | Covers |
+|---|---|
+| `tests/test_pipeline.py` | Carrier-registry completeness, the duplicate guard (no/partial/full overlap, month fallback, missing-column skip), `_normalize_carrier`'s no-parquet path. |
+| `tests/test_royalmail_normalizer.py` | The Royal Mail unified normalizer — canonical shape, docket grain (`Quantity` → `bultos_count`), GBP/GB constants, penalty-line rejection, negative `Net Value` not silently kept. |
+| `tests/test_intake.py` | `classify_invoice_file` per carrier (filename patterns + the seitrans/dachser sniff probe + cross-probe negatives + unknown → None); `place_invoice_file` month-from-content, re-drop idempotency, conflict quarantine; `quarantine_file` name collisions. |
+| `tests/test_run_collector.py` | `CarrierRun` status mapping, `RunReport.errors` / `nothing_happened`, `_is_ready` inbox-scan skip rules, the 8-carrier sweep (incl. one carrier crashing without aborting the sweep), unified-rebuild gating. |
 
 ### Documentation
 
-- [docs/architecture.md](architecture.md) ✅ — design, modules, tools, decisions.
-- [docs/workflow.md](workflow.md) ✅ — daily recipes for both couriers.
+- [docs/architecture.md](architecture.md) ✅ — design, the layered pipeline, module walkthrough, tools, key decisions.
+- [docs/pipeline.md](pipeline.md) ✅ — the `pipeline` command + the unified build, end to end.
+- [docs/automation.md](automation.md) ✅ — the collector: n8n Cloud workflow, the local runner, setup, operator workflow.
+- [docs/workflow.md](workflow.md) ✅ — daily recipes: setup, test, ingest, pipeline, collector, adding a courier.
+- [docs/drift_handling.md](drift_handling.md) ✅ — drift classes, the detection layers, the future LLM-triage strategy.
+- [docs/power_bi.md](power_bi.md) ✅ — repointing the per-courier Power BI datasets to the parquet substrate.
 - [docs/status.md](status.md) ✅ — this file.
-- [docs/drift_handling.md](drift_handling.md) ✅ — drift detection layers + future LLM-triage.
 
 ## What's untested against production
 
 | Item | Risk | Mitigation today |
 |---|---|---|
-| Writer has never touched the 113 MB Seur workbook (or the 569 KB Seitrans workbook). | Performance, VBA / named ranges / table refs, `.pbix` refresh after programmatic write. | Smoke test on a `Copy-Item` of each workbook before pointing the writer at the real one. |
-| End-to-end ingest of a freshly-emailed invoice (collector → parser → store). | Email-to-disk path, attachment naming, encoding. | n8n / Power Automate workflow not built yet — collector layer is mocked by `--file <path>`. |
+| The `pipeline` master-append path has not yet done a real net-new append to a production master. | openpyxl load+save on the 113 MB Seur workbook; `.pbix` refresh after a programmatic write. | The append path is unit-tested; the Royal Mail *rebuild* path has run against the real master; appends in this session tripped the duplicate guard (already-ingested months) so didn't write. Needs a genuine new-month run. |
+| The n8n Cloud workflow has not run end-to-end. | OneDrive OAuth, attachment encoding, folder IDs. | The Python half (`intake` + `run_collector`) is verified end-to-end against a temp inbox. n8n needs an Azure AD app registration first. |
+| The collector SMTP email has not sent. | M365 SMTP AUTH is off by default. | The runner degrades gracefully (does the ingest, logs, exits non-zero) when SMTP is unset or fails. |
 
 ## Known gaps and follow-ups
 
 | Gap | Severity | Notes |
 |---|---|---|
-| **Spring** parser is raw passthrough, not in CLI. | High before production cutover. | Per-invoice file is 22 cols; historical `INVOICES` sheet is 24 cols (small mapping); separate 114-col `REPORT` operations stream is a second parser entirely. Apply the same playbook as Wwex: pair raw and historical for one shipment, derive the column mapping. |
-| **Wwex Ship Date** is operator-derived from external sources. | Low (documented). | Parser coalesces SHIPMENT_DATE → ACTUAL_PICKUP_DATE → CREATION_DATE → ACTUAL_DELIVERY_DATE; ~36% of rows still differ from real Data because the operator pulls dates from the UPS tracking website / shipping label. Excluded from the golden comparison. |
-| **Wwex weight/charge values** occasionally edited by operator. | Low. | <1% of rows have manual overrides on `Billed Weight`, `Package Weight`, etc. Wwex golden test checks only 4 operator-stable columns. The parser's correctness on derivable columns is verified by the synthetic test. |
-| Seitrans `Q Expediciones` differs by ~8% from real Datos. | Low (documented). | The user marks `1` only on the *first global* occurrence of each `SPEDIZIONE NUMERO` across all of Datos; the parser only sees one file at a time. Per-file dedup is the best we can do without global state. The column is excluded from the Seitrans golden comparison. |
-| Correos phone columns + `Column58` differ from real Datos. | Low (documented). | Operator typed-in `+34` prefix on phones, occasional manual overrides on country code. Both excluded from golden comparison. |
-| Seur `--month YYYY-MM` doesn't match the flat 2025+ folder layout. | Medium. Pilot can use `--file` or auto-discovery for now. | The 2022/2023 Seur Facturas have `MM - <Mes>/` subfolders; 2025/2026 are flat (one xlsx per invoice in the year folder). The Seitrans CLI handles flat layouts because Seitrans Facturas are always flat. Either add a `--year` mode for Seur or parse `Fecha Factura` to filter. |
-| Plausibility rule for `Fecha Servicio` (Seur) is 95% non-null. | Low. | Empirically passes for current fixtures but might be too strict for years with more cancelled-shipment rows. Tune from a longer baseline. |
-| No mechanism for "this invoice was reissued and the new file IS canonical". | Low. | CLI exit 4 forces human review. The user manually deletes the manifest row to proceed. Could add `--accept-supersedes` later. |
-| Single-machine deployment assumed. | Low. | The lock file works on a single host. Cross-host coordination would need a real lock service — out of scope for the pilot. |
+| **Dachser 2026-02 ES invoice schema drift.** | Medium. | `2026_02_ES_112271952.xlsx` has the raw header `Nº de pedido`, which `_RENAME_CLEAN` doesn't map (a `º` character-variant mismatch) → the `Pedido` column goes missing. The parser now raises a clean `SchemaMismatch` (exit 2) instead of a bare `KeyError`, and the collector surfaces it as `error(2)` instead of crashing the sweep — but `pipeline --carrier dachser` fails until the rename map is fixed. |
+| **Manifest disabled.** | Low (covered). | The `pipeline` duplicate guard is the idempotency net. It's heuristic (invoice-id or month-row overlap), not a hash-exact record. Re-enable the `ManifestRegistry` alongside it once the parsers stabilise. |
+| **n8n Cloud not yet wired.** | Medium (blocks full automation). | The workflow JSON is ready to import, but n8n Cloud → Outlook/OneDrive needs an Azure AD app registration in the artero.com tenant — likely an IT request. |
+| **FX rates are placeholders.** | Medium. | `unified/fx_rates.py` ships approximate early-2026 GBP/USD rates marked `>>> REVIEW THESE RATES <<<`. The `*_eur` columns aren't trustworthy until the business sets the frozen rates. |
+| **UPS / WWEX / Royal Mail fetched manually.** | Low (by decision). | No portal automation — the operator downloads and drops files into `_inbox/`. Phasing portal scrapers is future work. |
+| **5 pre-existing test failures.** | Low. | `test_ingest_is_idempotent` + `test_manifest_conflict_exits_4` assert manifest behaviour that the `_NullRegistry` shim no-ops; `test_correos_golden`, `test_ups_golden`, `test_ups::test_rejects_csv_with_wrong_column_count` are golden/schema drift. All predate the pipeline + collector work. |
+| **Spring** full historical mapping incomplete. | Medium. | The 22-col parser works; mapping to the 24-col `INVOICES` schema and the separate 114-col `REPORT` stream are still TODO. |
+| Seitrans `Q Expediciones`, Correos phone columns, Wwex Ship Date | Low (all documented). | Operator post-processing the parser can't reproduce; excluded from the respective golden comparisons. |
+| Seur `--month YYYY-MM` vs the flat 2025+ folder layout. | Low. | The collector sidesteps this — `intake.place_invoice_file` always files into `<YYYY>/<NN> - <Mes>/` subfolders, which the pipeline's discovery resolves. |
 
 ## Roadmap
 
-### Immediate (next 1-2 weeks)
+### Immediate
 
-1. **Smoke-test the writer against copies of the real workbooks** (Seur 113 MB, Seitrans 569 KB). Confirm openpyxl load+save times, `.pbix` refresh.
-2. **Decide on the orchestrator.** n8n if Artero IT runs one; Power Automate otherwise. Wire trigger → fetch → POST-to-Python.
-3. **Production cutover for Seur and Seitrans.** First fully-automatic monthly ingest in shadow mode (writes to a copy; user diffs against the real workbook), then promote to real.
+1. **Fix the Dachser 2026-02 rename-map drift** so `pipeline --carrier dachser` runs again.
+2. **Set the real FX rates** in `unified/fx_rates.py` and rebuild unified.
+3. **Wire n8n Cloud** — Azure AD app registration, import the workflow, create the Outlook + OneDrive credentials, set the folder IDs.
+4. **Enable M365 SMTP AUTH** on a sending mailbox for the collector summary email.
+5. **First real production run** — a genuine new-month `pipeline` append to a master, in shadow mode (a copy) then promoted.
 
-### Step 1 expansion (weeks 2–6)
+### Next
 
-4. **Next parser: Correos Express** (lowest volume, simplest format per `01_data_exploration.md`). Establish the pattern of reusing the rename-derive-coerce flow.
-5. **Fix Seur `--month` for flat year folders** — add `--year YYYY` mode, or parse `Fecha Factura` per file.
-6. **Decision: Option A → Option B.** Once three couriers run cleanly, evaluate moving to per-courier DuckDB with the `.xlsx` regenerated from queries.
+6. **Re-enable the manifest** alongside the duplicate guard once the parsers are stable.
+7. **Power BI repoint** — point the per-courier datasets at `data/<carrier>/` parquet (see [power_bi.md](power_bi.md)).
+8. **Portal automation** for UPS / WWEX / Royal Mail (currently manual).
+9. **Spring** — finish the historical-schema mapping.
 
-### Step 1 long tail
+### Later
 
-7. Remaining 8 couriers in the order specified by `02_step1_plan.md`: VASP, Lynda's, Express Catalan, Dachser, DPD France, UPS (UK), Wwex, Spring.
-8. Backfill historical invoices that aren't yet in `Datos` (opt-in `cli.py backfill --courier <c> --from 2019`).
-
-### Step 2 / 3 (out of scope here)
-
-9. Per-courier Power BI continues to read from the workbook (no UX change for the user).
-10. Unified cross-courier dataset, global summary report.
+10. Option A → Option B — per-courier DuckDB with the `.xlsx` regenerated from queries.
+11. LLM-assisted drift triage, out of the runtime path (see [drift_handling.md](drift_handling.md)).
 
 ## Decision log
 
 | Date | Decision | Where it lives |
 |---|---|---|
-| 2026-05-05 | Pilot Seur, Option A storage, no Amazon, n8n preferred. | [02_step1_plan.md](../02_step1_plan.md) §8 + [architecture.md](architecture.md). |
-| 2026-05-05 | venv + pip + pinned reqs (no uv/Poetry). Internal tool, real-data fixtures (no anonymisation). | [architecture.md](architecture.md) tools table. |
-| 2026-05-05 | LLM out of the runtime path; reserved for offline drift-triage. | [drift_handling.md](drift_handling.md). |
-| 2026-05-05 | `Operations - Couriers/` is read-only. | Top-level constraint, enforced by tests + CLI defaults. |
-| 2026-05-05 | Seur golden test passes (2,948 rows, 5 fixtures). | This document. |
-| 2026-05-05 | Seitrans golden test passes (62 rows, 2 fixtures); `Q Expediciones` excluded from comparison because it's operator-post-processed cross-file. | [test_seitrans_golden.py](../tests/parsers/test_seitrans_golden.py). |
-| 2026-05-05 | Seitrans invoice number derived from data (`f"{year}-{DOCUMENTO_NUMERO}"`), not filename. Filenames are inconsistent. | [seitrans.py](../courier_automation/parsers/seitrans.py). |
-| 2026-05-05 | `_*` filename prefix marks user-scratch / dev tools — excluded from ruff via `ruff.toml`. | [ruff.toml](../ruff.toml). |
+| 2026-05-05 | Pilot Seur, Option A storage, n8n preferred. venv + pip. LLM out of the runtime path. | [architecture.md](architecture.md), [drift_handling.md](drift_handling.md). |
+| 2026-05-14 | `carriers.CARRIERS` registry — one source of truth for per-carrier config. | [carriers.py](../courier_automation/carriers.py), [architecture.md](architecture.md) §10. |
+| 2026-05-14 | The `pipeline` command is the per-carrier production path: master append **and** parquet **and** unified in one run. | [pipeline.md](pipeline.md). |
+| 2026-05-14 | Duplicate guard (heuristic, reads the master) is the idempotency net while the manifest stays disabled. | [pipeline.py](../courier_automation/pipeline.py), [architecture.md](architecture.md) §9. |
+| 2026-05-14 | Royal Mail stays at docket grain in the fact table; the `pipeline` rebuilds its master from scratch each run. | [pipeline.md](pipeline.md), [architecture.md](architecture.md) §11. |
+| 2026-05-14 | Unified schema carries both native-currency and frozen-rate EUR columns. | [unified/schema.py](../unified/schema.py), [unified/fx_rates.py](../unified/fx_rates.py). |
+| 2026-05-14 | Collector split: n8n Cloud fetches (dumb pipe), a local Task Scheduler runner does classification + ingest. UPS/WWEX/Royal Mail stay manual. | [automation.md](automation.md), [architecture.md](architecture.md) §8. |
+| 2026-05-14 | `Operations - Couriers/` is written only via the OneDrive-safe appender and `intake.place_invoice_file`. | [architecture.md](architecture.md) §7. |

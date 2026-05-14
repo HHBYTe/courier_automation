@@ -62,11 +62,11 @@ constants) so it's reviewable in one place and tunable per courier.
 
 ### 5. Golden test — periodic ground-truth check
 
-`tests/parsers/test_seur_golden.py` and
-`tests/parsers/test_seitrans_golden.py` parse real invoices and compare them
+The golden tests (`tests/parsers/test_<carrier>_golden.py` — seur,
+seitrans, correos, ups, wwex) parse real invoices and compare them
 row-for-row to parquet snapshots extracted from the production `Datos`
-sheets. Any per-cell drift the deterministic checks miss shows up here. Run
-them after every parser change.
+sheets. Any per-cell drift the deterministic checks miss shows up here.
+Run them after every parser change.
 
 The Seitrans golden test confirmed the value of this layer in practice:
 five distinct schema-level findings (filename inconsistency,
@@ -74,6 +74,31 @@ five distinct schema-level findings (filename inconsistency,
 stored as a date not int, mixed date formats causing silent NaT) all
 surfaced through golden-test failures during development — none of which
 the unit tests or plausibility checks would have caught alone.
+
+### 6. Collector intake — quarantine over guessing
+
+The collector classifies each dropped invoice file to a carrier
+(`intake.classify_invoice_file` — filename regex, then a parser
+header-`sniff()`). A file that matches no carrier is **quarantined** to
+`_inbox/_unclassified/`, never guessed at; a file that classifies but
+fails to parse goes to the same place. A name collision with different
+content goes to `_inbox/_conflicts/`. The collector's runner reports
+all three in its summary email's "ATTENTION NEEDED" section. This is
+drift-handling at the *file* level — the runner refuses to mis-file or
+mis-parse, and surfaces it for a human, rather than failing silently or
+guessing.
+
+### A worked example — Dachser, 2026-02
+
+The live `2026_02_ES_112271952.xlsx` invoice renamed a raw header to
+`Nº de pedido`, which the Dachser parser's `_RENAME_CLEAN` map doesn't
+cover (a `º` character-variant mismatch), so the `Pedido` column goes
+missing. This is textbook **structural drift**: the parser now raises a
+clean `SchemaMismatch` (exit 2) with `missing=['Pedido']` instead of a
+bare `KeyError`, the collector's sweep records it as `error(2)` and
+keeps going, and the summary email flags it. The fix is a one-line
+addition to the rename map — exactly the kind of triage the LLM tool
+below would eventually automate.
 
 ## What we still don't catch
 

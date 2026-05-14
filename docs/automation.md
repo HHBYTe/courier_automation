@@ -1,8 +1,9 @@
 # Automated invoice collection
 
 How new invoices get from the carriers' emails into the pipeline without
-anyone touching a file by hand. This is the "collector" layer that
-`docs/architecture.md` left as "not yet built".
+anyone touching a file by hand — the **collector** layer. For the
+per-carrier `pipeline` it feeds, see [pipeline.md](pipeline.md); for the
+design rationale, see [architecture.md](architecture.md).
 
 ## The shape of it
 

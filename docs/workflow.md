@@ -48,47 +48,66 @@ to send them to a project-relative folder you can browse.
 .\.venv\Scripts\ruff format .
 ```
 
-## Ingesting an invoice (development)
+## Running the pipeline (one carrier, end to end)
 
-Always operate on a copy of the workbook for now — production files are
-off-limits until end-to-end validation is signed off.
-
-### Seur
+`pipeline` is the production command: parse → duplicate guard → append to
+the master + write the parquet → rebuild unified. It writes to the real
+master workbook (via the OneDrive-safe appender), so there's no copy
+dance — the duplicate guard makes re-runs safe. Full reference:
+[pipeline.md](pipeline.md).
 
 ```powershell
-Copy-Item "Operations - Couriers\01. Seur\NEW Análisis expediciones SEUR.xlsx" `
-          "$env:TEMP\seur-smoke.xlsx"
+# Dry run — parse + duplicate guard only, writes nothing
+.\.venv\Scripts\python -m courier_automation.cli pipeline `
+    --carrier seitrans --dry-run
 
-# Dry run — parses + manifest-checks but doesn't write
-.\.venv\Scripts\python -m courier_automation.cli ingest seur `
-    --file "Operations - Couriers\01. Seur\Facturas\2025\0289992025D0235697.xlsx" `
-    --workbook "$env:TEMP\seur-smoke.xlsx" --dry-run
+# Ingest the latest populated month
+.\.venv\Scripts\python -m courier_automation.cli pipeline --carrier seitrans
 
-# Real run, then re-run — second run reports "already ingested"
-.\.venv\Scripts\python -m courier_automation.cli ingest seur `
-    --file "Operations - Couriers\01. Seur\Facturas\2025\0289992025D0235697.xlsx" `
-    --workbook "$env:TEMP\seur-smoke.xlsx"
+# A specific month, machine-readable output (the n8n / automation contract)
+.\.venv\Scripts\python -m courier_automation.cli pipeline `
+    --carrier seur --month 2026-04 --json
+
+# Re-run the same month — the guard trips, exit 6, nothing written
 ```
 
-### Seitrans
+## Manual ingest (development / debugging)
+
+`ingest <carrier>` is the workbench command — one carrier, one file or
+month, no unified rebuild. Default mode writes a *sidecar* `.xlsx` next
+to the master (plus a parquet) and never touches the master; use it on a
+copy when iterating on a parser:
 
 ```powershell
 Copy-Item "Operations - Couriers\04. Seitrans\Análisis envíos Seitrans.xlsx" `
           "$env:TEMP\seitrans-smoke.xlsx"
 
-# Single file
+# Sidecar mode (default) — parses, writes a fresh xlsx + parquet beside the master
 .\.venv\Scripts\python -m courier_automation.cli ingest seitrans `
-    --file "Operations - Couriers\04. Seitrans\Facturas\2025\2025_06_30_24633.xlsx" `
-    --workbook "$env:TEMP\seitrans-smoke.xlsx" --dry-run
+    --file "Operations - Couriers\04. Seitrans\Facturas\2025\2025_06_30_24633.xlsx"
 
-# Auto-discover the latest month under the default Facturas folder
+# Append to a workbook in place (here, the scratch copy)
 .\.venv\Scripts\python -m courier_automation.cli ingest seitrans `
-    --workbook "$env:TEMP\seitrans-smoke.xlsx"
+    --file "...\2025_06_30_24633.xlsx" `
+    --workbook "$env:TEMP\seitrans-smoke.xlsx" --write-master --dry-run
 ```
 
-Open the smoke file in Excel afterwards, verify the new rows in `Datos`,
-and confirm the matching `.pbix` (`Expediciones SEUR.pbix` or
-`Expediciones Seitrans.pbix`) refreshes against the scratch path.
+All eight carriers are wired: `seur`, `seitrans`, `dachser`, `correos`,
+`ups`, `wwex`, `royalmail`, `spring`. See [pipeline.md](pipeline.md) for
+`ingest` vs `pipeline`.
+
+## Running the collector (the full scheduled job)
+
+`scripts/run_collector.py` is what Windows Task Scheduler runs: scan the
+OneDrive `_inbox/`, classify + file each invoice, sweep `pipeline` for
+all eight carriers, rebuild unified, log, email a summary. Setup,
+env vars, and the operator workflow are in [automation.md](automation.md).
+
+```powershell
+# Run it by hand (point COURIER_INBOX at a scratch dir to test without the real inbox)
+$env:COURIER_INBOX = "$env:TEMP\collector-test\_inbox"
+.\.venv\Scripts\python scripts\run_collector.py
+```
 
 ## CLI exit codes
 
@@ -98,8 +117,10 @@ and confirm the matching `.pbix` (`Expediciones SEUR.pbix` or
 | 1 | Usage error | Read the message; fix the args. |
 | 2 | Schema mismatch | The carrier changed columns. Update `<CARRIER>_RAW_COLUMNS` (or the equivalent constant) in `parsers/<carrier>.py`. The diff in the message tells you what changed. |
 | 3 | Workbook lock timeout | Another ingest run, or someone has the lock file. Wait or remove the stale `.courier-automation.lock`. |
-| 4 | Manifest conflict | Carrier reissued the same invoice with new content. Inspect both files; if the new one is canonical, delete the old manifest row and re-ingest. |
+| 4 | Manifest conflict | Carrier reissued the same invoice with new content. (Unused while the manifest is disabled.) |
 | 5 | Plausibility check failed | Either the data really is bad, or rules are too tight. The message lists every offending column. See [drift_handling.md](drift_handling.md). |
+| 6 | Duplicate guard tripped | `pipeline` only — the month is already in the master. A safe no-op; nothing was written. Use `--force` to override. |
+| 7 | Unified build failed | `pipeline` only — the per-carrier ingest succeeded but the combine step didn't. Check the message; run `python -m unified.build` to reproduce. |
 
 ## Adding new fixtures (for the parser test)
 
@@ -129,13 +150,16 @@ regenerating the parquet:
 
 ```powershell
 # Seur (~1-2 minutes; 113 MB workbook)
-.\.venv\Scripts\python scripts\extract_seur_golden.py --period pilot-sample
+.\.venv\Scripts\python scripts\golden\extract_seur_golden.py --period pilot-sample
 .\.venv\Scripts\pytest tests\parsers\test_seur_golden.py -v
 
 # Seitrans (under 5 seconds; 569 KB workbook)
-.\.venv\Scripts\python scripts\extract_seitrans_golden.py --period pilot-sample
+.\.venv\Scripts\python scripts\golden\extract_seitrans_golden.py --period pilot-sample
 .\.venv\Scripts\pytest tests\parsers\test_seitrans_golden.py -v
 ```
+
+The golden extractors live under `scripts/golden/` — one per carrier
+(`extract_<carrier>_golden.py`).
 
 The `--period` arg is just a tag for the output filename; each golden
 test globs `*-datos.parquet` under its courier's golden dir and uses the
@@ -156,7 +180,7 @@ points at the column and first differing row. Common causes:
 ## Picking a candidate fixture (Seur only, currently)
 
 ```powershell
-.\.venv\Scripts\python scripts\_find_golden_candidates.py
+.\.venv\Scripts\python scripts\golden\_find_golden_candidates.py
 ```
 
 Prints the top Seur invoices that exist in *both* `Datos` and
@@ -176,11 +200,11 @@ file format:
   renames + derived columns added): copy seitrans.py and adapt the
   `_rename_and_derive` step.
 
-Step 1 plan (`02_step1_plan.md` §3) lists the recommended order:
-Correos Express → VASP → Lynda's → etc. For each carrier:
+Eight carriers are wired already; the remaining ones (VASP, Lynda's,
+Express Catalan, DPD France) follow the same recipe. For each:
 
-1. Survey one real invoice (or read the relevant section in
-   `01_data_exploration.md`).
+1. Survey one real invoice — open it, note the sheet name, the header
+   row, the column names and dtypes.
 2. Write `courier_automation/parsers/<carrier>.py` with
    `<CARRIER>_RAW_COLUMNS`, the dtype groups, plausibility rules, and a
    `<Carrier>Parser` class.
@@ -195,8 +219,20 @@ Correos Express → VASP → Lynda's → etc. For each carrier:
    one) and run it against the historical workbook. **Expect surprises**
    — every drift the Seur and Seitrans golden tests caught will probably
    recur in some shape.
-6. Add the new parser to the CLI under `ingest <carrier>`. Reuse
-   `_ingest_one`; only the parser instance and default paths differ.
+6. Add a `CarrierConfig` entry to `courier_automation/carriers.py`:
+   parser class, workbook + Facturas paths, data-sheet name, file globs,
+   the duplicate-guard key (`guard_invoice_column` or `guard_month_column`),
+   and the intake classification rule (`classify_patterns` if the
+   filename is distinctive, else `classify_probe=True` plus a header
+   `sniff()` on the parser). Add an `ingest <carrier>` subcommand in
+   `cli.py` — it's ~15 lines that read the new registry entry.
+7. Add a normalizer at `unified/normalizers/<carrier>.py` mapping the
+   carrier's parquet to the canonical schema, register it in
+   `unified/normalizers/__init__.py`, add the carrier to
+   `unified/schema.py`'s `CARRIERS`, and add a branch to
+   `unified/service_classifier.py`. Use `seitrans.py` as the template.
+8. Backfill the parquet substrate:
+   `scripts/backfill/backfill_<carrier>_parquet.py` (copy an existing one).
 
 ## Memory / state on disk
 
@@ -209,20 +245,17 @@ Correos Express → VASP → Lynda's → etc. For each carrier:
 - `%TEMP%\pytest-of-<user>\` — pytest's scratch from `tmp_path`.
   Last 3 runs kept; rotates automatically.
 
-## Operator workflow (once n8n is wired)
+## Operator workflow (production)
 
-This is what production will look like. Not built yet.
+The collector is built. n8n Cloud watches one Outlook folder and drops
+invoice attachments into the OneDrive `_inbox/`; a Windows Task
+Scheduler job runs `scripts/run_collector.py`, which classifies and
+files each invoice, sweeps the `pipeline` for all eight carriers,
+rebuilds the unified table, and emails a summary. UPS / WWEX / Royal
+Mail are still fetched by hand — the operator drops their downloads into
+the same `_inbox/`.
 
-1. n8n watches the corporate inbox labels `Couriers/Seur` and
-   `Couriers/Seitrans` (and a label per active courier as we add them).
-2. New invoice email → download attachment → POST to a Python ingest
-   endpoint (or run `python -m courier_automation.cli ingest <carrier>
-   --file ...` if the runner is co-located).
-3. On exit code 0 → mark email as ingested, send "rows appended" notification.
-4. On exit code 2 / 4 / 5 → send loud alert with the error message; do
-   not retry automatically.
-5. On exit code 3 → retry after 5 minutes (lock contention).
-
-The Python pipeline doesn't care which orchestrator drives it —
-n8n, Power Automate, Windows Task Scheduler, or `cron` all work the
-same way.
+The full operator runbook — Outlook + n8n setup, SMTP config, Task
+Scheduler, and the `_unclassified/` / `_conflicts/` triage folders —
+lives in [automation.md](automation.md). Day to day, the operator just
+reads the summary email and acts on its "ATTENTION NEEDED" section.
