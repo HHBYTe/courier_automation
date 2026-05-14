@@ -1,25 +1,31 @@
 // ===================================================================
 // Courier Automation — Power BI DAX measure library
-// Paste these into Power BI Desktop. Create a "Measures" table first
-// (Home → Enter Data → table name "Measures", one dummy column, OK)
-// and right-click → New measure, then paste each block.
 // ===================================================================
+// How to use:
+//   1. In Power BI Desktop, right-click your Medidas table → New measure
+//   2. The formula bar shows: Measure =
+//   3. Select all in the formula bar (Ctrl+A) and paste ONE block below
+//   4. Press Enter — the measure is created with the name on the left
+//   5. Repeat for each block
 //
-// Conventions
-// - Every cost measure is implicitly filtered by the page-level
-//   currency slicer; do NOT sum cost measures across currencies.
-// - Measures that produce non-meaningful cross-currency results
-//   return BLANK() when more than one currency is in the filter context.
+// Conventions:
+// - All cost measures are in EUR. They read the Shipments[*_eur]
+//   columns, which the pipeline converts from native currency using a
+//   single frozen rate (see unified/fx_rates.py). They sum cleanly
+//   across all carriers — no currency slicer or guard needed.
+// - Currency in Context / Is Single Currency are kept for INFORMATION
+//   only (e.g. a card showing which native currencies a filtered view
+//   contains). They no longer guard anything — safe to skip if unused.
 
 
 // -------------------------------------------------------------------
-// Currency guard
+// Currency info (optional — cost measures no longer depend on these)
 // -------------------------------------------------------------------
 
-[Currency in Context] =
-SELECTEDVALUE ( unified_shipments[currency], "MULTIPLE" )
+Currency in Context =
+SELECTEDVALUE ( Shipments[currency], "MULTIPLE" )
 
-[Is Single Currency] =
+Is Single Currency =
 IF ( [Currency in Context] = "MULTIPLE", FALSE, TRUE )
 
 
@@ -27,48 +33,42 @@ IF ( [Currency in Context] = "MULTIPLE", FALSE, TRUE )
 // Volume measures (currency-agnostic; safe to slice freely)
 // -------------------------------------------------------------------
 
-[Total Shipments] =
-COUNTROWS ( unified_shipments )
+Total Shipments =
+COUNTROWS ( Shipments )
 
-[Total Bultos] =
-SUM ( unified_shipments[bultos_count] )
+Total Bultos =
+SUM ( Shipments[bultos_count] )
 
-[Total Weight (kg)] =
-SUM ( unified_shipments[weight_kg] )
+Total Weight (kg) =
+SUM ( Shipments[weight_kg] )
 
-[Bultos per Shipment] =
+Bultos per Shipment =
 DIVIDE ( [Total Bultos], [Total Shipments] )
 
-[Avg Weight per Shipment (kg)] =
+Avg Weight per Shipment (kg) =
 DIVIDE ( [Total Weight (kg)], [Total Shipments] )
 
 
 // -------------------------------------------------------------------
-// Cost measures — guarded by currency
+// Cost measures — all in EUR (frozen-rate normalized, sum across carriers)
 // -------------------------------------------------------------------
 
-[Gross Cost] =
-IF ( [Is Single Currency], SUM ( unified_shipments[total_net] ) )
+Gross Cost =
+SUM ( Shipments[total_net_eur] )
 
-[Base Cost] =
-IF ( [Is Single Currency], SUM ( unified_shipments[base_cost] ) )
+Base Cost =
+SUM ( Shipments[base_cost_eur] )
 
-[Fuel Surcharge] =
-IF ( [Is Single Currency], SUM ( unified_shipments[fuel_surcharge] ) )
+Fuel Surcharge =
+SUM ( Shipments[fuel_surcharge_eur] )
 
-[Other Surcharges] =
-IF ( [Is Single Currency], SUM ( unified_shipments[other_surcharges] ) )
+Other Surcharges =
+SUM ( Shipments[other_surcharges_eur] )
 
-[Refund Total] =
-IF (
-    [Is Single Currency],
-    CALCULATE (
-        SUM ( refunds[total_net] ),
-        TREATAS ( VALUES ( unified_shipments[currency] ), refunds[currency] )
-    )
-)
+Refund Total =
+SUM ( Refunds[total_net_eur] )
 
-[Net Cost] =
+Net Cost =
 [Gross Cost] + COALESCE ( [Refund Total], 0 )
 
 
@@ -76,75 +76,165 @@ IF (
 // Ratios (currency-agnostic via DIVIDE within single-currency context)
 // -------------------------------------------------------------------
 
-[Cost per Shipment] =
+Cost per Shipment =
 DIVIDE ( [Gross Cost], [Total Shipments] )
 
-[Cost per Bulto] =
+Cost per Bulto =
 DIVIDE ( [Gross Cost], [Total Bultos] )
 
-[Cost per kg] =
+Cost per kg =
 DIVIDE ( [Gross Cost], [Total Weight (kg)] )
 
-[Fuel % of Net] =
+Fuel % of Net =
 DIVIDE ( [Fuel Surcharge], [Gross Cost] )
 
-[Surcharge % of Net] =
+Surcharge % of Net =
 DIVIDE ( [Fuel Surcharge] + [Other Surcharges], [Gross Cost] )
 
-[Refund Rate %] =
+Refund Rate % =
 DIVIDE ( -[Refund Total], [Gross Cost] )
 
 
 // -------------------------------------------------------------------
-// Time intelligence
+// Time intelligence (require dim_date marked as Date Table)
 // -------------------------------------------------------------------
 
-[Shipments MTD] =
+Shipments MTD =
 CALCULATE ( [Total Shipments], DATESMTD ( dim_date[date] ) )
 
-[Shipments YTD] =
+Shipments YTD =
 CALCULATE ( [Total Shipments], DATESYTD ( dim_date[date] ) )
 
-[Gross Cost MTD] =
+Gross Cost MTD =
 CALCULATE ( [Gross Cost], DATESMTD ( dim_date[date] ) )
 
-[Gross Cost YTD] =
+Gross Cost YTD =
 CALCULATE ( [Gross Cost], DATESYTD ( dim_date[date] ) )
 
-[Gross Cost LY] =
+Gross Cost LY =
 CALCULATE ( [Gross Cost], SAMEPERIODLASTYEAR ( dim_date[date] ) )
 
-[YoY Δ] =
+YoY Delta =
 [Gross Cost] - [Gross Cost LY]
 
-[YoY %] =
-DIVIDE ( [YoY Δ], [Gross Cost LY] )
+YoY % =
+DIVIDE ( [YoY Delta], [Gross Cost LY] )
 
-[Shipments LY] =
+Shipments LY =
 CALCULATE ( [Total Shipments], SAMEPERIODLASTYEAR ( dim_date[date] ) )
 
-[Shipments YoY %] =
+Shipments YoY % =
 DIVIDE ( [Total Shipments] - [Shipments LY], [Shipments LY] )
+
+Cost per Shipment LY =
+DIVIDE ( [Gross Cost LY], [Shipments LY] )
+
+Cost per Shipment YoY Delta =
+[Cost per Shipment] - [Cost per Shipment LY]
+
+Cost per Shipment YoY % =
+DIVIDE ( [Cost per Shipment YoY Delta], [Cost per Shipment LY] )
+
+
+// -------------------------------------------------------------------
+// Direction & rates (require the Direction calculated column on Shipments)
+// -------------------------------------------------------------------
+
+Export Shipments =
+CALCULATE ( [Total Shipments], Shipments[Direction] = "International" )
+
+Domestic Shipments =
+CALCULATE ( [Total Shipments], Shipments[Direction] = "Domestic" )
+
+Export Cost =
+CALCULATE ( [Gross Cost], Shipments[Direction] = "International" )
+
+Domestic Cost =
+CALCULATE ( [Gross Cost], Shipments[Direction] = "Domestic" )
+
+Export % of Shipments =
+DIVIDE ( [Export Shipments], [Total Shipments] )
+
+Export % of Cost =
+DIVIDE ( [Export Cost], [Gross Cost] )
+
+Days in Period =
+DISTINCTCOUNT ( dim_date[date] )
+
+Business Days in Period =
+CALCULATE (
+    DISTINCTCOUNT ( dim_date[date] ),
+    dim_date[is_business_day] = TRUE ()
+)
+
+Shipments per Day =
+DIVIDE ( [Total Shipments], [Days in Period] )
+
+Shipments per Business Day =
+DIVIDE ( [Total Shipments], [Business Days in Period] )
+
+Exports per Day =
+DIVIDE ( [Export Shipments], [Days in Period] )
+
+Exports per Business Day =
+DIVIDE ( [Export Shipments], [Business Days in Period] )
 
 
 // -------------------------------------------------------------------
 // Distribution / mix helpers
 // -------------------------------------------------------------------
 
-[Active Carriers] =
-DISTINCTCOUNT ( unified_shipments[carrier] )
+Active Carriers =
+DISTINCTCOUNT ( Shipments[carrier] )
 
-[Active Destinations] =
-DISTINCTCOUNT ( unified_shipments[destination_country] )
+Active Destinations =
+DISTINCTCOUNT ( Shipments[destination_country] )
 
-[% of Total Shipments] =
+% of Total Shipments =
 DIVIDE (
     [Total Shipments],
-    CALCULATE ( [Total Shipments], ALL ( unified_shipments[carrier] ) )
+    CALCULATE ( [Total Shipments], ALL ( Shipments[carrier] ) )
 )
 
-[% of Total Cost] =
+% of Total Cost =
 DIVIDE (
     [Gross Cost],
-    CALCULATE ( [Gross Cost], ALL ( unified_shipments[carrier] ) )
+    CALCULATE ( [Gross Cost], ALL ( Shipments[carrier] ) )
 )
+
+
+// -------------------------------------------------------------------
+// Refunds (Refunds fact table — only seur, dachser, ups have rows)
+// -------------------------------------------------------------------
+// Refund Total (Cost section) and Refund Rate % (Ratios section) live
+// above. Refund amounts are stored NEGATIVE — they reduce cost — so
+// Refund Total is a negative number and a column chart of it points
+// down. That is intentional: it keeps Net Cost = Gross + Refund honest.
+// Use -[Refund Total] in a visual if you want the magnitude positive.
+
+Refund Count =
+COUNTROWS ( Refunds )
+
+Avg Refund =
+DIVIDE ( [Refund Total], [Refund Count] )
+
+Refund Total LY =
+CALCULATE ( [Refund Total], SAMEPERIODLASTYEAR ( dim_date[date] ) )
+
+Refund Count LY =
+CALCULATE ( [Refund Count], SAMEPERIODLASTYEAR ( dim_date[date] ) )
+
+// Refund incidence: refund rows as a share of shipments in the same
+// date/carrier context. Approximate — one shipment can attract more
+// than one refund line — but a good directional "how often" signal.
+Refunded Shipment Rate % =
+DIVIDE ( [Refund Count], [Total Shipments] )
+
+// Weight on refunded rows. weight_kg is populated on ~99% of refund
+// rows (all SEUR); the Shipments weight measures can't be reused here
+// because they sum the Shipments table, not Refunds.
+Refund Weight (kg) =
+SUM ( Refunds[weight_kg] )
+
+Avg Weight per Refund (kg) =
+DIVIDE ( [Refund Weight (kg)], [Refund Count] )

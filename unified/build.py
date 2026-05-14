@@ -2,7 +2,8 @@
 
 Reads `data/<carrier>/*.parquet` for every implemented carrier, applies
 the carrier-specific normalizer, splits each carrier's rows into three
-buckets, validates the canonical schema, and writes:
+buckets, adds frozen-rate EUR-normalized columns (see `unified.fx_rates`),
+validates the canonical schema, and writes:
 
   unified/output/unified_shipments.parquet  — kept rows (= true shipments)
   unified/output/refunds.parquet            — refund/credit rows (negative
@@ -31,6 +32,7 @@ from pathlib import Path
 import pandas as pd
 
 from unified import schema
+from unified.fx_rates import FROZEN_RATE_AS_OF, RATE_TO_EUR
 from unified.normalizers import REGISTRY
 
 log = logging.getLogger("unified.build")
@@ -111,6 +113,29 @@ def _normalize_carrier(carrier: str) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
     return kept, refunds, rejected, stats
 
 
+def _add_eur_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Add frozen-rate EUR-normalized companion columns.
+
+    Every amount is converted with a single frozen rate per currency
+    from `unified.fx_rates`. EUR rows convert at 1.0 (no-op). See that
+    module for the historical-distortion tradeoff this accepts.
+    """
+    df = df.copy()
+    unknown = sorted(set(df["currency"].dropna()) - set(RATE_TO_EUR))
+    if unknown:
+        raise SystemExit(
+            f"no frozen FX rate for currency/currencies {unknown} — "
+            f"add them to unified/fx_rates.py"
+        )
+    rate = df["currency"].map(RATE_TO_EUR).astype("float64")
+    df["fx_rate_to_eur"] = rate
+    df["total_net_eur"] = (df["total_net"] * rate).astype("float64")
+    df["base_cost_eur"] = (df["base_cost"] * rate).astype("float64")
+    df["fuel_surcharge_eur"] = (df["fuel_surcharge"] * rate).astype("float64")
+    df["other_surcharges_eur"] = (df["other_surcharges"] * rate).astype("float64")
+    return df
+
+
 def _write_outputs(
     kept_frames: list[pd.DataFrame],
     refund_frames: list[pd.DataFrame],
@@ -122,6 +147,7 @@ def _write_outputs(
 
     if kept_frames:
         kept = pd.concat(kept_frames, ignore_index=True)
+        kept = _add_eur_columns(kept)
         kept = schema.coerce(kept)
         errors = schema.validate(kept)
         if errors:
@@ -144,6 +170,7 @@ def _write_outputs(
 
     if refund_frames:
         refunds = pd.concat(refund_frames, ignore_index=True)
+        refunds = _add_eur_columns(refunds)
         # Refunds share the canonical schema with shipments — coerce so
         # Power BI sees identical dtypes on the two tables.
         refunds = schema.coerce(refunds)
@@ -164,6 +191,7 @@ def _write_outputs(
 
     manifest = {
         "built_at": pd.Timestamp.utcnow().isoformat(),
+        "fx_rates": {"as_of": FROZEN_RATE_AS_OF, "rate_to_eur": RATE_TO_EUR},
         "total_kept": int(len(kept)),
         "total_refunds": int(len(refunds)),
         "total_rejected": sum(int(len(f)) for f in rejected_frames),
@@ -180,7 +208,11 @@ def _write_outputs(
 def _summarize_refunds(refunds: pd.DataFrame) -> dict:
     by_carrier = (
         refunds.groupby("carrier")
-            .agg(rows=("shipment_id", "size"), total=("total_net", "sum"))
+            .agg(
+                rows=("shipment_id", "size"),
+                total=("total_net", "sum"),
+                total_eur=("total_net_eur", "sum"),
+            )
             .reset_index()
     )
     return {
@@ -189,6 +221,7 @@ def _summarize_refunds(refunds: pd.DataFrame) -> dict:
                 "carrier": r["carrier"],
                 "rows": int(r["rows"]),
                 "total": float(r["total"]),
+                "total_eur": float(r["total_eur"]),
             }
             for _, r in by_carrier.iterrows()
         ],
@@ -202,6 +235,7 @@ def _summarize(kept: pd.DataFrame) -> dict:
                 rows=("shipment_id", "size"),
                 bultos=("bultos_count", "sum"),
                 total_net=("total_net", "sum"),
+                total_net_eur=("total_net_eur", "sum"),
                 date_min=("posting_date", "min"),
                 date_max=("posting_date", "max"),
             )
@@ -214,6 +248,7 @@ def _summarize(kept: pd.DataFrame) -> dict:
             "rows": int(r["rows"]),
             "bultos": int(r["bultos"]) if pd.notna(r["bultos"]) else 0,
             "total_net": float(r["total_net"]) if pd.notna(r["total_net"]) else 0.0,
+            "total_net_eur": float(r["total_net_eur"]) if pd.notna(r["total_net_eur"]) else 0.0,
             "date_min": str(r["date_min"].date()) if pd.notna(r["date_min"]) else None,
             "date_max": str(r["date_max"].date()) if pd.notna(r["date_max"]) else None,
         })

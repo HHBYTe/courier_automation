@@ -1,8 +1,11 @@
 """Canonical schema for the unified shipments fact table.
 
-Twenty columns, strict dtypes. Pass-through currency — amounts stay in
-their native unit (EUR / GBP / USD) and the `currency` column distinguishes
-them. Power BI converts at display time.
+Twenty-five columns, strict dtypes. Amounts are kept BOTH in their
+native currency (`total_net`, `base_cost`, … + `currency`) AND
+converted to EUR (`total_net_eur`, … + `fx_rate_to_eur`). The EUR
+columns use a single frozen rate from `unified.fx_rates` so every
+carrier is comparable on one scale; the native columns are retained
+for audit and for anyone who wants the original figures.
 
 Nullability rules:
 - Columns marked `nullable=True` may be null when the source carrier
@@ -66,6 +69,11 @@ UNIFIED_COLUMNS: tuple[Column, ...] = (
     Column("other_surcharges",    "float64",        nullable=True),
     Column("total_net",           "float64",        nullable=False),
     Column("currency",            "string",         nullable=False),
+    Column("fx_rate_to_eur",      "float64",        nullable=False),
+    Column("total_net_eur",       "float64",        nullable=False),
+    Column("base_cost_eur",       "float64",        nullable=True),
+    Column("fuel_surcharge_eur",  "float64",        nullable=True),
+    Column("other_surcharges_eur","float64",        nullable=True),
     Column("año",                 "Int64",          nullable=False),
     Column("mes",                 "Int64",          nullable=False),
     Column("source_file",         "string",         nullable=False),

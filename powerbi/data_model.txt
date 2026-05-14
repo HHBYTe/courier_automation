@@ -7,7 +7,7 @@ Tables to load in Power BI Desktop
 ----------------------------------
 
 Fact:
-  unified_shipments   — unified/output/unified_shipments.parquet  (~363k rows)
+  unified_shipments   — unified/output/unified_shipments.parquet  (~370k rows)
   refunds             — unified/output/refunds.parquet            (~3.3k rows)
 
 Dimension:
@@ -48,9 +48,13 @@ unified_shipments:
                               as the date in Mark as Date Table for
                               relationships if you skip dim_date
   - bultos_count, weight_kg, base_cost, fuel_surcharge, other_surcharges,
-    total_net:                summarisation = Sum
+    total_net, total_net_eur, base_cost_eur, fuel_surcharge_eur,
+    other_surcharges_eur:     summarisation = Sum
+  - fx_rate_to_eur:           summarisation = Do not summarise
   - shipment_id, invoice_id:  summarisation = Do not summarise
   - source_file:              hide (debug only)
+  - native cost columns (total_net, base_cost, …) can be hidden if you
+    only ever report in EUR — the *_eur columns are what the measures use
 
 refunds:
   - same as shipments
@@ -61,13 +65,19 @@ dim_date:
     `day_name` by `day_of_week`
 
 
-Page-level slicer
------------------
+Currency
+--------
 
-Add a `currency` slicer to every page (top-right corner). Default to
-EUR. The DAX measures return BLANK when multiple currencies are in
-context, so cost cards visibly go empty if a user accidentally clears
-the slicer — that's the safety guard.
+All cost measures are in EUR. The pipeline converts every non-EUR
+carrier (UPS = GBP, WWEX = USD) to EUR with a single frozen rate
+(see unified/fx_rates.py) and stores the result in the Shipments[*_eur]
+columns. Cost measures read those columns, so they sum cleanly across
+all 7 carriers with no slicer needed.
+
+A `currency` slicer is now OPTIONAL — only useful as an informational
+filter (e.g. "show me just the GBP-native carrier"). It is no longer a
+safety guard. The native-currency columns (total_net, base_cost, …) are
+still in the model for audit if anyone needs the original figures.
 
 
 Suggested 5-page operational drill-down
@@ -77,8 +87,8 @@ Page 1 — Overview
   Cards:    Total Shipments • Total Bultos • Gross Cost • Net Cost
   Trend:    Gross Cost by year_month, line + column combo
   Mix:      Total Shipments by carrier (donut)
-  Slicers:  currency, dim_date[year]
-  Filter:   none (page-level only on currency)
+  Slicers:  dim_date[year]  (currency slicer optional — see Currency note)
+  Filter:   none
 
 Page 2 — Carrier Detail
   Slicer:   single-select carrier dropdown (top)
@@ -92,14 +102,14 @@ Page 3 — Service Mix
   Matrix:   carrier (rows) × service_class (columns), values = Total Shipments
   100%-stacked bar:  Gross Cost by service_class, broken down by carrier
   Card:     Active Service Classes count
-  Slicers:  currency, year, month
+  Slicers:  year, month
 
 Page 4 — Destinations
   Map:      destination_country (filled map), size = Total Shipments
   Bar:      Top 15 destinations by Gross Cost (filter Top N)
   Table:    destination_country × Total Shipments × Total Bultos ×
             Avg Weight per Shipment × Gross Cost × Cost per Bulto
-  Slicers:  carrier, currency
+  Slicers:  carrier
   Note:     Royal Mail and SEUR don't supply destination_country —
             those rows will be in a "blank" slice. Either filter them
             out at the visual level or annotate the page.
@@ -113,15 +123,121 @@ Page 5 — Refunds
             filtered by (carrier, shipment_id)
 
 
-Setup checklist
----------------
+===================================================================
+HOW TO RUN EVERYTHING
+===================================================================
 
-1. Run `python -m unified.build`     (regenerates unified_shipments + refunds)
-2. Run `python -m powerbi.build_dims` (regenerates dim_date covering current range)
-3. Power BI Desktop → Get Data → Parquet → load all 5 files
-4. Modeling → wire the 5 relationships above
-5. Mark dim_date as date table
-6. Home → Enter Data → table "Measures" (one column "_", hidden)
-7. Paste blocks from measures.dax as individual measures into Measures table
-8. Build the 5 pages
-9. Refresh by re-running steps 1-2, then Home → Refresh in Power BI
+There are two scripts and they MUST run in this order. Both are run
+from the repo root in PowerShell. The .pbix never needs re-authoring
+once built — you only ever re-run the scripts and hit Refresh.
+
+  Script 1:  python -m unified.build
+             Reads  data/<carrier>/*.parquet  (all 7 carriers)
+             Writes unified/output/unified_shipments.parquet
+                    unified/output/refunds.parquet
+                    unified/output/rejections.parquet
+                    unified/output/manifest.json
+
+  Script 2:  python -m powerbi.build_dims
+             Reads  unified/output/unified_shipments.parquet
+             Writes powerbi/output/dim_date.parquet
+                    powerbi/output/dim_carrier.parquet
+                    powerbi/output/dim_service_class.parquet
+
+Script 2 reads Script 1's output, so unified.build ALWAYS runs first.
+
+
+-------------------------------------------------------------------
+A. Routine data refresh  (the common case — new invoices arrived)
+-------------------------------------------------------------------
+
+  1. python -m unified.build
+  2. python -m powerbi.build_dims
+  3. Open the .pbix → Home → Refresh (the refresh icon)
+  4. Save the .pbix
+
+That's it. Verify step 1 printed all 7 carriers and a kept-row count
+near ~370k (see "Sanity check" below). If a carrier is missing or the
+count is way off, DO NOT refresh Power BI — fix the build first.
+
+
+-------------------------------------------------------------------
+B. First-time setup  (building the .pbix from scratch)
+-------------------------------------------------------------------
+
+  1. python -m unified.build
+  2. python -m powerbi.build_dims
+  3. Power BI Desktop → Get Data → Parquet → load all 5 output files
+  4. Modeling → wire the 5 relationships listed above
+  5. Mark dim_date as a Date Table (Table Tools → Mark as Date Table)
+  6. Home → Enter Data → table "Medidas" (one column "_", mark hidden)
+  7. Paste each block from measures.dax as its own measure into Medidas
+  8. Add the calculated columns (Direction, Weight Bucket — see below)
+  9. Build the 5 report pages
+  10. Save the .pbix
+
+
+-------------------------------------------------------------------
+C. After changing the FX rates  (unified/fx_rates.py)
+-------------------------------------------------------------------
+
+The frozen GBP/USD→EUR rates live in unified/fx_rates.py. They feed
+the *_eur columns. After editing them you must rebuild so the new
+rates flow into the parquet:
+
+  1. Edit unified/fx_rates.py  (update RATE_TO_EUR and FROZEN_RATE_AS_OF)
+  2. python -m unified.build
+  3. python -m powerbi.build_dims      (not strictly needed, but harmless)
+  4. Open the .pbix → Home → Refresh → Save
+
+dim_carrier / dim_service_class only change if you add a carrier or a
+service class — otherwise step 3 is a no-op you can skip.
+
+
+-------------------------------------------------------------------
+!!! GOTCHA: never leave a partial build on disk !!!
+-------------------------------------------------------------------
+
+unified.build accepts an optional  --carriers  flag for testing a
+single carrier, e.g.:
+
+  python -m unified.build --carriers ups        # UPS ONLY — partial!
+
+This OVERWRITES unified/output/ with just that carrier's rows. If you
+then refresh Power BI, the report silently loses the other 6 carriers
+(symptom: visuals go blank or near-empty for everything except the one
+carrier you tested).
+
+RULE: any time you run --carriers, the very next thing you do is run a
+full  python -m unified.build  (no flag) before touching Power BI.
+When in doubt, just run the full build — it only takes ~16 seconds.
+
+
+-------------------------------------------------------------------
+Sanity check  (what a healthy `python -m unified.build` looks like)
+-------------------------------------------------------------------
+
+The run log should list ALL 7 carriers and end near these numbers:
+
+  correos    ~58,800 kept       seitrans   ~2,100 kept
+  seur      ~267,300 kept       dachser      ~420 kept
+  spring     ~1,200 kept        ups       ~18,000 kept
+  wwex      ~22,600 kept
+  -> ~370,000 kept rows, ~3,300 refunds, ~16,500 rejected
+
+Currency by carrier: UPS = GBP, WWEX = USD, all others = EUR.
+total_net_eur should have zero nulls. If the build hits a currency
+with no rate in fx_rates.py it aborts with a clear error — add the
+rate and re-run.
+
+
+-------------------------------------------------------------------
+Calculated columns to add in Power BI  (not in the parquet)
+-------------------------------------------------------------------
+
+  Shipments[Direction]          Domestic / International / Unknown
+  Shipments[Weight Bucket]      "001 KG".."MÁS 200 KG" / "Sin peso"
+  Shipments[Weight Bucket Sort] integer sort key for Weight Bucket
+
+These live in the .pbix and survive a data Refresh — you only author
+them once (first-time setup step 8).

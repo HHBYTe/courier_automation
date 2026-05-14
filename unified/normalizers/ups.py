@@ -36,33 +36,47 @@ def normalize(df: pd.DataFrame, source_file: str) -> pd.DataFrame:
     work["__net"] = pd.to_numeric(work["Net Amount"], errors="coerce")
     work["__category"] = work["Charge Category Code"].astype("string").str.strip()
     work["__desc"] = work["Charge Description"].astype("string").str.upper().fillna("")
-    work["__is_shp"] = work["__category"] == "SHP"
-    work["__is_fuel"] = work["__desc"].str.contains("FUEL", regex=False)
+    work["__is_shp"] = (work["__category"] == "SHP").fillna(False).astype(bool)
+    work["__is_fuel"] = (
+        work["__desc"].str.contains("FUEL", regex=False).fillna(False).astype(bool)
+    )
 
-    grp = work.groupby("Lead Shipment Number", dropna=False)
+    # Group key: the real Lead Shipment Number, or a per-row synthetic key
+    # for charge lines that have none. The synthetic key keeps those rows
+    # as individual output rows (they're rejected downstream for a null
+    # shipment_id, but visibly — not silently swallowed by one NaN group).
+    lead = work["Lead Shipment Number"]
+    work["__group_key"] = lead.where(
+        lead.notna(), "__nokey_" + work.index.astype("string")
+    )
+
     base_cost = (
         work.loc[work["__is_shp"] & ~work["__is_fuel"]]
-            .groupby("Lead Shipment Number")["__net"].sum()
+            .groupby("__group_key")["__net"].sum()
             .rename("base_cost")
     )
     fuel = (
         work.loc[work["__is_fuel"]]
-            .groupby("Lead Shipment Number")["__net"].sum()
+            .groupby("__group_key")["__net"].sum()
             .rename("fuel_surcharge")
     )
     other = (
         work.loc[~work["__is_shp"] & ~work["__is_fuel"]]
-            .groupby("Lead Shipment Number")["__net"].sum()
+            .groupby("__group_key")["__net"].sum()
             .rename("other_surcharges")
     )
-    total = grp["__net"].sum().rename("total_net")
+    total = work.groupby("__group_key")["__net"].sum().rename("total_net")
 
-    # One representative row per Lead Shipment Number — prefer SHP rows
-    # because they carry the shipment-level metadata.
-    shp_rows = work.loc[work["__is_shp"]].drop_duplicates(
-        subset=["Lead Shipment Number"], keep="first"
+    # One representative row per group — prefer a SHP row (carries the
+    # shipment-level metadata); fall back to the first row of any category
+    # so shipments billed only as ADJ/RTN/MIS aren't dropped. They flow
+    # through and pick up a reject reason downstream instead of vanishing.
+    work["__shp_rank"] = (~work["__is_shp"]).astype("int8")
+    meta = (
+        work.sort_values(["__group_key", "__shp_rank"], kind="stable")
+            .drop_duplicates(subset=["__group_key"], keep="first")
+            .set_index("__group_key")
     )
-    meta = shp_rows.set_index("Lead Shipment Number")
 
     joined = (
         meta.join(base_cost, how="left")
