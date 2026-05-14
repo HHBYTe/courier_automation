@@ -274,6 +274,25 @@ class SeitransParser:
             file_hash=file_hash,
         )
 
+    def sniff(self, path: Path) -> bool:
+        """True if `path` looks like a Seitrans invoice — header only, no
+        full parse. Used by the intake classifier to disambiguate bare
+        `.xlsx` files (Seitrans vs Dachser have no filename signature)."""
+        path = Path(path)
+        if not path.exists():
+            return False
+        try:
+            df = pd.read_excel(
+                path, sheet_name=self.sheet_name, engine="openpyxl", nrows=0
+            )
+            # assert_schema raises SchemaMismatch on the wrong shape; any
+            # other read failure (wrong file type, missing sheet, corrupt
+            # zip) just means "not a Seitrans file" — sniff never raises.
+            assert_schema(df, SEITRANS_RAW_COLUMNS)
+        except Exception:  # noqa: BLE001
+            return False
+        return True
+
     @staticmethod
     def _derive_invoice_date(df: pd.DataFrame) -> date:
         s = df["DOCUMENTO_DATA"].dropna()

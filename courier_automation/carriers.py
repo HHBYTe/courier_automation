@@ -49,6 +49,13 @@ class CarrierConfig:
     # Royal Mail has no append-friendly master; the pipeline rebuilds it
     # from scratch each run instead of appending, so the guard is skipped.
     rebuild_mode: bool = False
+    # Intake classification (courier_automation.intake). `classify_patterns`
+    # are case-insensitive filename regexes — the fast path. Carriers with
+    # no reliable filename signature (seitrans, dachser: bare/date-prefixed
+    # .xlsx) instead set `classify_probe=True` and are disambiguated by the
+    # parser's header `sniff()`.
+    classify_patterns: tuple[str, ...] = ()
+    classify_probe: bool = False
 
 
 def _name_contains(token: str) -> Callable[[Path], bool]:
@@ -64,6 +71,8 @@ CARRIERS: dict[str, CarrierConfig] = {
         data_sheet="Datos",
         file_globs=("*.xlsx",),
         guard_invoice_column="Numero Factura",
+        # e.g. 0289992025D0289264.xlsx (10 digits + 1-3 letters + 7 digits).
+        classify_patterns=(r"^\d{10}[A-Z]{1,3}\d{7}\.xlsx$",),
     ),
     "seitrans": CarrierConfig(
         name="seitrans",
@@ -73,6 +82,9 @@ CARRIERS: dict[str, CarrierConfig] = {
         data_sheet="Datos",
         file_globs=("*.xlsx",),
         guard_invoice_column="DOCUMENTO NUMERO",
+        # Bare/date-prefixed .xlsx with no signature — disambiguated by
+        # the parser header sniff (see intake.classify_invoice_file).
+        classify_probe=True,
     ),
     "dachser": CarrierConfig(
         name="dachser",
@@ -82,6 +94,8 @@ CARRIERS: dict[str, CarrierConfig] = {
         data_sheet="New Datos",
         file_globs=("*.xlsx", "*.XLSX", "*.xls", "*.XLS"),
         guard_invoice_column="Factura",
+        # No reliable filename signature — disambiguated by header sniff.
+        classify_probe=True,
     ),
     "correos": CarrierConfig(
         name="correos",
@@ -94,6 +108,8 @@ CARRIERS: dict[str, CarrierConfig] = {
         # The invoice number lives only in the raw header band, not in the
         # row schema — fall back to month-overlap on F.ADMISION.
         guard_month_column="F.ADMISION",
+        # e.g. FAC_UNICO_F2506_14077.xlsx
+        classify_patterns=(r"FAC_UNICO",),
     ),
     "ups": CarrierConfig(
         name="ups",
@@ -104,6 +120,8 @@ CARRIERS: dict[str, CarrierConfig] = {
         file_globs=("*.csv",),
         fallback_globs=("*.xlsx",),
         guard_invoice_column="Invoice Number",
+        # e.g. Invoice_59586753_010224.csv
+        classify_patterns=(r"^Invoice_\d+_\d+\.(?:csv|xlsx)$",),
     ),
     "wwex": CarrierConfig(
         name="wwex",
@@ -116,6 +134,8 @@ CARRIERS: dict[str, CarrierConfig] = {
         # invoice_number is synthetic (wwex-YYYY-MM) with no row column —
         # fall back to month-overlap on Ship Date.
         guard_month_column="Ship Date",
+        # e.g. shipment_detail_report.xlsx, shipmentDetailsUPS_W130089866_...xlsx
+        classify_patterns=(r"shipment[_ ]?detail", r"shipmentdetails"),
     ),
     "spring": CarrierConfig(
         name="spring",
@@ -126,6 +146,7 @@ CARRIERS: dict[str, CarrierConfig] = {
         file_globs=("*.xlsx", "*.XLSX"),
         name_filter=_name_contains("details of invoice"),
         guard_invoice_column="Invoice Number",
+        classify_patterns=(r"details of invoice",),
     ),
     "royalmail": CarrierConfig(
         name="royalmail",
@@ -136,6 +157,8 @@ CARRIERS: dict[str, CarrierConfig] = {
         file_globs=("*.csv",),
         name_filter=_name_contains("invoice"),
         rebuild_mode=True,
+        # e.g. 20260511_9075855419_Invoice_0751634000.csv
+        classify_patterns=(r"^\d{8}_\d+_Invoice_\d+\.csv$",),
     ),
 }
 

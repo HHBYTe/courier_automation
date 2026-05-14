@@ -1,0 +1,123 @@
+{
+  "name": "Courier Collector",
+  "meta": {
+    "description": "Watches the Outlook 'Courier Invoices' folder, uploads every invoice attachment (.xlsx/.xls/.csv) into the OneDrive '_inbox' folder, and moves the handled message to 'Courier Invoices/Collected'. NO carrier logic — classification and the pipeline run on the PC (scripts/run_collector.py). See docs/automation.md for setup."
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            { "mode": "everyMinute" }
+          ]
+        },
+        "event": "messageReceived",
+        "filters": {
+          "folderId": "PASTE_COURIER_INVOICES_FOLDER_ID"
+        }
+      },
+      "id": "trigger-outlook",
+      "name": "New mail in Courier Invoices",
+      "type": "n8n-nodes-base.microsoftOutlookTrigger",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "REPLACE_WITH_OUTLOOK_CREDENTIAL_ID",
+          "name": "Microsoft Outlook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "get",
+        "messageId": "={{ $json.id }}",
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "id": "get-message",
+      "name": "Get message + attachments",
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [480, 300],
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "REPLACE_WITH_OUTLOOK_CREDENTIAL_ID",
+          "name": "Microsoft Outlook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsClass": "",
+        "jsCode": "// Fan out: one output item per invoice attachment.\n// Keep only .xlsx / .xls / .csv — drop signatures, images, PDFs.\n// No carrier logic here: the PC runner (scripts/run_collector.py)\n// classifies and files each attachment.\nconst INVOICE_EXT = /\\.(xlsx|xls|csv)$/i;\nconst out = [];\nfor (const item of $input.all()) {\n  const bins = item.binary || {};\n  for (const key of Object.keys(bins)) {\n    const bin = bins[key];\n    const fileName = bin.fileName || key;\n    if (!INVOICE_EXT.test(fileName)) continue;\n    out.push({\n      json: {\n        fileName,\n        messageId: item.json.id,\n        subject: item.json.subject || '',\n        receivedDateTime: item.json.receivedDateTime || ''\n      },\n      binary: { data: bin }\n    });\n  }\n}\nreturn out;"
+      },
+      "id": "extract-attachments",
+      "name": "Extract invoice attachments",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "upload",
+        "fileName": "={{ $json.fileName }}",
+        "parentFolderId": "PASTE_ONEDRIVE_INBOX_FOLDER_ID",
+        "binaryData": true,
+        "binaryPropertyName": "data",
+        "options": {}
+      },
+      "id": "upload-onedrive",
+      "name": "Upload to OneDrive _inbox",
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1,
+      "position": [960, 300],
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "REPLACE_WITH_ONEDRIVE_CREDENTIAL_ID",
+          "name": "Microsoft OneDrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "move",
+        "messageId": "={{ $('Get message + attachments').item.json.id }}",
+        "folderId": "PASTE_COLLECTED_FOLDER_ID"
+      },
+      "id": "mark-collected",
+      "name": "Move message to Collected",
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [1200, 300],
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "REPLACE_WITH_OUTLOOK_CREDENTIAL_ID",
+          "name": "Microsoft Outlook account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "New mail in Courier Invoices": {
+      "main": [[{ "node": "Get message + attachments", "type": "main", "index": 0 }]]
+    },
+    "Get message + attachments": {
+      "main": [[{ "node": "Extract invoice attachments", "type": "main", "index": 0 }]]
+    },
+    "Extract invoice attachments": {
+      "main": [[{ "node": "Upload to OneDrive _inbox", "type": "main", "index": 0 }]]
+    },
+    "Upload to OneDrive _inbox": {
+      "main": [[{ "node": "Move message to Collected", "type": "main", "index": 0 }]]
+    }
+  }
+}

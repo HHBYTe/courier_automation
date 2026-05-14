@@ -11,9 +11,18 @@ import pytest
 from openpyxl import Workbook
 
 from courier_automation.parsers.correos import CORREOS_COLUMNS, CORREOS_RAW_COLUMNS
+from courier_automation.parsers.dachser import DACHSER_RAW_CANONICAL, _RENAME_CLEAN
 from courier_automation.parsers.seur import SEUR_COLUMNS
 from courier_automation.parsers.ups import UPS_COLUMNS
 from courier_automation.parsers.seitrans import SEITRANS_COLUMNS, SEITRANS_RAW_COLUMNS
+
+# canonical Dachser column -> a 'clean'-layout raw header that renames to
+# it. Used to build a synthetic clean-layout invoice whose headers survive
+# `_read_raw`'s strip+rename back to the canonical names exactly (some
+# canonical names carry an NBSP that a bare strip would drop).
+_DACHSER_CLEAN_HEADER: dict[str, str] = {}
+for _clean_name, _canon_name in _RENAME_CLEAN.items():
+    _DACHSER_CLEAN_HEADER.setdefault(_canon_name, _clean_name)
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 SEUR_RAW_DIR = FIXTURES_DIR / "seur" / "raw"
@@ -262,6 +271,80 @@ def empty_seitrans_workbook(tmp_path: Path) -> Path:
 @pytest.fixture
 def default_seitrans_row():
     return _make_default_seitrans_row
+
+
+def _make_default_dachser_row(line_number: int = 1) -> dict[str, Any]:
+    """Defaults for one row of a synthetic Dachser invoice (clean layout).
+    Only the columns the parser's plausibility / derivation needs are set;
+    the rest stay blank."""
+    row: dict[str, Any] = dict.fromkeys(DACHSER_RAW_CANONICAL, "")
+    row["Doc. Vtas"] = str(900000 + line_number)
+    row["Oficina de ventas"] = "100"
+    row["Solicitante"] = str(200000 + line_number)
+    row["Nombre 1"] = "Artero"
+    row["Factura"] = "480001"
+    row["Fecha factura"] = "2025-04-30"
+    row["Clase factura"] = "F"
+    row["Denominación"] = "Transporte"
+    row["Sal./Lleg."] = "S"
+    row["Fecha doc."] = "2025-04-28"
+    row["N Exp."] = str(700000 + line_number)
+    row["Pedido"] = f"P{line_number:05d}"
+    row["N único"] = str(800000 + line_number)
+    row["Peso"] = "120.5"
+    row["Volumen"] = "0.8"
+    row["Bultos"] = "2"
+    row["Origen"] = "Barcelona"
+    row["Destino"] = "Madrid"
+    row["Remitente"] = "Artero"
+    row["Consignatario"] = "Cliente SL"
+    row["Portes"] = "45.00"
+    row["Importe neto"] = "45.00"
+    row["Ref1"] = f"REF{line_number:04d}"
+    return row
+
+
+def make_dachser_invoice(
+    path: Path,
+    rows: Iterable[dict[str, Any]] | None = None,
+) -> Path:
+    """Write a synthetic Dachser invoice in the 'clean' layout: header at
+    row 0, first cell `Documento de ventas` (the clean-layout signal),
+    remaining headers = the canonical raw names (which `_RENAME_CLEAN`
+    either passes through or identity-maps)."""
+    if rows is None:
+        rows = [_make_default_dachser_row()]
+    rows = list(rows)
+
+    header = [_DACHSER_CLEAN_HEADER.get(c, c) for c in DACHSER_RAW_CANONICAL]
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Sheet1"
+    ws.append(header)
+    for row in rows:
+        ws.append([row.get(col, "") for col in DACHSER_RAW_CANONICAL])
+    path.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(path)
+    return path
+
+
+@pytest.fixture
+def dachser_invoice_factory(tmp_path: Path):
+    """Returns a callable that writes a synthetic Dachser invoice xlsx."""
+
+    def _factory(
+        rows: Iterable[dict[str, Any]] | None = None,
+        *,
+        filename: str = "01-2025 IN 112100582.xlsx",
+    ) -> Path:
+        return make_dachser_invoice(tmp_path / filename, rows)
+
+    return _factory
+
+
+@pytest.fixture
+def default_dachser_row():
+    return _make_default_dachser_row
 
 
 @pytest.fixture

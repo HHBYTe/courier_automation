@@ -39,6 +39,18 @@ def test_registry_entries_are_well_formed():
         assert has_guard or cfg.rebuild_mode
 
 
+def test_registry_classification_fields():
+    # Exactly seitrans + dachser use the parser-sniff probe — they have no
+    # reliable filename signature. Every other carrier has a filename regex.
+    probe = {n for n, c in CARRIERS.items() if c.classify_probe}
+    assert probe == {"seitrans", "dachser"}
+    for name, cfg in CARRIERS.items():
+        if name in probe:
+            assert cfg.classify_patterns == ()
+        else:
+            assert cfg.classify_patterns, f"{name} has no classify_patterns"
+
+
 def test_only_royalmail_is_rebuild_mode():
     rebuild = {n for n, c in CARRIERS.items() if c.rebuild_mode}
     assert rebuild == {"royalmail"}

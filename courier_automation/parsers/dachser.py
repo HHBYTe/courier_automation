@@ -61,6 +61,7 @@ import pandas as pd
 from courier_automation.parsers.base import (
     ParseResult,
     ParserError,
+    SchemaMismatch,
     assert_schema,
     compute_file_hash,
     to_clean_string,
@@ -271,9 +272,11 @@ _TIPO_BULTO_BUCKETS: tuple[int, ...] = (
 )
 
 
-def _read_raw(path: Path) -> pd.DataFrame:
+def _read_raw(path: Path, *, nrows: int | None = None) -> pd.DataFrame:
     """Read a Dachser file under either layout, returning a DataFrame
-    whose columns are the canonical 55 names in canonical order."""
+    whose columns are the canonical 55 names in canonical order.
+
+    `nrows=0` reads the header only — used by `DachserParser.sniff`."""
     # Peek the first cell to decide layout. The bracketed layout opens
     # with a long auto-generated title; the clean layout opens with the
     # column header "Documento de ventas".
@@ -281,10 +284,10 @@ def _read_raw(path: Path) -> pd.DataFrame:
     first_cell = "" if probe.empty else str(probe.iloc[0, 0] or "")
 
     if "Documento de ventas" in first_cell:
-        df = pd.read_excel(path, sheet_name=0, header=0, dtype=str)
+        df = pd.read_excel(path, sheet_name=0, header=0, dtype=str, nrows=nrows)
         rename_map = _RENAME_CLEAN
     else:
-        df = pd.read_excel(path, sheet_name=0, header=3, dtype=str)
+        df = pd.read_excel(path, sheet_name=0, header=3, dtype=str, nrows=nrows)
         # Bracketed files prepend a phantom blank column (`Unnamed: 0`).
         if df.columns[0].startswith("Unnamed"):
             df = df.iloc[:, 1:]
@@ -400,7 +403,16 @@ class DachserParser:
             raise ParserError(f"could not read {path.name}: {e}") from e
 
         # The schema check uses the canonical names, so both layouts
-        # surface the same diff message if a column goes missing.
+        # surface the same diff message if a column goes missing. Guard
+        # the reindex first: a missing column would otherwise raise a bare
+        # KeyError instead of the clean SchemaMismatch diff (a renamed
+        # raw header that `_RENAME_*` doesn't cover lands here).
+        missing = [c for c in DACHSER_RAW_CANONICAL if c not in df.columns]
+        if missing:
+            raise SchemaMismatch(
+                f"schema mismatch ({len(df.columns)} cols vs expected "
+                f"{len(DACHSER_RAW_CANONICAL)}): missing={missing}"
+            )
         assert_schema(df[list(DACHSER_RAW_CANONICAL)], DACHSER_RAW_CANONICAL)
 
         df = _add_derived(df)
@@ -427,6 +439,23 @@ class DachserParser:
             source_path=path,
             file_hash=file_hash,
         )
+
+    def sniff(self, path: Path) -> bool:
+        """True if `path` looks like a Dachser invoice — header only, no
+        full parse. Used by the intake classifier to disambiguate bare
+        `.xlsx` files (Seitrans vs Dachser have no filename signature)."""
+        path = Path(path)
+        if not path.exists():
+            return False
+        try:
+            df = _read_raw(path, nrows=0)
+            # assert_schema raises SchemaMismatch on the wrong shape; any
+            # other read failure (wrong file type, corrupt zip, bad layout)
+            # just means "not a Dachser file" — sniff never raises.
+            assert_schema(df[list(DACHSER_RAW_CANONICAL)], DACHSER_RAW_CANONICAL)
+        except Exception:  # noqa: BLE001
+            return False
+        return True
 
     @staticmethod
     def _derive_invoice_number(df: pd.DataFrame, path: Path) -> str:
