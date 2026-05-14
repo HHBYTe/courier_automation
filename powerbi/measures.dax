@@ -218,6 +218,17 @@ COUNTROWS ( Refunds )
 Avg Refund =
 DIVIDE ( [Refund Total], [Refund Count] )
 
+// Distinct shipments that attracted at least one refund line. Differs
+// from Refund Count because a shipment can have several credit lines
+// (rare here — one shipment with 8, the rest 1:1).
+Refunded Shipments =
+DISTINCTCOUNT ( Refunds[shipment_id] )
+
+// Refund cost per refunded shipment — Avg Refund's denominator is the
+// row count, this one's is the distinct shipment count.
+Refund per Refunded Shipment =
+DIVIDE ( [Refund Total], [Refunded Shipments] )
+
 Refund Total LY =
 CALCULATE ( [Refund Total], SAMEPERIODLASTYEAR ( dim_date[date] ) )
 
@@ -238,3 +249,12 @@ SUM ( Refunds[weight_kg] )
 
 Avg Weight per Refund (kg) =
 DIVIDE ( [Refund Weight (kg)], [Refund Count] )
+
+// Bultos on refunded rows. Like weight_kg, bultos_count is forced
+// positive in the build (some carriers sign-flip the whole credit
+// line) so it sums and averages cleanly here.
+Refund Bultos =
+SUM ( Refunds[bultos_count] )
+
+Bultos per Refund =
+DIVIDE ( [Refund Bultos], [Refund Count] )

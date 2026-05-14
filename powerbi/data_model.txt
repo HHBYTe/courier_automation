@@ -110,9 +110,12 @@ Page 4 — Destinations
   Table:    destination_country × Total Shipments × Total Bultos ×
             Avg Weight per Shipment × Gross Cost × Cost per Bulto
   Slicers:  carrier
-  Note:     Royal Mail and SEUR don't supply destination_country —
-            those rows will be in a "blank" slice. Either filter them
-            out at the visual level or annotate the page.
+  Note:     SEUR destination_country is derived from its plaza codes
+            (see unified/normalizers/seur.py + data/seur/other/Destino.csv)
+            and is ~100% populated — SEUR DOES land on the map now.
+            Royal Mail still won't supply destination_country; those
+            rows fall in a "blank" slice — filter at the visual level
+            or annotate the page.
 
 Page 5 — Refunds
   Cards:    Refund Total • Refund Rate %

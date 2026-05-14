@@ -9,16 +9,73 @@ Within PORTES, each `Numero Expedicion` appears once (validated against
 2026-04 sample: 1666 PORTES rows = 1666 expediciones). No GROUP BY
 needed for the kept rows.
 
-Origin: ES fixed (SEUR is Spain-domestic-or-Iberian). Destination: from
-`Direccion Destinatario` etc.; SEUR uses an internal `Destino` plaza code
-not ISO — fall back to ES unless we can derive otherwise from the
-postcode.
+Origin: ES fixed (SEUR is Spain-domestic-or-Iberian). Destination: the
+`Destino` column is an internal SEUR plaza code, not ISO. SEUR's own
+reference sheet `data/seur/other/Destino.csv` maps every plaza code to
+a country — we read it and translate to ISO alpha-2. Codes absent from
+that sheet but already valid ISO (international plazas) pass through;
+anything still unknown stays null.
 """
 from __future__ import annotations
+
+from pathlib import Path
 
 import pandas as pd
 
 from unified.service_classifier import classify
+
+# SEUR's reference sheet lives alongside the invoice parquets. The
+# normalizer only runs when data/seur/ exists, so this path is safe.
+_DESTINO_CSV = (
+    Path(__file__).resolve().parents[2] / "data" / "seur" / "other" / "Destino.csv"
+)
+
+# Destino.csv "País" column (Spanish country names) -> ISO 3166-1 alpha-2.
+_PAIS_TO_ISO = {
+    "España": "ES", "Portugal": "PT", "Andorra": "AD",
+    "Italia": "IT", "Francia": "FR", "Alemania": "DE",
+    "Reino Unido": "GB", "Holanda": "NL", "Dinamarca": "DK",
+    "Bélgica": "BE", "Finlandia": "FI", "República Checa": "CZ",
+    "Grecia": "GR", "Polonia": "PL", "Suiza": "CH", "Austria": "AT",
+    "Bulgaria": "BG", "Hungría": "HU", "Suecia": "SE", "Lituania": "LT",
+    "Eslovenia": "SI", "Croacia": "HR", "Luxemburgo": "LU", "Letonia": "LV",
+    "Isla Reunión": "RE", "Estonia": "EE", "Irlanda": "IE",
+    "Rumanía": "RO", "Turquía": "TR",
+}
+
+# Codes seen in invoice data but absent from Destino.csv. The 2-letter
+# ones are already valid ISO alpha-2 (Albania, China, Monaco, Malta,
+# Norway, Russia, Singapore, Slovakia — international plazas); FUE and
+# LAN are Canary Islands. SCP and the numeric "28" are unidentified and
+# deliberately omitted — they fall through to null (~15 rows total).
+_EXTRA_DEST_TO_ISO = {
+    "AL": "AL", "CN": "CN", "MC": "MC", "MT": "MT",
+    "NO": "NO", "RU": "RU", "SG": "SG", "SK": "SK",
+    "FUE": "ES", "LAN": "ES",
+}
+
+
+def _load_destino_map() -> dict[str, str]:
+    """Plaza code -> ISO alpha-2, built from SEUR's own reference sheet."""
+    if not _DESTINO_CSV.exists():
+        raise FileNotFoundError(
+            f"SEUR destination reference sheet missing: {_DESTINO_CSV}. "
+            f"It ships with the SEUR invoice export — restore it before building."
+        )
+    ref = pd.read_csv(_DESTINO_CSV)
+    mapping: dict[str, str] = {}
+    for code, pais in zip(ref["Código Destino"], ref["País"]):
+        iso = _PAIS_TO_ISO.get(str(pais).strip())
+        if iso is None:
+            raise ValueError(
+                f"Destino.csv País {pais!r} (code {code!r}) has no ISO "
+                f"mapping — add it to _PAIS_TO_ISO in seur.py"
+            )
+        mapping[str(code).strip()] = iso
+    return {**mapping, **_EXTRA_DEST_TO_ISO}
+
+
+_DEST_TO_ISO = _load_destino_map()
 
 
 def normalize(df: pd.DataFrame, source_file: str) -> pd.DataFrame:
@@ -48,9 +105,11 @@ def normalize(df: pd.DataFrame, source_file: str) -> pd.DataFrame:
     out["bultos_count"] = pd.to_numeric(work["Bultos"], errors="coerce").astype("Int64")
     out["weight_kg"] = pd.to_numeric(work["Peso"], errors="coerce").astype("float64")
     out["origin_country"] = "ES"
-    # SEUR is Iberian-domestic + Andorra; absent a country column, leave null
-    # for all destinations (Power BI will show "Spain (assumed)" as needed).
-    out["destination_country"] = pd.Series(pd.NA, index=work.index, dtype="string")
+    # Translate SEUR's internal `Destino` plaza code to ISO alpha-2 via
+    # the reference sheet. Unknown codes (~15 rows) map to null.
+    out["destination_country"] = (
+        work["Destino"].astype("string").str.strip().map(_DEST_TO_ISO).astype("string")
+    )
     out["base_cost"] = pd.to_numeric(work["Portes"], errors="coerce").astype("float64")
     out["fuel_surcharge"] = pd.to_numeric(
         work["Cargo Combustible"], errors="coerce"
