@@ -10,7 +10,7 @@ conversion happens here.
 """
 from __future__ import annotations
 
-from . import correos, dachser, seitrans, seur, spring, ups, wwex
+from . import correos, dachser, royalmail, seitrans, seur, spring, ups, wwex
 
 REGISTRY = {
     "correos": correos.normalize,
@@ -20,6 +20,7 @@ REGISTRY = {
     "spring": spring.normalize,
     "ups": ups.normalize,
     "wwex": wwex.normalize,
+    "royalmail": royalmail.normalize,
 }
 
 __all__ = ["REGISTRY"]

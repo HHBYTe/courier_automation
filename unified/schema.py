@@ -38,6 +38,7 @@ CARRIERS: tuple[str, ...] = (
     "spring",
     "ups",
     "wwex",
+    "royalmail",
 )
 
 CURRENCIES: tuple[str, ...] = ("EUR", "GBP", "USD")

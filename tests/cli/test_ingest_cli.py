@@ -8,14 +8,14 @@ import pytest
 from openpyxl import load_workbook
 from typer.testing import CliRunner
 
-from courier_automation.cli import (
+from courier_automation.cli import app
+from courier_automation.exit_codes import (
     EXIT_LOCK,
     EXIT_MANIFEST_CONFLICT,
     EXIT_OK,
     EXIT_PLAUSIBILITY,
     EXIT_SCHEMA,
     EXIT_USAGE,
-    app,
 )
 from courier_automation.parsers.seur import SEUR_COLUMNS
 from courier_automation.store.workbook_appender import LOCK_SUFFIX

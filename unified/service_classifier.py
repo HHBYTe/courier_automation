@@ -67,6 +67,15 @@ def classify(carrier: str, service_raw: object) -> str | None:
         if "ltl" in low or "ftl" in low or "freight" in low:
             return "freight"
         return "parcel"
+    if carrier == "royalmail":
+        # Check parcel markers before "letter": service names like
+        # "ROYAL MAIL TRACKED 24" contain neither, but a "Large Letter"
+        # weight-band line should land in "letter".
+        if "tracked" in low or "parcel" in low or "signed" in low:
+            return "parcel"
+        if "letter" in low:
+            return "letter"
+        return "other"
     return "other"
 
 

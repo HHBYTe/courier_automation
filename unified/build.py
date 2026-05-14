@@ -26,7 +26,6 @@ import json
 import logging
 import sys
 import time
-from collections import defaultdict
 from pathlib import Path
 
 import pandas as pd
@@ -48,14 +47,16 @@ def _discover(carrier: str) -> list[Path]:
     )
 
 
-def _normalize_carrier(carrier: str) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
-    """Return (kept, rejected, stats) for one carrier."""
+def _normalize_carrier(
+    carrier: str,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict]:
+    """Return (kept, refunds, rejected, stats) for one carrier."""
     files = _discover(carrier)
     if not files:
         log.warning("%s: no parquets found in %s", carrier, DATA_DIR / carrier)
-        return pd.DataFrame(), pd.DataFrame(), {
+        return pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), {
             "carrier": carrier, "files": 0, "raw_rows": 0,
-            "kept": 0, "rejected": 0, "reject_breakdown": {},
+            "kept": 0, "refunds": 0, "rejected": 0, "reject_breakdown": {},
         }
 
     fn = REGISTRY[carrier]
@@ -72,9 +73,9 @@ def _normalize_carrier(carrier: str) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
         frames.append(normalized)
 
     if not frames:
-        return pd.DataFrame(), pd.DataFrame(), {
+        return pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), {
             "carrier": carrier, "files": len(files), "raw_rows": raw_rows,
-            "kept": 0, "rejected": 0, "reject_breakdown": {},
+            "kept": 0, "refunds": 0, "rejected": 0, "reject_breakdown": {},
         }
 
     combined = pd.concat(frames, ignore_index=True)
@@ -90,8 +91,17 @@ def _normalize_carrier(carrier: str) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
         & rest["shipment_id"].notna()
         & rest["posting_date"].notna()
     )
-    refunds = rest.loc[refund_mask].drop(columns=["_reject_reason"])
+    refunds = rest.loc[refund_mask].drop(columns=["_reject_reason"]).copy()
     rejected = rest.loc[~refund_mask].copy()
+
+    # Carriers issue credit lines inconsistently: SEUR negates only the
+    # money, Dachser sign-flips the whole row (weight, bultos too). The
+    # money columns SHOULD stay negative — that's what makes
+    # Net Cost = Gross + Refund work — but weight_kg / bultos_count are
+    # descriptive, not additive, so negative values there are meaningless.
+    # Force them positive so refund rows are consistent across carriers.
+    for col in ("weight_kg", "bultos_count"):
+        refunds[col] = refunds[col].abs()
 
     breakdown = (
         rejected["_reject_reason"].value_counts(dropna=False).to_dict()

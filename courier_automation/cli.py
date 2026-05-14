@@ -13,10 +13,13 @@ Exit codes:
   3  workbook lock timeout
   4  manifest conflict (same invoice number, different file hash)
   5  plausibility check failed (silent-drift detector — see docs/drift_handling.md)
+  6  duplicate guard tripped (the month is already in the master) — `pipeline` only
+  7  unified build failed, non-schema — `pipeline` only
 """
 
 from __future__ import annotations
 
+import contextlib
 import datetime as dt
 import enum
 import logging
@@ -29,17 +32,27 @@ from typing import Callable, Optional
 import pandas as pd
 import typer
 
+from courier_automation.carriers import CARRIERS
+from courier_automation.exit_codes import (
+    EXIT_LOCK,
+    EXIT_MANIFEST_CONFLICT,
+    EXIT_PLAUSIBILITY,
+    EXIT_SCHEMA,
+    EXIT_USAGE,
+)
 from courier_automation.manifest.registry import ManifestRegistry  # noqa: F401
-from courier_automation.parsers.base import ParserError, SchemaMismatch
+from courier_automation.parsers.base import (
+    CourierParser,
+    ParserError,
+    SchemaMismatch,
+)
 from courier_automation.parsers.plausibility import PlausibilityError
-from courier_automation.parsers.correos import CorreosParser
-from courier_automation.parsers.seur import SeurParser
-from courier_automation.parsers.dachser import DachserParser
-from courier_automation.parsers.seitrans import SeitransParser
-from courier_automation.parsers.spring import SpringParser
-from courier_automation.parsers.royalmail import RoyalMailParser
-from courier_automation.parsers.ups import UpsParser
-from courier_automation.parsers.wwex import WwexParser
+from courier_automation.pipeline import (
+    DEFAULT_GUARD_THRESHOLD,
+    PipelineResult,
+    emit_result,
+    run_pipeline,
+)
 from courier_automation.store.workbook_appender import (
     DATOS_SHEET,
     WorkbookAppender,
@@ -63,47 +76,28 @@ FORMAT_OPTION = typer.Option(
     help="Sidecar output format: xlsx, parquet, or both (default).",
 )
 
-EXIT_OK = 0
-EXIT_USAGE = 1
-EXIT_SCHEMA = 2
-EXIT_LOCK = 3
-EXIT_MANIFEST_CONFLICT = 4
-EXIT_PLAUSIBILITY = 5
+# Exit codes are defined in `courier_automation.exit_codes` (imported above)
+# so the CLI and the pipeline orchestrator share one source of truth.
 
-DEFAULT_SEUR_WORKBOOK = Path(
-    "Operations - Couriers/01. Seur/NEW Análisis expediciones SEUR.xlsx"
-)
-DEFAULT_SEUR_FACTURAS = Path("Operations - Couriers/01. Seur/Facturas")
-DEFAULT_SEITRANS_WORKBOOK = Path(
-    "Operations - Couriers/04. Seitrans/Análisis envíos Seitrans.xlsx"
-)
-DEFAULT_SEITRANS_FACTURAS = Path("Operations - Couriers/04. Seitrans/Facturas")
-DEFAULT_DACHSER_WORKBOOK = Path(
-    "Operations - Couriers/03. Dachser/Expediciones Dachser.xlsx"
-)
-DEFAULT_DACHSER_FACTURAS = Path("Operations - Couriers/03. Dachser/Facturas")
-DEFAULT_CORREOS_WORKBOOK = Path(
-    "Operations - Couriers/05. Correos Express/Análisis Envíos Correos Express V2.xlsx"
-)
-DEFAULT_CORREOS_FACTURAS = Path("Operations - Couriers/05. Correos Express/Facturas")
-DEFAULT_UPS_WORKBOOK = Path(
-    "Operations - Couriers/07. UPS (UK)/UPS Shippings Report.xlsx"
-)
-DEFAULT_UPS_FACTURAS = Path("Operations - Couriers/07. UPS (UK)/Facturas")
-DEFAULT_WWEX_WORKBOOK = Path(
-    "Operations - Couriers/11. Wwex (US)/Wwex USA Shippings Report.xlsx"
-)
-DEFAULT_WWEX_FACTURAS = Path("Operations - Couriers/11. Wwex (US)/Facturas")
-DEFAULT_SPRING_WORKBOOK = Path(
-    "Operations - Couriers/13. Spring (FR)/Shipment Report.xlsx"
-)
-DEFAULT_SPRING_FACTURAS = Path("Operations - Couriers/13. Spring (FR)/Facturas")
-# No historical workbook exists for Royal Mail yet; the sidecar lands
-# alongside this stem so the operator can promote it when one is created.
-DEFAULT_ROYALMAIL_WORKBOOK = Path(
-    "Operations - Couriers/12. Royal Mail (UK)/Royal Mail Shipments Report.xlsx"
-)
-DEFAULT_ROYALMAIL_FACTURAS = Path("Operations - Couriers/12. Royal Mail (UK)/Facturas")
+# Per-carrier paths/config now live in `courier_automation.carriers.CARRIERS`.
+# These aliases keep the Typer option signatures below byte-for-byte
+# unchanged while sourcing their values from the one registry.
+DEFAULT_SEUR_WORKBOOK = CARRIERS["seur"].workbook
+DEFAULT_SEUR_FACTURAS = CARRIERS["seur"].facturas_root
+DEFAULT_SEITRANS_WORKBOOK = CARRIERS["seitrans"].workbook
+DEFAULT_SEITRANS_FACTURAS = CARRIERS["seitrans"].facturas_root
+DEFAULT_DACHSER_WORKBOOK = CARRIERS["dachser"].workbook
+DEFAULT_DACHSER_FACTURAS = CARRIERS["dachser"].facturas_root
+DEFAULT_CORREOS_WORKBOOK = CARRIERS["correos"].workbook
+DEFAULT_CORREOS_FACTURAS = CARRIERS["correos"].facturas_root
+DEFAULT_UPS_WORKBOOK = CARRIERS["ups"].workbook
+DEFAULT_UPS_FACTURAS = CARRIERS["ups"].facturas_root
+DEFAULT_WWEX_WORKBOOK = CARRIERS["wwex"].workbook
+DEFAULT_WWEX_FACTURAS = CARRIERS["wwex"].facturas_root
+DEFAULT_SPRING_WORKBOOK = CARRIERS["spring"].workbook
+DEFAULT_SPRING_FACTURAS = CARRIERS["spring"].facturas_root
+DEFAULT_ROYALMAIL_WORKBOOK = CARRIERS["royalmail"].workbook
+DEFAULT_ROYALMAIL_FACTURAS = CARRIERS["royalmail"].facturas_root
 
 # Manifest pipeline is disabled while we iterate on parser fixes — see
 # docs/architecture.md. The shim below matches the ManifestRegistry surface
@@ -144,7 +138,98 @@ def _setup_logging() -> None:
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s %(levelname)s %(name)s | %(message)s",
+            stream=sys.stderr,
         )
+
+
+@app.command("pipeline")
+def pipeline(
+    carrier: str = typer.Option(
+        ...,
+        "--carrier",
+        help="Carrier to run: " + ", ".join(sorted(CARRIERS)) + ".",
+    ),
+    month: Optional[str] = typer.Option(
+        None,
+        "--month",
+        help="Month to ingest in YYYY-MM form (default: latest populated month).",
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Parse + run the duplicate guard only; write nothing."
+    ),
+    json_out: bool = typer.Option(
+        False, "--json",
+        help="Emit one JSON result object to stdout (for n8n); logs go to stderr.",
+    ),
+    force: bool = typer.Option(
+        False, "--force", help="Skip the duplicate guard and ingest anyway."
+    ),
+    guard_threshold: float = typer.Option(
+        DEFAULT_GUARD_THRESHOLD,
+        "--guard-threshold",
+        help="Overlap fraction at/above which the duplicate guard aborts.",
+    ),
+    skip_unified: bool = typer.Option(
+        False, "--skip-unified", help="Skip the unified cross-carrier rebuild."
+    ),
+) -> None:
+    """End-to-end for ONE carrier: ingest the month into the master workbook
+    + monthly parquet (no sidecar), then rebuild the unified table.
+
+    Designed for n8n: one Execute Command node per carrier, run from the
+    repo root. Pair with --json so n8n can branch on the result object.
+    """
+    _setup_logging()
+    cfg = CARRIERS.get(carrier)
+    if cfg is None:
+        emit_result(
+            PipelineResult(
+                carrier=carrier, month=month, status="error",
+                detail=f"unknown carrier {carrier!r}; "
+                f"known: {', '.join(sorted(CARRIERS))}",
+            ),
+            json_out,
+        )
+        raise typer.Exit(code=EXIT_USAGE)
+
+    # File discovery lives here (the pipeline module stays discovery-free).
+    # In --json mode silence _resolve_files' stdout chatter so stdout stays
+    # a single parseable JSON object.
+    try:
+        with contextlib.redirect_stdout(sys.stderr) if json_out \
+                else contextlib.nullcontext():
+            files = _resolve_files(
+                file=None, month=month, folder=None,
+                default_facturas=cfg.facturas_root,
+                file_globs=cfg.file_globs,
+                fallback_globs=cfg.fallback_globs,
+                name_filter=cfg.name_filter,
+            )
+    except typer.Exit as e:
+        emit_result(
+            PipelineResult(
+                carrier=carrier, month=month, status="error",
+                detail=f"no invoices found for "
+                f"{month or 'the latest month'} under {cfg.facturas_root}",
+            ),
+            json_out,
+        )
+        raise typer.Exit(code=e.exit_code)
+
+    parquet_path = _export_parquet_path(cfg.name, files)
+    month_label = _month_stamp(files)
+    code = run_pipeline(
+        cfg=cfg,
+        files=files,
+        parquet_path=parquet_path,
+        month_label=month_label,
+        dry_run=dry_run,
+        json_out=json_out,
+        force=force,
+        guard_threshold=guard_threshold,
+        skip_unified=skip_unified,
+    )
+    raise typer.Exit(code=code)
 
 
 @ingest_app.command("seur")
@@ -181,16 +266,19 @@ def ingest_seur(
 ) -> None:
     """Ingest one or many Seur invoice files (default: write a sidecar)."""
     _setup_logging()
+    cfg = CARRIERS["seur"]
     files = _resolve_files(
         file=file, month=month, folder=folder,
-        default_facturas=DEFAULT_SEUR_FACTURAS,
-        file_globs=("*.xlsx",),
+        default_facturas=cfg.facturas_root,
+        file_globs=cfg.file_globs,
+        fallback_globs=cfg.fallback_globs,
+        name_filter=cfg.name_filter,
     )
     _run_ingest(
         files=files,
-        parser=SeurParser(),
+        parser=cfg.parser_factory(),
         workbook=workbook,
-        sheet_name=DATOS_SHEET,
+        sheet_name=cfg.data_sheet,
         dry_run=dry_run,
         write_master=write_master,
         format=format,
@@ -231,16 +319,19 @@ def ingest_seitrans(
 ) -> None:
     """Ingest one or many Seitrans invoice files (default: write a sidecar)."""
     _setup_logging()
+    cfg = CARRIERS["seitrans"]
     files = _resolve_files(
         file=file, month=month, folder=folder,
-        default_facturas=DEFAULT_SEITRANS_FACTURAS,
-        file_globs=("*.xlsx",),
+        default_facturas=cfg.facturas_root,
+        file_globs=cfg.file_globs,
+        fallback_globs=cfg.fallback_globs,
+        name_filter=cfg.name_filter,
     )
     _run_ingest(
         files=files,
-        parser=SeitransParser(),
+        parser=cfg.parser_factory(),
         workbook=workbook,
-        sheet_name=DATOS_SHEET,
+        sheet_name=cfg.data_sheet,
         dry_run=dry_run,
         write_master=write_master,
         format=format,
@@ -273,16 +364,19 @@ def ingest_dachser(
 ) -> None:
     """Ingest one or many Dachser invoice files (default: write a sidecar)."""
     _setup_logging()
+    cfg = CARRIERS["dachser"]
     files = _resolve_files(
         file=file, month=month, folder=folder,
-        default_facturas=DEFAULT_DACHSER_FACTURAS,
-        file_globs=("*.xlsx", "*.XLSX", "*.xls", "*.XLS"),
+        default_facturas=cfg.facturas_root,
+        file_globs=cfg.file_globs,
+        fallback_globs=cfg.fallback_globs,
+        name_filter=cfg.name_filter,
     )
     _run_ingest(
         files=files,
-        parser=DachserParser(),
+        parser=cfg.parser_factory(),
         workbook=workbook,
-        sheet_name="New Datos",
+        sheet_name=cfg.data_sheet,
         dry_run=dry_run,
         write_master=write_master,
         format=format,
@@ -315,16 +409,19 @@ def ingest_correos(
 ) -> None:
     """Ingest one or many Correos Express invoice files (default: sidecar)."""
     _setup_logging()
+    cfg = CARRIERS["correos"]
     files = _resolve_files(
         file=file, month=month, folder=folder,
-        default_facturas=DEFAULT_CORREOS_FACTURAS,
-        file_globs=("*.xlsx",),
+        default_facturas=cfg.facturas_root,
+        file_globs=cfg.file_globs,
+        fallback_globs=cfg.fallback_globs,
+        name_filter=cfg.name_filter,
     )
     _run_ingest(
         files=files,
-        parser=CorreosParser(),
+        parser=cfg.parser_factory(),
         workbook=workbook,
-        sheet_name=DATOS_SHEET,
+        sheet_name=cfg.data_sheet,
         dry_run=dry_run,
         write_master=write_master,
         format=format,
@@ -360,19 +457,21 @@ def ingest_ups(
     """Ingest one or many UPS billing files (default: sidecar)."""
     _setup_logging()
     # Prefer raw CSVs (the actual UPS Billing Center export). The .xlsx
-    # files that sometimes appear are operator-converted; we use them
-    # only as a fallback when no CSV exists for the month.
+    # files that sometimes appear are operator-converted; the registry's
+    # fallback_globs uses them only when no CSV exists for the month.
+    cfg = CARRIERS["ups"]
     files = _resolve_files(
         file=file, month=month, folder=folder,
-        default_facturas=DEFAULT_UPS_FACTURAS,
-        file_globs=("*.csv",),
-        fallback_globs=("*.xlsx",),
+        default_facturas=cfg.facturas_root,
+        file_globs=cfg.file_globs,
+        fallback_globs=cfg.fallback_globs,
+        name_filter=cfg.name_filter,
     )
     _run_ingest(
         files=files,
-        parser=UpsParser(),
+        parser=cfg.parser_factory(),
         workbook=workbook,
-        sheet_name="Data",  # UPS uses 'Data' not 'Datos'
+        sheet_name=cfg.data_sheet,
         dry_run=dry_run,
         write_master=write_master,
         format=format,
@@ -407,17 +506,19 @@ def ingest_wwex(
 ) -> None:
     """Ingest one or many Wwex shipment-detail files (default: sidecar)."""
     _setup_logging()
+    cfg = CARRIERS["wwex"]
     files = _resolve_files(
         file=file, month=month, folder=folder,
-        default_facturas=DEFAULT_WWEX_FACTURAS,
-        file_globs=("*.xlsx", "*.xls", "*.csv"),
-        name_filter=lambda p: "shipment" in p.name.lower(),
+        default_facturas=cfg.facturas_root,
+        file_globs=cfg.file_globs,
+        fallback_globs=cfg.fallback_globs,
+        name_filter=cfg.name_filter,
     )
     _run_ingest(
         files=files,
-        parser=WwexParser(),
+        parser=cfg.parser_factory(),
         workbook=workbook,
-        sheet_name="Data",
+        sheet_name=cfg.data_sheet,
         dry_run=dry_run,
         write_master=write_master,
         format=format,
@@ -453,17 +554,19 @@ def ingest_royalmail(
 ) -> None:
     """Ingest one or many Royal Mail invoice files (default: sidecar)."""
     _setup_logging()
+    cfg = CARRIERS["royalmail"]
     files = _resolve_files(
         file=file, month=month, folder=folder,
-        default_facturas=DEFAULT_ROYALMAIL_FACTURAS,
-        file_globs=("*.csv",),
-        name_filter=lambda p: "invoice" in p.name.lower(),
+        default_facturas=cfg.facturas_root,
+        file_globs=cfg.file_globs,
+        fallback_globs=cfg.fallback_globs,
+        name_filter=cfg.name_filter,
     )
     _run_ingest(
         files=files,
-        parser=RoyalMailParser(),
+        parser=cfg.parser_factory(),
         workbook=workbook,
-        sheet_name=DATOS_SHEET,
+        sheet_name=cfg.data_sheet,
         dry_run=dry_run,
         write_master=write_master,
         format=format,
@@ -498,17 +601,19 @@ def ingest_spring(
 ) -> None:
     """Ingest one or many Spring invoice files (default: sidecar)."""
     _setup_logging()
+    cfg = CARRIERS["spring"]
     files = _resolve_files(
         file=file, month=month, folder=folder,
-        default_facturas=DEFAULT_SPRING_FACTURAS,
-        file_globs=("*.xlsx", "*.XLSX"),
-        name_filter=lambda p: "details of invoice" in p.name.lower(),
+        default_facturas=cfg.facturas_root,
+        file_globs=cfg.file_globs,
+        fallback_globs=cfg.fallback_globs,
+        name_filter=cfg.name_filter,
     )
     _run_ingest(
         files=files,
-        parser=SpringParser(),
+        parser=cfg.parser_factory(),
         workbook=workbook,
-        sheet_name="INVOICES",
+        sheet_name=cfg.data_sheet,
         dry_run=dry_run,
         write_master=write_master,
         format=format,
@@ -575,7 +680,7 @@ def _run_ingest(
 def _ingest_one(
     path: Path,
     *,
-    parser: SeurParser,
+    parser: CourierParser,
     registry: ManifestRegistry,
     appender: WorkbookAppender,
     workbook: Path,
