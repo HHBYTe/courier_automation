@@ -96,6 +96,28 @@ All eight carriers are wired: `seur`, `seitrans`, `dachser`, `correos`,
 `ups`, `wwex`, `royalmail`, `spring`. See [pipeline.md](pipeline.md) for
 `ingest` vs `pipeline`.
 
+### Cleaning up sidecars
+
+`ingest` in default mode leaves `<workbook stem> - append <YYYY-MM>.xlsx`
+files next to each master. They accumulate over time and are safe to
+remove — the canonical record is the master workbook plus the parquet
+under `data/<carrier>/`. Use `scripts/delete_sidecars.py` to sweep them:
+
+```powershell
+# Dry run (default) — lists every sidecar it would delete, with total size
+.\.venv\Scripts\python scripts\delete_sidecars.py
+
+# Actually delete
+.\.venv\Scripts\python scripts\delete_sidecars.py --delete
+
+# Scan a different root (defaults to "Operations - Couriers")
+.\.venv\Scripts\python scripts\delete_sidecars.py --root <path> --delete
+```
+
+The matcher requires the trailing stamp to be `YYYY-MM` or
+`YYYYMMDD-HHMMSS` (what `_export_sidecar_path` writes), so unrelated
+workbooks that happen to contain "append" in the name are left alone.
+
 ## Running the collector (the full scheduled job)
 
 `scripts/run_collector.py` is what Windows Task Scheduler runs: scan the

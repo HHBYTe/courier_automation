@@ -56,6 +56,7 @@ def _build_carrier_dim() -> pd.DataFrame:
         ("spring",   "Spring",          "FR", "parcel",        "EUR"),
         ("ups",      "UPS",             "GB", "parcel/express","GBP"),
         ("wwex",     "WWEX SpeedShip",  "US", "parcel/LTL",    "USD"),
+        ("royalmail","Royal Mail",      "GB", "parcel",        "GBP"),
     ]
     return pd.DataFrame(
         rows,

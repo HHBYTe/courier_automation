@@ -190,16 +190,21 @@ DISTINCTCOUNT ( Shipments[carrier] )
 Active Destinations =
 DISTINCTCOUNT ( Shipments[destination_country] )
 
+// ALLSELECTED, not ALL(Shipments[carrier]): visuals slice by the
+// dim_carrier (and dim_date / dim_service_class) dimensions, so the
+// filter to clear lives on the dim, not the fact column. ALLSELECTED
+// drops the visual's own row/column context while keeping outer
+// slicers — giving each row its share of the visible total.
 % of Total Shipments =
 DIVIDE (
     [Total Shipments],
-    CALCULATE ( [Total Shipments], ALL ( Shipments[carrier] ) )
+    CALCULATE ( [Total Shipments], ALLSELECTED () )
 )
 
 % of Total Cost =
 DIVIDE (
     [Gross Cost],
-    CALCULATE ( [Gross Cost], ALL ( Shipments[carrier] ) )
+    CALCULATE ( [Gross Cost], ALLSELECTED () )
 )
 
 

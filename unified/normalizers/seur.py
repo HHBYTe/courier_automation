@@ -110,7 +110,6 @@ def normalize(df: pd.DataFrame, source_file: str) -> pd.DataFrame:
     out["destination_country"] = (
         work["Destino"].astype("string").str.strip().map(_DEST_TO_ISO).astype("string")
     )
-    out["base_cost"] = pd.to_numeric(work["Portes"], errors="coerce").astype("float64")
     out["fuel_surcharge"] = pd.to_numeric(
         work["Cargo Combustible"], errors="coerce"
     ).astype("float64")
@@ -129,6 +128,17 @@ def normalize(df: pd.DataFrame, source_file: str) -> pd.DataFrame:
     out["total_net"] = pd.to_numeric(
         work["Importe facturado (sin impuestos)"], errors="coerce"
     ).astype("float64")
+    # SEUR bills in two layouts: itemized rows fill `Portes` (which, with
+    # the surcharge columns, sums to the billed total); lump-sum rows fill
+    # only `Importe facturado` and leave `Portes` empty. For lump-sum rows
+    # the whole charge IS the base shipping cost, so fall back to
+    # total - fuel - other. This keeps base + fuel + other = total_net for
+    # every row, instead of dropping ~half of SEUR's cost on the floor.
+    portes = pd.to_numeric(work["Portes"], errors="coerce")
+    residual = (
+        out["total_net"] - out["fuel_surcharge"].fillna(0) - out["other_surcharges"].fillna(0)
+    )
+    out["base_cost"] = portes.where(portes.notna(), residual).astype("float64")
     out["currency"] = "EUR"
     out["año"] = out["posting_date"].dt.year.astype("Int64")
     out["mes"] = out["posting_date"].dt.month.astype("Int64")
