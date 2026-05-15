@@ -113,9 +113,11 @@ Page 4 — Destinations
   Note:     SEUR destination_country is derived from its plaza codes
             (see unified/normalizers/seur.py + data/seur/other/Destino.csv)
             and is ~100% populated — SEUR DOES land on the map now.
-            Royal Mail still won't supply destination_country; those
-            rows fall in a "blank" slice — filter at the visual level
-            or annotate the page.
+            Royal Mail invoices don't carry destination_country either;
+            we default RM rows to "GB" in the normalizer because every
+            observed RM service in this dataset is UK-domestic (1st/2nd
+            class, Tracked 24/48). If a future RM invoice contains an
+            international service, revisit this default.
 
 Page 5 — Refunds
   Cards:    Refund Total • Refund Rate %

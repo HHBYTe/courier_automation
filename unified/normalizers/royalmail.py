@@ -11,7 +11,11 @@ Cost structure: a single `Net Value` per docket (surcharge sub-rows are
 already dropped by the parser, and `Net Value` is surcharge-inclusive),
 so `base_cost = total_net` and the fuel/other columns are null.
 
-Destination is not on the Royal Mail invoice — left null. Origin is GB.
+Destination is not on the Royal Mail invoice. Royal Mail is a UK
+domestic-first carrier in this dataset (all observed services are
+1st/2nd class or Tracked 24/48), so we default destination_country
+to GB rather than leaving it null — this puts RM on the map and in
+domestic Direction bucket instead of Unknown. Origin is GB.
 Currency is GBP. Penalty/admin lines (admin charge, label incorrectly
 applied, unreadable barcode, oversize) classify to None via the shared
 service classifier and are rejected — they aren't shipments.
@@ -42,7 +46,7 @@ def normalize(df: pd.DataFrame, source_file: str) -> pd.DataFrame:
     out["bultos_count"] = pd.to_numeric(df["Quantity"], errors="coerce").astype("Int64")
     out["weight_kg"] = pd.to_numeric(df["Weight (kg)"], errors="coerce").astype("float64")
     out["origin_country"] = pd.Series("GB", index=df.index, dtype="string")
-    out["destination_country"] = pd.Series(pd.NA, index=df.index, dtype="string")
+    out["destination_country"] = pd.Series("GB", index=df.index, dtype="string")
     # Net Value is the surcharge-inclusive docket total — no fuel/other split.
     out["base_cost"] = pd.to_numeric(df["Net Value"], errors="coerce").astype("float64")
     out["fuel_surcharge"] = pd.Series(float("nan"), index=df.index, dtype="float64")
