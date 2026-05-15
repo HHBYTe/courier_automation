@@ -178,7 +178,7 @@ def test_guard_month_fallback_clears_when_month_empty(monkeypatch):
 
 
 def test_normalize_carrier_no_parquets_returns_4tuple(monkeypatch):
-    monkeypatch.setattr(unified_build, "_discover", lambda carrier: [])
+    monkeypatch.setattr(unified_build, "_discover", lambda *a, **k: [])
     result = unified_build._normalize_carrier("seur")
     assert len(result) == 4  # (kept, refunds, rejected, stats)
     kept, refunds, rejected, stats = result

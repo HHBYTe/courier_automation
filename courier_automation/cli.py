@@ -47,6 +47,7 @@ from courier_automation.parsers.base import (
     SchemaMismatch,
 )
 from courier_automation.parsers.plausibility import PlausibilityError
+from courier_automation.storage import get_storage
 from courier_automation.pipeline import (
     DEFAULT_GUARD_THRESHOLD,
     PipelineResult,
@@ -228,6 +229,7 @@ def pipeline(
         force=force,
         guard_threshold=guard_threshold,
         skip_unified=skip_unified,
+        storage=get_storage(),
     )
     raise typer.Exit(code=code)
 
@@ -655,7 +657,7 @@ def _run_ingest(
         )
         return
 
-    appender = WorkbookAppender(sheet_name=sheet_name)
+    appender = WorkbookAppender(sheet_name=sheet_name, storage=get_storage())
     summary = {"appended": 0, "skipped": 0, "rows_written": 0}
     for path in files:
         result = _ingest_one(

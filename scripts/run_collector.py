@@ -65,6 +65,7 @@ from courier_automation.intake import (  # noqa: E402
     place_invoice_file,
     quarantine_file,
 )
+from courier_automation.storage import OpsLocator, get_storage  # noqa: E402
 import typer  # noqa: E402
 import unified.build as unified_build  # noqa: E402
 
@@ -216,6 +217,7 @@ def _scan_inbox() -> list[Path]:
 def _intake(report: RunReport) -> dict[str, set[str]]:
     """Classify and place every ready inbox file. Returns
     {carrier: {"YYYY-MM", ...}} for the carriers that got new files."""
+    storage = get_storage()
     affected: dict[str, set[str]] = {}
     for path in _scan_inbox():
         cls = classify_invoice_file(path)
@@ -227,7 +229,9 @@ def _intake(report: RunReport) -> dict[str, set[str]]:
             continue
         try:
             placed, parsed = place_invoice_file(
-                path, cls.carrier, parse_result=cls.parse_result,
+                path, cls.carrier,
+                parse_result=cls.parse_result,
+                storage=storage,
             )
         except IntakeConflict as e:
             quarantine_file(path, CONFLICTS)
@@ -304,10 +308,11 @@ def _rebuild_unified(report: RunReport) -> None:
         log.error("unified build returned %d", rc)
         return
     report.unified_status = "rebuilt"
-    manifest = unified_build.OUT_DIR / "manifest.json"
-    if manifest.exists():
+    storage = get_storage()
+    manifest_loc = OpsLocator("unified/output/manifest.json")
+    if storage.exists(manifest_loc):
         import json
-        m = json.loads(manifest.read_text(encoding="utf-8"))
+        m = json.loads(storage.read_bytes(manifest_loc).decode("utf-8"))
         report.unified_totals = {
             k: m.get(k) for k in ("total_kept", "total_refunds", "total_rejected")
         }

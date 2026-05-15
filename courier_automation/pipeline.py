@@ -23,12 +23,11 @@ never `cli`, which imports it (`run_pipeline`). File discovery lives in
 """
 from __future__ import annotations
 
+import io
 import json
 import logging
 import re
-import shutil
 import tempfile
-import uuid
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
@@ -53,6 +52,7 @@ from courier_automation.parsers.base import (
 )
 from courier_automation.parsers.plausibility import PlausibilityError
 from courier_automation.parsers.royalmail import ROYALMAIL_COLUMNS, RoyalMailParser
+from courier_automation.storage import LocalStorage, OpsLocator, Storage
 from courier_automation.store.workbook_appender import (
     WorkbookAppender,
     WorkbookLocked,
@@ -64,6 +64,7 @@ log = logging.getLogger("courier_automation.pipeline")
 
 ROOT = Path(__file__).resolve().parent.parent
 UNIFIED_MANIFEST = ROOT / "unified" / "output" / "manifest.json"
+UNIFIED_MANIFEST_LOC = OpsLocator("unified/output/manifest.json")
 
 DEFAULT_GUARD_THRESHOLD = 0.90
 
@@ -138,21 +139,28 @@ def _parse_files(parser: CourierParser, files: list[Path]) -> list[ParseResult]:
 # duplicate guard
 
 
-def _read_master_readonly(path: Path, sheet: str) -> pd.DataFrame | None:
+def _read_master_readonly(
+    storage: Storage, loc: OpsLocator, sheet: str
+) -> pd.DataFrame | None:
     """Read the master's data sheet read-only. Returns None if the workbook
-    doesn't exist yet (first ingest for the carrier). Mirrors the
-    OneDrive-locked-file fallback the backfill scripts use."""
-    if not path.exists():
+    doesn't exist yet (first ingest for the carrier).
+
+    Two-stage read for resilience: first try `open_local_copy` which
+    yields a real path (zero-copy on LocalStorage, a tempfile download
+    on GraphStorage). If that fails with `PermissionError` (Excel has
+    the file open on the operator's PC), fall back to streaming the
+    bytes and parsing from a `BytesIO` — bypasses the Windows file lock.
+    """
+    if not storage.exists(loc):
         return None
     try:
-        return pd.read_excel(path, sheet_name=sheet, engine="openpyxl")
-    except PermissionError:
-        tmp = Path(tempfile.gettempdir()) / f"guard-{uuid.uuid4().hex[:8]}-{path.name}"
-        shutil.copy2(path, tmp)
-        try:
-            return pd.read_excel(tmp, sheet_name=sheet, engine="openpyxl")
-        finally:
-            tmp.unlink(missing_ok=True)
+        with storage.open_local_copy(loc) as p:
+            return pd.read_excel(p, sheet_name=sheet, engine="openpyxl")
+    except (PermissionError, OSError):
+        data = storage.read_bytes(loc)
+        return pd.read_excel(
+            io.BytesIO(data), sheet_name=sheet, engine="openpyxl"
+        )
 
 
 def _clean_id_set(series: pd.Series) -> set[str]:
@@ -168,11 +176,16 @@ def _duplicate_guard(
     parsed: list[ParseResult],
     month_label: str,
     threshold: float,
+    *,
+    storage: Storage | None = None,
 ) -> tuple[bool, str]:
     """Return (is_duplicate, detail). A month is a duplicate when its rows
     already overlap the master beyond `threshold`. Any non-zero partial
     overlap also aborts — half-written months need manual inspection."""
-    master = _read_master_readonly(cfg.workbook, cfg.data_sheet)
+    if storage is None:
+        storage = LocalStorage(ops_root=ROOT)
+    workbook_loc = OpsLocator(cfg.workbook.as_posix())
+    master = _read_master_readonly(storage, workbook_loc, cfg.data_sheet)
     if master is None:
         return False, "master workbook not found - treating as first ingest"
 
@@ -239,76 +252,137 @@ def _ingest_master_and_parquet(
     cfg: CarrierConfig,
     parser: CourierParser,
     parsed: list[ParseResult],
-    parquet_path: Path,
+    parquet_loc: OpsLocator,
     dry_run: bool,
-) -> tuple[int, Path | None]:
+    storage: Storage,
+) -> tuple[int, OpsLocator | None]:
     """Append the parsed rows to the master workbook, then write the month
     parquet. Append-first is deliberate: if the parquet write fails, the
     master is updated and the next run's guard (which reads the master)
-    still catches it. Returns (rows_written, parquet_path | None)."""
+    still catches it. Returns (rows_written, parquet_loc | None)."""
     combined = pd.concat([p.rows for p in parsed], ignore_index=True)
     if dry_run:
         log.info(
             "%s: would append %d rows to %s and write %s",
-            cfg.name, len(combined), cfg.workbook.name, parquet_path,
+            cfg.name, len(combined), cfg.workbook.name, parquet_loc,
         )
         return len(combined), None
 
-    appender = WorkbookAppender(sheet_name=cfg.data_sheet)
+    workbook_loc = OpsLocator(cfg.workbook.as_posix())
+    appender = WorkbookAppender(sheet_name=cfg.data_sheet, storage=storage)
     rows_written = appender.append(
-        workbook_path=cfg.workbook,
+        workbook_path=_resolve_for_appender(storage, workbook_loc),
         rows=combined,
         expected_columns=parser.expected_columns,
     )
     log.info("%s: appended %d rows to %s", cfg.name, rows_written, cfg.workbook.name)
 
-    parquet_path.parent.mkdir(parents=True, exist_ok=True)
-    # export_parquet raises FileExistsError if the month parquet exists —
-    # run_pipeline maps that to EXIT_DUPLICATE.
-    export_parquet(
-        output_path=parquet_path,
-        rows=combined,
-        expected_columns=parser.expected_columns,
-    )
-    log.info("%s: wrote %d rows -> %s", cfg.name, rows_written, parquet_path)
-    return rows_written, parquet_path
+    # Build the parquet on a local tempfile then publish via Storage.
+    # `export_parquet` raises FileExistsError if the target exists, so
+    # check existence in Storage first — run_pipeline maps that to
+    # EXIT_DUPLICATE.
+    if storage.exists(parquet_loc):
+        raise FileExistsError(str(parquet_loc))
+    with tempfile.TemporaryDirectory() as td:
+        tmp_pq = Path(td) / parquet_loc.name
+        export_parquet(
+            output_path=tmp_pq,
+            rows=combined,
+            expected_columns=parser.expected_columns,
+        )
+        storage.write_from_local(parquet_loc, tmp_pq)
+    log.info("%s: wrote %d rows -> %s", cfg.name, rows_written, parquet_loc)
+    return rows_written, parquet_loc
+
+
+def _path_to_loc(storage: Storage, path: Path | str) -> OpsLocator:
+    """Convert a `Path` (or path-like string) to an `OpsLocator` relative
+    to the storage's ops root. Absolute paths under a `LocalStorage`'s
+    `ops_root` are made relative; already-relative paths pass through as
+    locators. For non-local backends only relative paths make sense."""
+    p = Path(path)
+    if p.is_absolute():
+        if isinstance(storage, LocalStorage):
+            return OpsLocator(p.resolve().relative_to(storage.ops_root).as_posix())
+        # Non-local backends shouldn't be handed an absolute local Path.
+        return OpsLocator(p.name)
+    return OpsLocator(p.as_posix())
+
+
+def _resolve_for_appender(storage: Storage, loc: OpsLocator) -> Path:
+    """Resolve `loc` to a real `Path` to hand to `WorkbookAppender.append`.
+
+    `WorkbookAppender.append` still takes `workbook_path: Path` (for
+    back-compat with legacy callers) — but when a Storage is injected
+    it uses that Storage for the actual transactional write. For
+    LocalStorage we resolve via `local_path`; for other backends we
+    return a synthetic Path carrying just the locator string (the
+    appender will use storage.update_xlsx_atomically with the locator
+    derived from this Path's parent relationship to ops_root).
+    """
+    if isinstance(storage, LocalStorage):
+        return storage.local_path(loc)
+    # Non-local backend: synthesise a Path. WorkbookAppender.append
+    # converts this to an OpsLocator internally using its existing
+    # workbook_path.relative_to(storage.ops_root) logic, but with a
+    # synthetic Path that lacks an ops_root match we fall back to the
+    # locator's name. This branch only matters once GraphStorage is
+    # wired up; for PR1 we always pass LocalStorage.
+    return Path(str(loc))
 
 
 # ---------------------------------------------------------------------------
 # Royal Mail: full rebuild instead of append
 
 
-def rebuild_royalmail_master(facturas_root: Path, workbook: Path) -> int:
+def rebuild_royalmail_master(
+    facturas_root: Path,
+    workbook: Path,
+    *,
+    storage: Storage | None = None,
+) -> int:
     """Rebuild the Royal Mail master workbook from every invoice CSV under
     the canonical `<YYYY>/<MM> - <Mes>/` tree. Re-runnable: deletes the
     target first. Idempotent by construction — that is why the duplicate
-    guard is skipped for Royal Mail. Returns rows written."""
+    guard is skipped for Royal Mail. Returns rows written.
+
+    `facturas_root` and `workbook` are accepted as `Path` for backward
+    compatibility with the standalone `scripts/build_royalmail_master.py`
+    entrypoint; internally we convert to OpsLocators against `storage`.
+    """
+    if storage is None:
+        storage = LocalStorage(ops_root=ROOT)
     parser = RoyalMailParser()
-    files: list[Path] = []
-    if facturas_root.is_dir():
-        for year_dir in sorted(facturas_root.iterdir()):
-            if not (year_dir.is_dir() and year_dir.name.isdigit()):
+    facturas_loc = _path_to_loc(storage, facturas_root)
+    workbook_loc = _path_to_loc(storage, workbook)
+
+    # Discover month-folder CSV files via Storage.
+    csv_locs: list[OpsLocator] = []
+    if storage.exists(facturas_loc) and storage.is_dir(facturas_loc):
+        for year_entry in storage.list_dir(facturas_loc):
+            if not (year_entry.is_dir and year_entry.name.isdigit()):
                 continue
-            for month_dir in sorted(year_dir.iterdir()):
-                if not (month_dir.is_dir() and _MONTH_DIR_RE.match(month_dir.name)):
+            year_loc = facturas_loc / year_entry.name
+            for month_entry in storage.list_dir(year_loc):
+                if not (month_entry.is_dir and _MONTH_DIR_RE.match(month_entry.name)):
                     continue
-                files.extend(
-                    sorted(
-                        p for p in month_dir.glob("*.csv")
-                        if "invoice" in p.name.lower()
-                    )
-                )
-    if not files:
+                month_loc = year_loc / month_entry.name
+                for csv_loc in storage.glob_names(month_loc, ("*.csv",)):
+                    if "invoice" in csv_loc.name.lower():
+                        csv_locs.append(csv_loc)
+    csv_locs.sort()
+    if not csv_locs:
         raise PipelineError(
             EXIT_USAGE, f"no Royal Mail invoice CSVs found under {facturas_root}"
         )
 
     frames: list[pd.DataFrame] = []
-    for path in files:
+    for loc in csv_locs:
         try:
-            frames.append(parser.parse(path).rows)
+            with storage.open_local_copy(loc) as p:
+                frames.append(parser.parse(p).rows)
         except (SchemaMismatch, PlausibilityError, ParserError) as e:
-            log.warning("  SKIP %s: %s", path.name, e)
+            log.warning("  SKIP %s: %s", loc.name, e)
     if not frames:
         raise PipelineError(EXIT_USAGE, "no parseable Royal Mail invoices")
 
@@ -316,51 +390,57 @@ def rebuild_royalmail_master(facturas_root: Path, workbook: Path) -> int:
         by=["Invoice Date", "Document Number", "Posting Date", "Docket Number"],
         na_position="last", kind="stable",
     ).reset_index(drop=True)
-    workbook.unlink(missing_ok=True)
-    written = export_rows(
-        output_path=workbook,
-        rows=combined,
-        expected_columns=ROYALMAIL_COLUMNS,
-        sheet_name="Datos",
-        date_formats=parser.export_date_formats,
-    )
-    log.info("royalmail: rebuilt master %s with %d rows", workbook.name, written)
+    storage.delete(workbook_loc, missing_ok=True)
+    with tempfile.TemporaryDirectory() as td:
+        tmp_wb = Path(td) / workbook_loc.name
+        written = export_rows(
+            output_path=tmp_wb,
+            rows=combined,
+            expected_columns=ROYALMAIL_COLUMNS,
+            sheet_name="Datos",
+            date_formats=parser.export_date_formats,
+        )
+        storage.write_from_local(workbook_loc, tmp_wb)
+    log.info("royalmail: rebuilt master %s with %d rows", workbook_loc.name, written)
     return written
 
 
 def _rebuild_royalmail(
     cfg: CarrierConfig,
     parsed: list[ParseResult],
-    parquet_path: Path,
+    parquet_loc: OpsLocator,
     dry_run: bool,
-) -> tuple[int, Path | None]:
+    storage: Storage,
+) -> tuple[int, OpsLocator | None]:
     """Royal Mail path: rebuild the whole master, then write the month
     parquet from the already-parsed month files."""
     combined = pd.concat([p.rows for p in parsed], ignore_index=True)
     if dry_run:
         log.info(
             "royalmail: would rebuild master and write %d rows -> %s",
-            len(combined), parquet_path,
+            len(combined), parquet_loc,
         )
         return len(combined), None
 
-    rebuild_royalmail_master(cfg.facturas_root, cfg.workbook)
-    parquet_path.parent.mkdir(parents=True, exist_ok=True)
-    parquet_path.unlink(missing_ok=True)  # rebuild model: overwrite freely
-    export_parquet(
-        output_path=parquet_path,
-        rows=combined,
-        expected_columns=ROYALMAIL_COLUMNS,
-    )
-    log.info("royalmail: wrote %d rows -> %s", len(combined), parquet_path)
-    return len(combined), parquet_path
+    rebuild_royalmail_master(cfg.facturas_root, cfg.workbook, storage=storage)
+    storage.delete(parquet_loc, missing_ok=True)
+    with tempfile.TemporaryDirectory() as td:
+        tmp_pq = Path(td) / parquet_loc.name
+        export_parquet(
+            output_path=tmp_pq,
+            rows=combined,
+            expected_columns=ROYALMAIL_COLUMNS,
+        )
+        storage.write_from_local(parquet_loc, tmp_pq)
+    log.info("royalmail: wrote %d rows -> %s", len(combined), parquet_loc)
+    return len(combined), parquet_loc
 
 
 # ---------------------------------------------------------------------------
 # unified rebuild
 
 
-def _run_unified() -> dict:
+def _run_unified(storage: Storage) -> dict:
     """Rebuild the unified cross-carrier table in-process. Returns the
     headline totals from the freshly-written manifest.json."""
     import unified.build as unified_build  # local import: heavy, optional path
@@ -378,9 +458,9 @@ def _run_unified() -> dict:
     if rc != 0:
         raise PipelineError(EXIT_UNIFIED, f"unified build returned {rc}")
 
-    if not UNIFIED_MANIFEST.exists():
+    if not storage.exists(UNIFIED_MANIFEST_LOC):
         raise PipelineError(EXIT_UNIFIED, "unified build wrote no manifest.json")
-    manifest = json.loads(UNIFIED_MANIFEST.read_text(encoding="utf-8"))
+    manifest = json.loads(storage.read_bytes(UNIFIED_MANIFEST_LOC).decode("utf-8"))
     return {
         "total_kept": manifest.get("total_kept"),
         "total_refunds": manifest.get("total_refunds"),
@@ -403,9 +483,19 @@ def run_pipeline(
     force: bool,
     guard_threshold: float,
     skip_unified: bool,
+    storage: Storage | None = None,
 ) -> int:
     """Run the full pipeline for one carrier. Returns a process exit code
-    and emits the PipelineResult (JSON or human) to stdout."""
+    and emits the PipelineResult (JSON or human) to stdout.
+
+    `storage` defaults to `LocalStorage(ops_root=ROOT)` — the legacy
+    behaviour. Callers (the CLI, the collector) pass an explicit
+    Storage for tests / cloud runs.
+    """
+    if storage is None:
+        storage = LocalStorage(ops_root=ROOT)
+    parquet_loc = _path_to_loc(storage, parquet_path)
+
     result = PipelineResult(carrier=cfg.name, month=month_label)
     parser = cfg.parser_factory()
     try:
@@ -413,11 +503,14 @@ def run_pipeline(
         result.files_ingested = len(parsed)
 
         if cfg.rebuild_mode:
-            rows, pq = _rebuild_royalmail(cfg, parsed, parquet_path, dry_run)
+            rows, pq = _rebuild_royalmail(
+                cfg, parsed, parquet_loc, dry_run, storage
+            )
         else:
             if not force:
                 is_dup, detail = _duplicate_guard(
-                    cfg, parsed, month_label or "", guard_threshold
+                    cfg, parsed, month_label or "", guard_threshold,
+                    storage=storage,
                 )
                 if is_dup:
                     result.status = "duplicate"
@@ -426,7 +519,7 @@ def run_pipeline(
                     return EXIT_DUPLICATE
                 log.info("duplicate guard: %s", detail)
             rows, pq = _ingest_master_and_parquet(
-                cfg, parser, parsed, parquet_path, dry_run
+                cfg, parser, parsed, parquet_loc, dry_run, storage
             )
         result.rows_appended = rows
         result.parquet_path = str(pq) if pq else None
@@ -438,7 +531,7 @@ def run_pipeline(
             return EXIT_OK
 
         if not skip_unified:
-            result.unified_totals = _run_unified()
+            result.unified_totals = _run_unified(storage)
 
         result.status = "ok"
         result.detail = (

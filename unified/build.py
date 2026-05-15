@@ -21,15 +21,16 @@ Run with:  python -m unified.build
 from __future__ import annotations
 
 import argparse
-import glob
 import json
 import logging
 import sys
+import tempfile
 import time
 from pathlib import Path
 
 import pandas as pd
 
+from courier_automation.storage import LocalStorage, OpsLocator, Storage, get_storage
 from unified import schema
 from unified.fx_rates import FROZEN_RATE_AS_OF, RATE_TO_EUR
 from unified.normalizers import REGISTRY
@@ -40,20 +41,39 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 OUT_DIR = ROOT / "unified" / "output"
 
+# Storage-relative locators for the data and output trees.
+DATA_DIR_LOC = OpsLocator("data")
+OUT_DIR_LOC = OpsLocator("unified/output")
 
-def _discover(carrier: str) -> list[Path]:
-    return sorted(
-        Path(p) for p in glob.glob(str(DATA_DIR / carrier / "*.parquet"))
-    )
+
+def _discover(
+    carrier: str, *, storage: Storage | None = None
+) -> list[OpsLocator]:
+    """Find every `<DATA_DIR_LOC>/<carrier>/*.parquet` locator.
+
+    Returns OpsLocators (not Paths) so the same code works against any
+    backend. Callers that need a local Path open each via
+    `storage.open_local_copy`.
+    """
+    if storage is None:
+        storage = LocalStorage(ops_root=ROOT)
+    carrier_dir = DATA_DIR_LOC / carrier
+    if not storage.exists(carrier_dir):
+        return []
+    return sorted(storage.glob_names(carrier_dir, ("*.parquet",)))
 
 
 def _normalize_carrier(
     carrier: str,
+    *,
+    storage: Storage | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict]:
     """Return (kept, refunds, rejected, stats) for one carrier."""
-    files = _discover(carrier)
+    if storage is None:
+        storage = LocalStorage(ops_root=ROOT)
+    files = _discover(carrier, storage=storage)
     if not files:
-        log.warning("%s: no parquets found in %s", carrier, DATA_DIR / carrier)
+        log.warning("%s: no parquets found in %s/%s", carrier, DATA_DIR_LOC, carrier)
         return pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), {
             "carrier": carrier, "files": 0, "raw_rows": 0,
             "kept": 0, "refunds": 0, "rejected": 0, "reject_breakdown": {},
@@ -62,14 +82,15 @@ def _normalize_carrier(
     fn = REGISTRY[carrier]
     frames: list[pd.DataFrame] = []
     raw_rows = 0
-    for path in files:
+    for loc in files:
         try:
-            raw = pd.read_parquet(path)
+            with storage.open_local_copy(loc) as p:
+                raw = pd.read_parquet(p)
         except Exception as e:  # noqa: BLE001
-            log.error("  SKIP %s: %s", path.name, e)
+            log.error("  SKIP %s: %s", loc.name, e)
             continue
         raw_rows += len(raw)
-        normalized = fn(raw, source_file=path.name)
+        normalized = fn(raw, source_file=loc.name)
         frames.append(normalized)
 
     if not frames:
@@ -151,9 +172,17 @@ def _write_outputs(
     refund_frames: list[pd.DataFrame],
     rejected_frames: list[pd.DataFrame],
     stats: list[dict],
-    out_dir: Path,
+    out_dir: OpsLocator,
+    storage: Storage,
 ) -> None:
-    out_dir.mkdir(parents=True, exist_ok=True)
+    """Write the unified outputs (parquets, CSVs, manifest) to storage.
+
+    Builds each artifact on a local tempdir then publishes via
+    `storage.write_from_local` / `storage.write_bytes` (with
+    overwrite=True — the unified build is always a full replacement).
+    """
+    storage.ensure_dir(out_dir)
+    out_dir_label = out_dir.name or str(out_dir)
 
     if kept_frames:
         kept = pd.concat(kept_frames, ignore_index=True)
@@ -169,11 +198,9 @@ def _write_outputs(
             by=["posting_date", "carrier", "shipment_id"],
             na_position="last", kind="stable",
         ).reset_index(drop=True)
-        kept.to_parquet(out_dir / "unified_shipments.parquet", index=False)
-        kept.to_csv(
-            out_dir / "unified_shipments.csv", index=False, encoding="utf-8-sig"
-        )
-        log.info("wrote %d kept rows to %s", len(kept), out_dir.name)
+        _publish_parquet(storage, out_dir / "unified_shipments.parquet", kept)
+        _publish_csv(storage, out_dir / "unified_shipments.csv", kept)
+        log.info("wrote %d kept rows to %s", len(kept), out_dir_label)
     else:
         log.warning("no kept rows")
         kept = schema.empty_frame()
@@ -188,16 +215,16 @@ def _write_outputs(
             by=["posting_date", "carrier", "shipment_id"],
             na_position="last", kind="stable",
         ).reset_index(drop=True)
-        refunds.to_parquet(out_dir / "refunds.parquet", index=False)
-        refunds.to_csv(out_dir / "refunds.csv", index=False, encoding="utf-8-sig")
-        log.info("wrote %d refund rows to %s", len(refunds), out_dir.name)
+        _publish_parquet(storage, out_dir / "refunds.parquet", refunds)
+        _publish_csv(storage, out_dir / "refunds.csv", refunds)
+        log.info("wrote %d refund rows to %s", len(refunds), out_dir_label)
     else:
         refunds = schema.empty_frame()
 
     if rejected_frames:
         rejected = pd.concat(rejected_frames, ignore_index=True)
-        rejected.to_parquet(out_dir / "rejections.parquet", index=False)
-        log.info("wrote %d rejected rows to %s", len(rejected), out_dir.name)
+        _publish_parquet(storage, out_dir / "rejections.parquet", rejected)
+        log.info("wrote %d rejected rows to %s", len(rejected), out_dir_label)
 
     manifest = {
         "built_at": pd.Timestamp.utcnow().isoformat(),
@@ -209,10 +236,30 @@ def _write_outputs(
         "kept_summary": _summarize(kept) if len(kept) else {},
         "refunds_summary": _summarize_refunds(refunds) if len(refunds) else {},
     }
-    (out_dir / "manifest.json").write_text(
-        json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8"
+    storage.write_bytes(
+        out_dir / "manifest.json",
+        json.dumps(manifest, indent=2, ensure_ascii=False).encode("utf-8"),
+        overwrite=True,
     )
-    log.info("wrote manifest to %s/manifest.json", out_dir.name)
+    log.info("wrote manifest to %s/manifest.json", out_dir_label)
+
+
+def _publish_parquet(
+    storage: Storage, loc: OpsLocator, df: pd.DataFrame
+) -> None:
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td) / loc.name
+        df.to_parquet(tmp, index=False)
+        storage.write_from_local(loc, tmp, overwrite=True)
+
+
+def _publish_csv(
+    storage: Storage, loc: OpsLocator, df: pd.DataFrame
+) -> None:
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td) / loc.name
+        df.to_csv(tmp, index=False, encoding="utf-8-sig")
+        storage.write_from_local(loc, tmp, overwrite=True)
 
 
 def _summarize_refunds(refunds: pd.DataFrame) -> dict:
@@ -273,7 +320,11 @@ def _summarize(kept: pd.DataFrame) -> dict:
     }
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(
+    argv: list[str] | None = None,
+    *,
+    storage: Storage | None = None,
+) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--carriers", nargs="*", default=None,
@@ -285,6 +336,9 @@ def main(argv: list[str] | None = None) -> int:
         level=logging.INFO, format="%(asctime)s  %(levelname)s  %(message)s"
     )
 
+    if storage is None:
+        storage = get_storage()
+
     carriers = args.carriers or list(schema.CARRIERS)
     unknown = [c for c in carriers if c not in REGISTRY]
     if unknown:
@@ -292,13 +346,13 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     t0 = time.time()
-    log.info("building unified shipments from %s", DATA_DIR)
+    log.info("building unified shipments from %s", DATA_DIR_LOC)
     kept_frames: list[pd.DataFrame] = []
     refund_frames: list[pd.DataFrame] = []
     rejected_frames: list[pd.DataFrame] = []
     stats: list[dict] = []
     for c in carriers:
-        kept, refunds, rejected, stat = _normalize_carrier(c)
+        kept, refunds, rejected, stat = _normalize_carrier(c, storage=storage)
         stats.append(stat)
         if not kept.empty:
             kept_frames.append(kept)
@@ -307,7 +361,10 @@ def main(argv: list[str] | None = None) -> int:
         if not rejected.empty:
             rejected_frames.append(rejected)
 
-    _write_outputs(kept_frames, refund_frames, rejected_frames, stats, OUT_DIR)
+    _write_outputs(
+        kept_frames, refund_frames, rejected_frames, stats,
+        OUT_DIR_LOC, storage,
+    )
     log.info("done in %.1fs", time.time() - t0)
     return 0
 

@@ -18,11 +18,15 @@ from courier_automation.storage.base import (
     StorageLocked,
     StorageNotFound,
 )
+from courier_automation.storage.factory import get_storage
+from courier_automation.storage.local import LocalStorage
 
 __all__ = [
+    "LocalStorage",
     "OpsEntry",
     "OpsLocator",
     "Storage",
     "StorageLocked",
     "StorageNotFound",
+    "get_storage",
 ]

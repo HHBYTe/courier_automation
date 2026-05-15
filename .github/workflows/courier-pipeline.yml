@@ -1,0 +1,56 @@
+name: courier-pipeline
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 06:00 UTC daily. Adjust to match the local Task Scheduler cadence
+    # if you're running both in shadow for the cutover week.
+    - cron: "0 6 * * *"
+
+concurrency:
+  # One run at a time. cancel-in-progress: false so a queued schedule
+  # waits for an in-flight ingest to finish rather than tearing it down
+  # mid-write.
+  group: courier-pipeline
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      COURIER_BACKEND: graph
+      GRAPH_TENANT_ID:     ${{ secrets.GRAPH_TENANT_ID }}
+      GRAPH_CLIENT_ID:     ${{ secrets.GRAPH_CLIENT_ID }}
+      GRAPH_CLIENT_SECRET: ${{ secrets.GRAPH_CLIENT_SECRET }}
+      GRAPH_DRIVE_ID:      ${{ secrets.GRAPH_DRIVE_ID }}
+      # Inbox is read from Graph in this backend, not from a local dir.
+      # COURIER_INBOX is unused but set to an existing path so any code
+      # that still references it doesn't trip on a missing directory.
+      COURIER_INBOX: /tmp/courier-inbox-unused
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run collector (intake + per-carrier pipeline + unified rebuild)
+        run: python scripts/run_collector.py
+
+      - name: Upload run logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: collector-logs-${{ github.run_id }}
+          path: logs/collector/
+          retention-days: 30
+          if-no-files-found: warn

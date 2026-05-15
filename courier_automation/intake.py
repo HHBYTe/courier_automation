@@ -25,6 +25,7 @@ from pathlib import Path
 
 from courier_automation.carriers import CARRIERS
 from courier_automation.parsers.base import ParseResult, compute_file_hash
+from courier_automation.storage import LocalStorage, OpsLocator, Storage
 
 log = logging.getLogger("courier_automation.intake")
 
@@ -121,6 +122,7 @@ def place_invoice_file(
     *,
     parse_result: ParseResult | None = None,
     base_dir: Path | None = None,
+    storage: Storage | None = None,
 ) -> tuple[Path, ParseResult]:
     """Move a classified inbox file into its carrier's Facturas tree.
 
@@ -130,9 +132,10 @@ def place_invoice_file(
     scans `<NN> - <Mes>/` subfolders, so the collector normalises every
     carrier to that, even Seur/Spring which were historically flat).
 
-    `base_dir` is the root the carrier's repo-relative `facturas_root` is
-    resolved against — defaults to the repo root (`ROOT`); tests pass a
-    tmp dir so they never touch the real `Operations - Couriers/` tree.
+    Pass `storage` to route all destination I/O through a Storage
+    backend; if omitted, a `LocalStorage` rooted at `base_dir` (or the
+    repo root) is built on the fly. Tests pass `base_dir=tmp_path` and
+    get exactly the same semantics they had before the Storage refactor.
 
     Returns (final_path, parse_result). Raises:
       - the parser's exceptions (SchemaMismatch / ParserError / ...) if
@@ -149,26 +152,42 @@ def place_invoice_file(
         parse_result = cfg.parser_factory().parse(path)
     d = parse_result.invoice_date
 
-    target_dir = (
-        (base_dir or ROOT) / cfg.facturas_root
+    if storage is None:
+        storage = LocalStorage(ops_root=base_dir or ROOT)
+
+    # `cfg.facturas_root` is a relative `Path` like
+    # "Operations - Couriers/01. Seur/Facturas". Convert to an OpsLocator
+    # against the storage's ops root.
+    facturas_loc = OpsLocator(cfg.facturas_root.as_posix())
+    target_loc = (
+        facturas_loc
         / str(d.year)
         / f"{d.month:02d} - {SPANISH_MONTHS[d.month]}"
     )
-    target_dir.mkdir(parents=True, exist_ok=True)
-    dest = target_dir / path.name
+    storage.ensure_dir(target_loc)
+    dest_loc = target_loc / path.name
 
-    if dest.exists():
-        if compute_file_hash(dest) == compute_file_hash(path):
+    # Resolve a real Path for return value + log lines. For LocalStorage
+    # this is the on-disk path; for GraphStorage callers we'd need a
+    # different shape — not used in PR1.
+    dest_path = (
+        storage.local_path(dest_loc)
+        if isinstance(storage, LocalStorage)
+        else Path(str(dest_loc))
+    )
+
+    if storage.exists(dest_loc):
+        if storage.file_hash(dest_loc) == compute_file_hash(path):
             # Identical re-drop — already collected. Drop the inbox copy.
             path.unlink()
             log.info("%s: already at %s (identical) — inbox copy removed",
-                     path.name, dest)
-            return dest, parse_result
-        raise IntakeConflict(path, dest)
+                     path.name, dest_path)
+            return dest_path, parse_result
+        raise IntakeConflict(path, dest_path)
 
-    shutil.move(str(path), str(dest))
-    log.info("%s: placed -> %s", path.name, dest)
-    return dest, parse_result
+    storage.move_in(path, dest_loc)
+    log.info("%s: placed -> %s", path.name, dest_path)
+    return dest_path, parse_result
 
 
 def quarantine_file(path: Path, dest_dir: Path) -> Path:

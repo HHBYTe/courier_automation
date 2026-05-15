@@ -1,39 +1,40 @@
 """Append parser rows to a courier's historical workbook.
 
-OneDrive-safe write strategy:
-  1. Acquire a sidecar lock file (atomic O_CREAT+O_EXCL).
-  2. Copy the workbook into a non-OneDrive working dir.
-  3. Edit the working copy with openpyxl.
-  4. Stage to <target>.tmp on the same volume as the target.
-  5. os.replace() — atomic on Windows when source and dest share a volume.
-  6. Release the lock.
+The OneDrive-safe write strategy (sidecar lock + off-tree working copy
++ atomic replace) is owned by `LocalStorage.update_xlsx_atomically` in
+`courier_automation/storage/local.py`. This module is now a thin shell:
+it provides the openpyxl row-append mutator and delegates the
+transactional dance to the injected `Storage`.
 
-This avoids OneDrive sync conflict files and protects against partial writes
-when Excel is open or the process dies mid-save.
+When no `Storage` is passed, `append()` builds a `LocalStorage` rooted
+at the workbook's parent directory on the fly — preserving the legacy
+`WorkbookAppender().append(workbook_path=...)` calling convention.
+Later refactor steps inject an explicit Storage at the call sites.
 """
 
 from __future__ import annotations
 
 import datetime as _dt
 import logging
-import os
-import shutil
-import tempfile
-import time
-import uuid
-from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator
 
 import pandas as pd
 from openpyxl import Workbook, load_workbook
 
 from courier_automation.parsers.base import SchemaMismatch, assert_schema
+from courier_automation.storage import LocalStorage, OpsLocator, Storage
+from courier_automation.storage.base import StorageLocked
+from courier_automation.storage.local import (  # re-exported for back-compat
+    LOCK_SUFFIX,  # noqa: F401
+)
 
 log = logging.getLogger(__name__)
 
 DATOS_SHEET = "Datos"
-LOCK_SUFFIX = ".courier-automation.lock"
+
+# Backward-compatible alias for callers importing `WorkbookLocked` from
+# this module. The exception class itself now lives in storage.base.
+WorkbookLocked = StorageLocked
 
 __all__ = [
     "DATOS_SHEET",
@@ -44,11 +45,14 @@ __all__ = [
 ]
 
 
-class WorkbookLocked(RuntimeError):
-    """Could not acquire the sidecar lock within the configured retry budget."""
-
-
 class WorkbookAppender:
+    """Append rows to a master workbook's data sheet, atomically.
+
+    Holds the per-mutation policy (which sheet to write, how many
+    retries to make on a held lock). The transactional `read → mutate
+    → publish` cycle lives in the `Storage` backend.
+    """
+
     def __init__(
         self,
         *,
@@ -56,11 +60,13 @@ class WorkbookAppender:
         lock_retries: int = 6,
         lock_retry_seconds: float = 5.0,
         working_dir: Path | None = None,
+        storage: Storage | None = None,
     ) -> None:
         self.sheet_name = sheet_name
         self.lock_retries = lock_retries
         self.lock_retry_seconds = lock_retry_seconds
         self.working_dir = working_dir
+        self.storage = storage
 
     def append(
         self,
@@ -74,12 +80,47 @@ class WorkbookAppender:
         if not workbook_path.exists():
             raise FileNotFoundError(f"workbook not found: {workbook_path}")
 
-        with self._lock(workbook_path):
-            with self._working_copy(workbook_path) as working_copy:
-                written = self._append_to_workbook(
-                    working_copy, rows, expected_columns
+        # Resolve `workbook_path` to an `OpsLocator` against the injected
+        # storage. Three cases:
+        #   1. No storage injected → build a scoped LocalStorage at the
+        #      workbook's parent dir (legacy WorkbookAppender behaviour).
+        #   2. LocalStorage injected and workbook is under its ops_root
+        #      → compute the relative locator.
+        #   3. LocalStorage injected but workbook is OUTSIDE ops_root
+        #      (e.g. CLI test passes an absolute tmp_path workbook with a
+        #      repo-rooted storage) → fall back to case 1.
+        storage = self.storage
+        loc: OpsLocator | None = None
+        if isinstance(storage, LocalStorage):
+            try:
+                rel = workbook_path.resolve().relative_to(
+                    storage.ops_root.resolve()
                 )
-                self._atomic_replace(working_copy, workbook_path)
+                loc = OpsLocator(rel.as_posix())
+            except ValueError:
+                storage = None  # fall through to the scoped-local branch
+        elif storage is not None:
+            # Non-local backend: caller is responsible for the locator
+            # mapping. Use the bare filename as a placeholder.
+            loc = OpsLocator(workbook_path.name)
+
+        if storage is None:
+            storage = LocalStorage(
+                ops_root=workbook_path.parent,
+                working_dir=self.working_dir,
+            )
+            loc = OpsLocator(workbook_path.name)
+        assert loc is not None  # one of the branches above set it
+
+        def _mutate(local_copy: Path) -> int:
+            return self._append_to_workbook(local_copy, rows, expected_columns)
+
+        written = storage.update_xlsx_atomically(
+            loc,
+            _mutate,
+            retries=self.lock_retries,
+            retry_seconds=self.lock_retry_seconds,
+        )
         log.info(
             "workbook append: %s += %d rows (sheet=%s)",
             workbook_path.name,
@@ -119,65 +160,6 @@ class WorkbookAppender:
             return written
         finally:
             wb.close()
-
-    @contextmanager
-    def _lock(self, workbook_path: Path) -> Iterator[None]:
-        lock_path = workbook_path.with_suffix(workbook_path.suffix + LOCK_SUFFIX)
-        for attempt in range(1, self.lock_retries + 1):
-            try:
-                fd = os.open(
-                    lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY
-                )
-            except FileExistsError:
-                if attempt == self.lock_retries:
-                    raise WorkbookLocked(
-                        f"could not acquire {lock_path.name} after "
-                        f"{self.lock_retries} attempts (held by another "
-                        f"ingest run, or stale)"
-                    )
-                log.info(
-                    "lock held on %s, retry %d/%d in %.1fs",
-                    lock_path.name,
-                    attempt,
-                    self.lock_retries,
-                    self.lock_retry_seconds,
-                )
-                time.sleep(self.lock_retry_seconds)
-                continue
-            try:
-                with os.fdopen(fd, "w") as f:
-                    f.write(f"pid={os.getpid()} ts={time.time()}\n")
-                break
-            except Exception:
-                # If we can't write metadata, surrender the lock and re-raise.
-                lock_path.unlink(missing_ok=True)
-                raise
-        try:
-            yield
-        finally:
-            lock_path.unlink(missing_ok=True)
-
-    @contextmanager
-    def _working_copy(self, workbook_path: Path) -> Iterator[Path]:
-        base = self.working_dir or Path(tempfile.gettempdir()) / "courier_automation_work"
-        base.mkdir(parents=True, exist_ok=True)
-        run_dir = base / f"run-{uuid.uuid4().hex[:12]}"
-        run_dir.mkdir(parents=True, exist_ok=True)
-        try:
-            working_copy = run_dir / workbook_path.name
-            shutil.copy2(workbook_path, working_copy)
-            yield working_copy
-        finally:
-            shutil.rmtree(run_dir, ignore_errors=True)
-
-    def _atomic_replace(self, source: Path, target: Path) -> None:
-        """Stage to <target>.tmp on the target's volume, then os.replace.
-        os.replace is atomic on Windows when source and dest share a volume."""
-        staging = target.with_suffix(target.suffix + ".tmp")
-        if staging.exists():
-            staging.unlink()
-        shutil.copy2(source, staging)
-        os.replace(staging, target)
 
 
 def export_rows(
