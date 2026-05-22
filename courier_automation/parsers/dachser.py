@@ -157,6 +157,9 @@ _RENAME_BRACKETED: dict[str, str] = {
     "Plz. Orig.": "Plz. Orig",
     "País Orig.": "País Ori",
     "Administ.": "Administ",
+    # Some bracketed files spell the order column out ("Nº de pedido")
+    # rather than emitting the canonical "Pedido" header directly.
+    "Nº de pedido": "Pedido",
     "Total": "Importe neto",
 }
 
